@@ -101,7 +101,8 @@ module.exports = {
       },
       height: {
         content: 'max-content',
-        70: '17.5rem'
+        70: '17.5rem',
+        68: '272px',
       }
     }
   },

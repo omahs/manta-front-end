@@ -1,1 +1,24 @@
 /* Manta network-specific styling goes here */
+
+// sbt page
+.sbt-faq-content {
+  .el-collapse {
+    width: 100%;
+    border: none;
+
+    .el-collapse-item__header__arrow {
+      display: none;
+    }
+    .el-collapse-item {
+      margin-top: 8px;
+      .el-collapse-item__header,
+      .el-collapse-item__wrap,
+      .el-collapse-item__content {
+        border: none;
+        border-radius: 8px;
+        background: #050d32;
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+}

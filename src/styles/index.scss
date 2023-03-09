@@ -7,6 +7,7 @@
 @import './components.scss';
 @import './dolphin.scss';
 @import './ag-grid.scss';
+@import './manta.scss';
 body,
 html {
   font-family: 'Inter' !important;
@@ -59,6 +60,10 @@ input[type='number']::-webkit-outer-spin-button {
 
 .font-red-hat-mono {
   font-family: 'Red Hat Mono' !important;
+}
+
+.font-red-hat-text {
+  font-family: 'Red Hat Text' !important;
 }
 
 @keyframes jump {

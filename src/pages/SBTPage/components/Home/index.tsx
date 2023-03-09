@@ -1,7 +1,8 @@
 import Icon from 'components/Icon';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
-import sbtImgs from 'resources/images/sbt';
 import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
+import FAQ from './FAQ';
+import Warning from './Warning';
 
 const Home = () => {
   const { setCurrentStep } = useSBT();
@@ -9,29 +10,130 @@ const Home = () => {
   const toUpload = () => {
     setCurrentStep(Step.Upload);
   };
+
+  const toNFT = () => {
+    // TODO navigate to NFT page
+  };
+
   return (
-    <div className="flex flex-col items-center mx-auto bg-secondary rounded-xl p-14 w-75">
-      <Icon className="w-20 h-20" name="manta" />
-      <h2 className="text-white text-2xl mt-6 mb-4 font-red-hat-mono font-medium">
-        MANTA zkSBT
-      </h2>
-      <div className="grid gap-6 grid-cols-9 grid-rows-3 w-full justify-between mt-8 mb-20">
-        {sbtImgs.map((item, index) => {
-          return (
-            <img
-              className="img-bg w-24 h-24 rounded-xl cursor-pointer hover:scale-200 transform duration-500 hover:z-10"
-              key={index}
-              src={item}
-            />
-          );
-        })}
+    <div className="font-red-hat-text flex flex-col items-center mx-auto bg-secondary rounded-xl p-6 w-75">
+      <div className="w-full mb-6">
+        <div className="text-2xl mb-4">My Account</div>
+        <ButtonWithSignerAndWallet
+          onClick={toNFT}
+          btnComponent="My NFTs"
+          className="px-14 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
+          noWalletComponent="Connect wallet to mint"
+        />
       </div>
-      <ButtonWithSignerAndWallet
-        onClick={toUpload}
-        btnComponent="Mint your AI-generated zkSBT"
-        className="px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
-        noWalletComponent="Connect wallet to mint"
-      />
+      <div className="w-full">
+        <h1 className="font-red-hat-text text-2xl">Ongoing Projects</h1>
+        <div className=" flex justify-between align-bottom mt-4">
+          <div className="left ">
+            <div
+              className="flex h-80 w-80"
+              style={{ backgroundColor: '#050D32' }}>
+              <div className="m-auto flex flex-col items-center font-red-hat-mono">
+                <Icon className="w-20 h-20" name="manta" />
+                <div className="mt-4 text-xl text-center">zkSBT</div>
+              </div>
+            </div>
+          </div>
+          <div className="right ml-6">
+            <div className="pt-6 pb-4 text-2xl">zkSBT</div>
+            <div className="text-sm text-white text-opacity-80">
+              Nullam suscipit ex et erat imperdiet, eu condimentum ex dapibus.
+              Ut ornare tellus eget libero blandit, et dignissim dui mollis.
+              Suspendisse potenti. Orci varius natoque penatibus et magnis dis
+              parturient montes, nascetur ridiculus mus. Proin eleifend nisl in
+              nunc fringilla, vitae elementum tortor porta. Suspendisse in
+              lectus non risus varius egestas. Maecenas condimentum vehicula mi
+              quis mattis. Nulla commodo velit non sagittis egestas. Cras ut
+              risus sapien. Suspendisse pellentesque laoreet quam eget ornare.
+              Maecenas in blandit erat. Donec convallis a erat sed ultricies.
+              Pellentesque faucibus sapien lectus, non pretium eros eleifend ut.{' '}
+            </div>
+            <div
+              className="count-down mt-4 py-4 px-6 flex justify-between bg-red-400 rounded-md"
+              style={{ backgroundColor: '#1E2546' }}>
+              <div className="flex flex-col justify-between w-full ">
+                <div className="flex  justify-between">
+                  <div className="text-2xl">WL Mint</div>
+                  <div className="flex items-end mb-4">
+                    <span>Ends in</span>
+                    <div className="ml-4 flex items-end gap-2">
+                      <span
+                        className="font-red-hat-mono text-2xl"
+                        style={{ color: '#51FFE0' }}>
+                        05
+                      </span>
+                      <span>D</span>
+                      <span
+                        className="font-red-hat-mono text-2xl"
+                        style={{ color: '#51FFE0' }}>
+                        12
+                      </span>
+                      <span>H</span>
+                      <span
+                        className="font-red-hat-mono text-2xl"
+                        style={{ color: '#51FFE0' }}>
+                        12
+                      </span>
+                      <span>M</span>
+                      <span
+                        className="font-red-hat-mono text-2xl"
+                        style={{ color: '#51FFE0' }}>
+                        42
+                      </span>
+                      <span>S</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <div className="text-xl">40 Manta</div>
+                  <ButtonWithSignerAndWallet
+                    btnComponent="Generate"
+                    onClick={toUpload}
+                    className="mb-2 px-12 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 "
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Warning />
+                  <div className="text-xs text-error">
+                    Only open to WL zkAddress
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>Total Minted: 1304</div>
+      </div>
+
+      <div className="mt-4 w-full">
+        <h1 className="font-red-hat-text text-2xl">Coming Soon</h1>
+        <div className="flex justify-between align-bottom mt-4">
+          <div className="left ">
+            <div
+              className="flex h-80 w-80"
+              style={{ backgroundColor: '#050D32' }}>
+              <div className="m-auto flex flex-col items-center font-red-hat-mono">
+                <Icon className="w-20 h-20" name="manta" />
+                <div className="mt-4 text-xl text-center">MANTA NETWORK</div>
+                <div className=" text-xl text-center">NAME SERVICE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 w-full">
+        <h1 className="font-red-hat-text text-2xl">FAQ</h1>
+        <div className="sbt-faq-content w-full flex justify-between align-bottom mt-4">
+          <FAQ />
+        </div>
+      </div>
     </div>
   );
 };
