@@ -1,5 +1,5 @@
+// @ts-nocheck
 import { Collapse } from 'element-react';
-import Warning from './Warning';
 import Arrow from './Arrow';
 
 const FAQ = () => {
@@ -45,8 +45,6 @@ const FAQ = () => {
           justo, at tristique sem volutpat vel.
         </div>
       </Collapse.Item>
-
-
     </Collapse>
   );
 };
