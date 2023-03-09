@@ -155,3 +155,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - [\#432](https://github.com/Manta-Network/manta-front-end/pull/432) Added fee depletion warning for public transfers of DOL
 - [\#487](https://github.com/Manta-Network/manta-front-end/pull/487) Show private transaction history in zkAccount modal
+
+
+## [4.1.0] - 2023-3-10
+### Changed
+- Update manta.js to v3.0.0
