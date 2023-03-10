@@ -10,30 +10,8 @@ import Progress from '../Progress';
 import SignerButton from '../SignerButton';
 import WalletButton from '../WalletButton';
 
-const UploadedImg = ({
-  url,
-  index,
-  length
-}: {
-  url: string;
-  index: number;
-  length: number;
-}) => {
-  const transformStyle = `scale(${Math.pow(0.9, index)})`;
-  const left = `${6 * index}rem`;
-  return (
-    <img
-      src={url}
-      className={'w-60 h-60 rounded-lg transform absolute'}
-      style={{
-        transform: transformStyle,
-        left,
-        zIndex: length - index,
-        opacity: 0.9
-      }}
-      key={index}
-    />
-  );
+const UploadedImg = ({ url }: { url: string }) => {
+  return <img src={url} className={'w-25 h-25 rounded-lg'} />;
 };
 
 const Generating = () => {
@@ -65,16 +43,9 @@ const Generating = () => {
       <p className="text-sm text-opacity-60 text-white mb-6">
         It will normally take 20 mins.
       </p>
-      <div className="relative w-full h-60">
+      <div className="relative w-full grid grid-rows-2 grid-cols-10 gap-4">
         {imgList.map(({ url }, index) => {
-          return (
-            <UploadedImg
-              key={index}
-              url={url ?? ''}
-              index={index}
-              length={imgList.length}
-            />
-          );
+          return <UploadedImg url={url ?? ''} key={index} />;
         })}
       </div>
       <div className="flex border border-dashed w-max p-4 mt-6 rounded-lg">
