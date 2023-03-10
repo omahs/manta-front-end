@@ -6119,9 +6119,9 @@ bindings@^1.3.0, bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
+"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
   version "0.0.4"
-  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
+  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"
@@ -11537,10 +11537,10 @@ manta-polkawallet-bridge@0.0.0:
     axios "^0.27.2"
     lodash "^4.17.20"
 
-manta.js@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/manta.js/-/manta.js-1.0.0.tgz#de6e05d14080f82b3b6abd9a6a5bb3cabfc91a5c"
-  integrity sha512-w8xbGP9rB6aSCuqCJ6gW8d+gNPv7WwbArpMyDr8NF5iOW6yruFh52Ru2R8VAD4ce/W0r2p7t1Gi7GELoKAVP4Q==
+manta.js@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/manta.js/-/manta.js-3.0.0.tgz#14e593695c90e3e3496f64e245b71208e4c54a52"
+  integrity sha512-qKScSi43nA+urxbNFA2V0Tnt+KjCFTfgH4jIjmyN5EKiDHQrBObz1FeXS1+NelT3KIBePfTU7+CoESjMYXHAhw==
   dependencies:
     "@polkadot/api" "6.8.1"
     "@polkadot/extension-dapp" "0.39.3"
@@ -11552,7 +11552,7 @@ manta.js@^1.0.0:
     "@polkadot/util-crypto" "8.1.2"
     axios "^0.27.2"
     bn.js "^5.2.0"
-    scale-codec "^0.10.0"
+    scale-codec "^0.10.2"
     typescript "^4.9.4"
 
 map-cache@^0.2.2:
@@ -14811,7 +14811,7 @@ saxes@^5.0.1:
   dependencies:
     xmlchars "^2.2.0"
 
-scale-codec@^0.10.0:
+scale-codec@^0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/scale-codec/-/scale-codec-0.10.2.tgz#bdc99257f577b72d19ab43c7f0870c579810246f"
   integrity sha512-hEdcKrQ2X2boKjyq1lHE8gkvgM+S+egDHx7FoG+N4JzpQ6a2OnE9t6KW+qjJm8A9HUf54UcnHXbV1iPGA51wAQ==

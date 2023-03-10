@@ -10,6 +10,7 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useConfig } from 'contexts/configContext';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useSend } from './SendContext';
 
 const ActiveSendButton = () => {
@@ -50,6 +51,7 @@ const ActiveSendButton = () => {
 
 const ValidationSendButton = ({ showModal }) => {
   const config = useConfig();
+  const { apiState } = useSubstrate();
   const {
     isPublicTransfer,
     isPrivateTransfer,
@@ -63,6 +65,7 @@ const ValidationSendButton = ({ showModal }) => {
   } = useSend();
   const { signerIsConnected, signerVersion } = usePrivateWallet();
   const { externalAccount } = useExternalAccount();
+  const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
 
   let validationMsg = null;
   let shouldShowWalletMissingValidation = false;
@@ -77,6 +80,8 @@ const ValidationSendButton = ({ showModal }) => {
     validationMsg = 'Signer out of date';
   } else if (!externalAccount) {
     shouldShowWalletMissingValidation = true;
+  } else if (apiIsDisconnected) {
+    validationMsg = 'Connecting to network';
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
   } else if (userCanPayFee() === false) {

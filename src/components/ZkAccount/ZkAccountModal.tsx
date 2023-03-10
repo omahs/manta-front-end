@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import PrivateActivityTableContent from './PrivateActivityTableContent';
-import PrivateAssetTableContent from './PrivateAssetTableContent';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import getAbbreviatedName from 'utils/display/getAbbreviatedName';
+import PrivateAssetTableContent from './PrivateAssetTableContent';
+import PrivateActivityTableContent from './PrivateActivityTableContent';
 
 type TableContentSelectorProp = {
   displayAssets: boolean;
@@ -106,7 +106,7 @@ const TableContentDisplay = () => {
 
 const NetworkDisconnectedDisplay = () => {
   return (
-    <div className="border border-secondary rounded-lg px-6 py-6 text-secondary overflow-y-auto bg-white bg-opacity-5">
+    <div className="border border-secondary rounded-lg px-6 py-6 mt-4 text-secondary overflow-y-auto bg-white bg-opacity-5">
       <div className="flex flex-col items-center justify-center gap-3">
         <div className="text-white text-center">
           Cannot connect to the network
