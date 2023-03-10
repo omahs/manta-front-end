@@ -1,4 +1,5 @@
 // @ts-nocheck
+import React from 'react';
 import classNames from 'classnames';
 import ConnectWallet from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';

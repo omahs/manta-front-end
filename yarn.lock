@@ -11534,10 +11534,10 @@ manta-polkawallet-bridge@0.0.0:
     axios "^0.27.2"
     lodash "^4.17.20"
 
-manta.js@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/manta.js/-/manta.js-2.0.0.tgz#f3c6aa650bef3a3575df3d6174c95420216b8575"
-  integrity sha512-suuHs0YGalGFNRKfaMj0L71RaBfaxpO+fSyrMrOmvzf0jDaMe97cJpvKlsZaoMcnDv6hX5bXbWT8gxkEx0EJtQ==
+manta.js@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/manta.js/-/manta.js-3.0.0.tgz#14e593695c90e3e3496f64e245b71208e4c54a52"
+  integrity sha512-qKScSi43nA+urxbNFA2V0Tnt+KjCFTfgH4jIjmyN5EKiDHQrBObz1FeXS1+NelT3KIBePfTU7+CoESjMYXHAhw==
   dependencies:
     "@polkadot/api" "6.8.1"
     "@polkadot/extension-dapp" "0.39.3"
@@ -11549,7 +11549,7 @@ manta.js@2.0.0:
     "@polkadot/util-crypto" "8.1.2"
     axios "^0.27.2"
     bn.js "^5.2.0"
-    scale-codec "^0.10.0"
+    scale-codec "^0.10.2"
     typescript "^4.9.4"
 
 map-cache@^0.2.2:
@@ -14808,7 +14808,7 @@ saxes@^5.0.1:
   dependencies:
     xmlchars "^2.2.0"
 
-scale-codec@^0.10.0:
+scale-codec@^0.10.2:
   version "0.10.2"
   resolved "https://registry.yarnpkg.com/scale-codec/-/scale-codec-0.10.2.tgz#bdc99257f577b72d19ab43c7f0870c579810246f"
   integrity sha512-hEdcKrQ2X2boKjyq1lHE8gkvgM+S+egDHx7FoG+N4JzpQ6a2OnE9t6KW+qjJm8A9HUf54UcnHXbV1iPGA51wAQ==

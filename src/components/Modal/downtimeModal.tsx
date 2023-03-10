@@ -31,7 +31,7 @@ function DowntimeModal() {
           Please join the Manta Network{' '}
           <a
             className="cursor-pointer text-link hover:underline"
-            href="www.discord.gg/mantanetwork"
+            href="https://www.discord.gg/mantanetwork"
             target="_blank"
             rel="noopener noreferrer"
           >

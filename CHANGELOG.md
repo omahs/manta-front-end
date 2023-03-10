@@ -157,6 +157,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#487](https://github.com/Manta-Network/manta-front-end/pull/487) Show private transaction history in zkAccount modal
 
 
+## [4.1.0] - 2023-3-10
+
+### Fixed
+- [\#685](https://github.com/Manta-Network/manta-front-end/pull/684) Fix downtime modal discord link
+
+### Changed
+- [\#684](https://github.com/Manta-Network/manta-front-end/pull/684) Update manta.js to v3.0.0
+
+
 ## [5.0.0] - 2023-3-8
 
 ### Fixed
@@ -180,6 +189,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#613](https://github.com/Manta-Network/manta-front-end/pull/613) Restyle the address copy icon in the zkAccount modal
 - [\#629](https://github.com/Manta-Network/manta-front-end/pull/629) Replace tabbed menu with navlinks
 - [\#646](https://github.com/Manta-Network/manta-front-end/pull/646) Change fonts on staking page
+- [\#666](https://github.com/Manta-Network/manta-front-end/pull/666) Change styles on staking page and bridge page
 
 ### Added
 - [\#493](https://github.com/Manta-Network/manta-front-end/pull/493) Remember and default to the most recently used account for each public wallet
