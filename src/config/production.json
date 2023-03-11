@@ -11,7 +11,7 @@
     {
       "name": "Dolphin",
       "path": "/dolphin",
-      "url": "wss://ws.npoimage-backend-service.cloud:444",
+      "url": "wss://kwaltz.baikal.testnet.dolphin.training",
       "testnet": true,
       "explorer": "dolphin.subscan.io"
     }

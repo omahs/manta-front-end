@@ -11,12 +11,9 @@ import {
 import {
   DispatchError,
   EventRecord,
-  ExtrinsicStatus,
-  RuntimeDispatchInfo,
-  SignedBlock
+  ExtrinsicStatus
 } from '@polkadot/types/interfaces';
 import type { ITuple } from '@polkadot/types/types';
-// @ts-ignore:next-line
 import { SbtMantaPrivateWallet, Environment, Network } from 'mantasbt.js';
 
 import TxStatus from 'types/TxStatus';
@@ -100,9 +97,7 @@ export const SBTPrivateContextProvider = ({
       externalAccount.address
     );
 
-    const gasFee: RuntimeDispatchInfo = await reserveSbt.paymentInfo(
-      externalAccount.address
-    );
+    const gasFee = await reserveSbt.paymentInfo(externalAccount.address);
     const value = Balance.Native(config, new BN(gasFee.partialFee.toString()));
     setReserveGasFee(value);
   }, [config, extensionSigner, externalAccount, sbtPrivateWallet]);
@@ -136,10 +131,12 @@ export const SBTPrivateContextProvider = ({
             setTxStatus(TxStatus.failed(''));
           } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
             try {
-              const signedBlock: SignedBlock =
-                await sbtPrivateWallet.api.rpc.chain.getBlock(status.asInBlock);
-              const extrinsics = signedBlock.block.extrinsics;
-              const extrinsic = extrinsics.find((extrinsic) =>
+              const signedBlock =
+                await sbtPrivateWallet?.api?.rpc?.chain?.getBlock(
+                  status.asInBlock
+                );
+              const extrinsics = signedBlock?.block?.extrinsics;
+              const extrinsic = extrinsics?.find((extrinsic) =>
                 extrinsicWasSentByUser(extrinsic, externalAccount, api)
               );
               const extrinsicHash = extrinsic?.hash.toHex();
@@ -183,7 +180,7 @@ export const SBTPrivateContextProvider = ({
       if (!sbtPrivateWallet || !externalAccount || !api?.query) {
         return;
       }
-      const assetIdRange =
+      const assetIdRange: any =
         await sbtPrivateWallet.api.query.mantaSbt.reservedIds(
           externalAccount.address
         );
@@ -196,9 +193,10 @@ export const SBTPrivateContextProvider = ({
       await sbtPrivateWallet.getPrivateBalance(assetId);
 
       const numberOfMints = newMintSet.size;
-      const metadata = [...newMintSet].map(
-        (genereatedImg) => genereatedImg?.cid
+      const metadata = [...newMintSet]?.map(
+        (genereatedImg) => genereatedImg?.cid ?? ''
       );
+
       const sbtMint = await sbtPrivateWallet.buildSbtBatch(
         extensionSigner,
         externalAccount.address,
@@ -224,7 +222,7 @@ export const SBTPrivateContextProvider = ({
           return;
         }
         await batchTx.signAndSend(externalAccount.address, handleTxRes);
-        return transactionDatas.map((tx: any) => {
+        return transactionDatas?.map((tx: any) => {
           const proofId = u8aToHex(
             tx[0].ToPrivate[0]['utxo_commitment_randomness']
           );

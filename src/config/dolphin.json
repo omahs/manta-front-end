@@ -3,7 +3,7 @@
   "SS58_FORMAT": 42,
   "SUBSCAN_URL": "https://dolphin.subscan.io",
   "TWITTER_URL": "https://twitter.com/mantanetwork",
-  "DOLPHIN_SOCKET": "wss://ws.npoimage-backend-service.cloud:444",
+  "DOLPHIN_SOCKET": "wss://kwaltz.baikal.testnet.dolphin.training",
   "KUSAMA_SOCKET": "wss://ws.internal.kusama.systems",
   "KARURA_SOCKET": "wss://ws.archive.acala.seabird.systems",
   "MOONRIVER_SOCKET": "wss://ws.moonriver.seabird.systems",
