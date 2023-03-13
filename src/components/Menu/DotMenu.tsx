@@ -78,9 +78,9 @@ const Menu = () => {
     'MEDIUM_URL': 'https://mantanetwork.medium.com/',
     'CALAMARI_GUIDE_URL': 'https://docs.manta.network/docs/calamari/Staking/Overview',
     'CALAMARI_BUG_REPORT': 'https://discord.gg/PRDBTChSsF',
-    'DOLPHIN_GUIDE_URL': 'https://docs.manta.network/docs/guides/DolphinPay',
+    'DOLPHIN_GUIDE_URL': 'https://docs.manta.network/docs/guides/MantaPay',
     'DOLPHIN_BUG_REPORT': 'https://docs.google.com/forms/d/e/1FAIpQLScAIuDuztZoKHOlpJNC-9FlVdYJpMBLcztQCvT3IQ0FGe7GaA/viewform',
-    'DOLPHIN_FAUCET_URL': 'https://docs.manta.network/docs/guides/DolphinPay#get-testnet-tokens',
+    'DOLPHIN_FAUCET_URL': 'https://docs.manta.network/docs/guides/MantaPay#get-testnet-tokens',
   };
 
   const DotMenuContent = () => (
