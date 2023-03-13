@@ -10,6 +10,7 @@ import axios from 'axios';
 
 import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
+import { levels } from '../components/TokenButton';
 import { useGenerated } from './generatedContext';
 import { ThemeItem, useSBTTheme } from './sbtThemeContext';
 import { GenerateStatus, useGenerating } from './generatingContext';
@@ -23,6 +24,11 @@ type MintContextValue = {
   resetContextData: () => void;
   activeWatermarkIndex: number;
   setActiveWatermarkIndex: (index: number) => void;
+};
+const LEVEL_TO_SIZE = {
+  [levels.normal]: 1,
+  [levels.supreme]: 2,
+  [levels.master]: 3
 };
 
 const MintContext = createContext<MintContextValue | null>(null);
@@ -41,9 +47,13 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const getWatermarkedImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/watermark`;
     const data = {
-      url: [...mintSet].map(({ url }) => url),
-      token: 'manta',
-      size: 1,
+      data: [...mintSet].map(({ url, watermarkToken, watermarkLevel }) => {
+        return {
+          url,
+          token: watermarkToken,
+          size: LEVEL_TO_SIZE[watermarkLevel ?? levels.normal]
+        };
+      }),
       address: externalAccount?.address,
       model_id: modelId
     };
