@@ -12,6 +12,7 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import Icon from 'components/Icon';
+import classNames from 'classnames';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import ModalNotes from './ModalNotes';
@@ -184,8 +185,10 @@ export const UnstakeModal = ({ hideModal }) => {
 
       <div className="mt-6 w-full">
         <Button
-          className="font-red-hat-text text-base w-full btn-primary"
-          onClick={onClickUnstake}>
+          className={ classNames('font-red-hat-text text-base w-full btn-primary', { 'filter brightness-50': !inputValue }) }
+          onClick={onClickUnstake}
+          disabled={!inputValue}
+        >
           Unstake
         </Button>
       </div>

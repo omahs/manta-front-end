@@ -12,6 +12,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import DotLoader from 'components/Loaders/DotLoader';
 import Icon from 'components/Icon';
+import classNames from 'classnames';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import { MAX_DELEGATIONS } from '../StakeConstants';
@@ -192,8 +193,9 @@ export const StakeModal = ({ hideModal }) => {
       <ErrorText errorMessage={errorMessage} />
       <div className="mt-6 w-full">
         <Button
-          className="font-red-hat-text text-base w-full btn-primary"
-          onClick={onClickStake}>
+          className={ classNames('font-red-hat-text text-base w-full btn-primary', { 'filter brightness-50': !inputValue }) }
+          onClick={onClickStake}
+          disabled={!inputValue}>
           Stake
         </Button>
       </div>
