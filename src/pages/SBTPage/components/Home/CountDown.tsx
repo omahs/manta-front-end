@@ -45,19 +45,19 @@ const Countdown: React.FC<CountdownProps> = ({ endTime, started }) => {
         <>
           <span>Ends in</span>
           <div className="ml-4 flex items-end gap-2">
-            <span className="font-red-hat-mono text-2xl text-center text-sbt-date">
+            <span className="font-red-hat-mono font-semibold text-2xl text-center text-sbt-date">
               {days}
             </span>
             <span>D</span>
-            <span className="w-8 font-red-hat-mono text-2xl text-center text-sbt-date">
+            <span className="w-8 font-red-hat-mono font-semibold text-2xl text-center text-sbt-date">
               {hours}
             </span>
             <span>H</span>
-            <span className="w-8 font-red-hat-mono text-2xl text-center text-sbt-date">
+            <span className="w-8 font-red-hat-mono font-semibold text-2xl text-center text-sbt-date">
               {minutes}
             </span>
             <span>M</span>
-            <span className="w-8 font-red-hat-mono text-2xl text-center text-sbt-date">
+            <span className="w-8 font-red-hat-mono font-semibold text-2xl text-center text-sbt-date">
               {seconds}
             </span>
             <span>S</span>

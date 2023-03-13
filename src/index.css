@@ -5,6 +5,13 @@ html {
   height: 100%;
   overflow: auto;
 }
+textarea,
+view,
+div {
+  box-sizing: border-box;
+  font-family: RedHat, RedHatMono, Arial, PingFangSC-Regular, 'Microsoft YaHei',
+    sans-serif !important;
+}
 
 body {
   height: 100%;
