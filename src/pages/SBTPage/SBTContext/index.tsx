@@ -64,6 +64,14 @@ export type SBTContextValue = {
   nativeTokenBalance: Balance | null;
   skippedStep: boolean;
   toggleSkippedStep: (skippedStep: boolean) => void;
+  hasNFT: boolean;
+  totalCount: number;
+  countDown: number | string;
+  isWhiteList: boolean;
+  getHasNFT: () => void;
+  getTotalCount: () => void;
+  getCountDown: () => void;
+  getIsWhiteList: () => void;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -78,10 +86,76 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     null
   );
   const [skippedStep, toggleSkippedStep] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [countDown, setCountDown] = useState('');
+  const [hasNFT, setHasNFT] = useState(false);
+  const [isWhiteList, setIsWhiteList] = useState(true);
 
   const { externalAccount } = useExternalAccount();
   const config = useConfig();
   const { api } = useSubstrate();
+
+  const getHasNFT = useCallback(async () => {
+    const url = `${config.SBT_NODE_SERVICE}/npo/hasnft`;
+    const data = {
+      address: externalAccount?.address
+    };
+    try {
+      const res = await axios.post(url, data);
+      if (res.status === 200 || res.status === 201) {
+        const hasNFT = res.data || false;
+        setHasNFT(hasNFT);
+      }
+    } catch (error) {
+      // TODO
+    }
+
+    return false;
+  }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
+
+  const getTotalCount = useCallback(async () => {
+    const url = `${config.SBT_NODE_SERVICE}/npo/count`;
+    try {
+      const res = await axios.post(url);
+      if (res.status === 200 || res.status === 201) {
+        const totalCount = Number(res.data) || 0;
+        setTotalCount(totalCount);
+      }
+    } catch (error) {
+      // TODO
+    }
+  }, [config.SBT_NODE_SERVICE]);
+
+  const getCountDown = useCallback(async () => {
+    const url = `${config.SBT_NODE_SERVICE}/npo/countdown`;
+    try {
+      const res = await axios.post(url);
+      if (res.status === 200 || res.status === 201) {
+        const countDown = res.data || 0;
+        setCountDown(countDown);
+      }
+    } catch (error) {
+      // TODO
+    }
+  }, [config.SBT_NODE_SERVICE]);
+
+  const getIsWhiteList = useCallback(async () => {
+    const url = `${config.SBT_NODE_SERVICE}/npo/whitelist`;
+    const data = {
+      address: externalAccount?.address
+    };
+    try {
+      const res = await axios.post(url, data);
+      if (res.status === 200 || res.status === 201) {
+        const isWhiteList = res.data || false;
+        setIsWhiteList(isWhiteList);
+      }
+    } catch (error) {
+      // TODO
+    }
+
+    return false;
+  }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
 
   const uploadImgs = useCallback(
     async (files: File[]) => {
@@ -194,7 +268,15 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       getPublicBalance,
       nativeTokenBalance,
       toggleSkippedStep,
-      skippedStep
+      skippedStep,
+      hasNFT,
+      totalCount,
+      countDown,
+      isWhiteList,
+      getHasNFT,
+      getTotalCount,
+      getCountDown,
+      getIsWhiteList
     };
   }, [
     currentStep,
@@ -204,7 +286,15 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     showOnGoingTask,
     getPublicBalance,
     nativeTokenBalance,
-    skippedStep
+    skippedStep,
+    hasNFT,
+    totalCount,
+    countDown,
+    isWhiteList,
+    getHasNFT,
+    getTotalCount,
+    getCountDown,
+    getIsWhiteList
   ]);
 
   return (

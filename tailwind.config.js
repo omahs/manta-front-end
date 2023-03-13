@@ -27,6 +27,12 @@ module.exports = {
       lg: 'var(--min-width-lg)'
     },
     extend: {
+      colors: {
+        sbt: {
+          'count-down': '#1E2546',
+          date: '#51FFE0'
+        }
+      },
       spacing: {
         128: '32rem',
         108: '27rem',
@@ -102,7 +108,7 @@ module.exports = {
       height: {
         content: 'max-content',
         70: '17.5rem',
-        68: '272px',
+        68: '272px'
       }
     }
   },

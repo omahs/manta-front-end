@@ -11,13 +11,25 @@
     }
     .el-collapse-item {
       margin-top: 8px;
-      .el-collapse-item__header,
-      .el-collapse-item__wrap,
-      .el-collapse-item__content {
+      .el-collapse-item__header {
         border: none;
         border-radius: 8px;
         background: #050d32;
         color: rgba(255, 255, 255, 0.8);
+      }
+      .el-collapse-item__wrap,
+      .el-collapse-item__content {
+        border: none;
+        background: #050d32;
+        color: rgba(255, 255, 255, 0.8);
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+      }
+    }
+    .el-collapse-item.is-active {
+      .el-collapse-item__header {
+        border-bottom-left-radius: unset;
+        border-bottom-right-radius: unset;
       }
     }
   }
