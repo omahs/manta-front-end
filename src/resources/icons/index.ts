@@ -46,6 +46,7 @@ import { ReactComponent as right } from 'resources/icons/right.svg';
 import { ReactComponent as search } from 'resources/icons/search.svg';
 import { ReactComponent as greenCheck } from 'resources/icons/green-check-solid.svg';
 import { ReactComponent as information } from 'resources/icons/information-solid.svg';
+import { ReactComponent as qrCode } from 'resources/icons/qr-code.svg';
 
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
@@ -141,6 +142,7 @@ const icons = {
   search,
   greenCheck,
   information,
+  qrCode,
   Blocks,
   Sign,
   transfer,
