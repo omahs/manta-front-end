@@ -192,7 +192,7 @@ export default class AssetType {
     } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
         AssetType.Calamari(config, isPrivate),
-        AssetType.Karura(config, isPrivate),
+        // AssetType.Karura(config, isPrivate),
         AssetType.Kusama(config, isPrivate),
         AssetType.Moonriver(config, isPrivate)
       ];
