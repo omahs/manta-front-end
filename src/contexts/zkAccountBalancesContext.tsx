@@ -87,7 +87,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isReady, privateAddress]);
 
   useEffect(() => {
     const clearBalancesOnDeleteZkAccount = () => {
