@@ -9,6 +9,7 @@ type PrivateAssetItemProps = {
   key: number;
 };
 
+
 const PrivateAssetItem = ({ balance }: PrivateAssetItemProps) => {
   const privateBalanceRef = useRef(null);
   const isEllipsis = useEllipsis(privateBalanceRef);
@@ -40,7 +41,7 @@ const PrivateAssetItem = ({ balance }: PrivateAssetItemProps) => {
           </Tooltip>
         </div>
       </div>
-      <div className="text-white">{'$0.00'}</div>
+      <div className="text-white">{balance.usdBalanceString}</div>
     </div>
   );
 };

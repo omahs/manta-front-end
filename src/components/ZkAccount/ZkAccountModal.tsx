@@ -5,6 +5,7 @@ import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import getAbbreviatedName from 'utils/display/getAbbreviatedName';
+import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
 import PrivateAssetTableContent from './PrivateAssetTableContent';
 import PrivateActivityTableContent from './PrivateActivityTableContent';
 
@@ -68,10 +69,11 @@ const ZkAddressDisplay = () => {
 };
 
 const UsdBalanceDisplay = () => {
+  const { totalBalanceString } = useZkAccountBalances();
   return (
     <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-1 mt-4 text-secondary flex flex-col justify-center items-center">
       <span className="pt-3 pb-1 text-base text-white">Total Balance</span>
-      <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
+      <div className="text-white pb-3 text-2xl font-bold">{totalBalanceString}</div>
     </div>
   );
 };
