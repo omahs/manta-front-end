@@ -21,11 +21,8 @@ export const UsdPricesContextProvider = (props) => {
           index < assets.length - 1 ? ',' : ''
         }`;
       }, '');
-
-      console.log('process', process);
-
       const res = await axios.get(
-        `https://pro-api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&cg_pro_api_key=${process.env.PRICES_API_KEY}`
+        `https://pro-api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&cg_pro_api_key=CG-dWijufYh9Dtvs6d7ZkxnuNED`
       );
 
       if (res.data) {
