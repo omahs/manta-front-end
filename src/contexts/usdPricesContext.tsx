@@ -5,15 +5,17 @@ import PropTypes from 'prop-types';
 import AssetType from 'types/AssetType';
 import Decimal from 'decimal.js';
 import Usd from 'types/Usd';
+import { useConfig } from './configContext';
 
 const UsdPricesContext = createContext();
 
 export const UsdPricesContextProvider = (props) => {
+  const config = useConfig();
   const [usdPrices, setUsdPrices] = useState({});
 
   const fetchUsdPrices = async () => {
     try {
-      const assets = AssetType.AllCurrencies(false);
+      const assets = AssetType.AllCurrencies(config, false);
       const ids = assets.reduce((res, asset, index) => {
         return `${res}${asset.coingeckoId}${
           index < assets.length - 1 ? ',' : ''

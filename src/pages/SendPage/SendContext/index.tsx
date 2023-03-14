@@ -1,4 +1,5 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
@@ -23,7 +24,7 @@ const SendContext = React.createContext();
 export const SendContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
-  const { setTxStatus, txStatus } = useTxStatus();
+  const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
   const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
@@ -187,13 +188,24 @@ export const SendContextProvider = (props) => {
     if (!api?.isConnected || !address || !assetType) {
       return null;
     }
-    const balanceRaw = await MantaUtilities.getPublicBalance(
-      api,
-      new BN(assetType.assetId),
-      address
-    );
-    const balance = balanceRaw ? new Balance(assetType, balanceRaw) : null;
-    return balance;
+    try {
+      if (assetType.isNativeToken) {
+        const raw = await api.query.system.account(address);
+        const total = new Balance(assetType, new BN(raw.data.free.toString()), );
+        const staked = new Balance(assetType, new BN(raw.data.miscFrozen.toString()));
+        return total.sub(staked);
+      } else {
+        const assetBalance = await api.query.assets.account(assetType.assetId, address);
+        if (assetBalance.value.isEmpty) {
+          return new Balance(assetType, new BN(0));
+        } else {
+          return new Balance(assetType, new BN(assetBalance.value.balance.toString()));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch public balance', e);
+      return null;
+    }
   };
 
   // Gets available native public balance for some public address;
@@ -305,20 +317,22 @@ export const SendContextProvider = (props) => {
 
   // Gets the amount of the native token the user is not allowed to go below
   // If the user attempts a transaction with less than this amount of the
-  // native token, the transaction will fail
+  // native token, the transaction will fail.
+  // Note that estimates are conservative (2x observed fees) and inexact
   const getReservedNativeTokenBalance = () => {
     if (!senderNativeTokenPublicBalance) {
       return null;
     }
-    const conservativeFeeEstimate = Balance.fromBaseUnits(
-      AssetType.Native(config),
-      50
-    );
-    const existentialDeposit = Balance.Native(
-      config,
-      AssetType.Native(config).existentialDeposit
-    );
-    return conservativeFeeEstimate.add(existentialDeposit);
+    let feeEstimate;
+    if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 50);
+    } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 1);
+    } else {
+      throw new Error('Unknown network');
+    }
+    const existentialDeposit = Balance.Native(config, AssetType.Native(config).existentialDeposit);
+    return feeEstimate.add(existentialDeposit);
   };
 
   // Returns true if the current tx would cause the user to go below a
@@ -330,14 +344,18 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       (isToPrivate() || isPublicTransfer())
     ) {
-      const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(
-        AssetType.Native(config),
-        150
-      );
+      let suggestedMinFeeBalance;
+      if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+        suggestedMinFeeBalance = Balance.fromBaseUnits(AssetType.Native(config), 150);
+      } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+        suggestedMinFeeBalance = Balance.fromBaseUnits(AssetType.Native(config), 5);
+      } else {
+        throw new Error('Unknown network');
+      }
       const balanceAfterTx = senderAssetCurrentBalance.sub(
         senderAssetTargetBalance
       );
-      return SUGGESTED_MIN_FEE_BALANCE.gte(balanceAfterTx);
+      return suggestedMinFeeBalance.gte(balanceAfterTx);
     }
     return false;
   };
@@ -428,7 +446,8 @@ export const SendContextProvider = (props) => {
   };
 
   const handleTxFailure = (extrinsic) => {
-    setTxStatus(TxStatus.failed());
+    // Don't show failure if the tx was interrupted by disconnection
+    txStatusRef.current?.isProcessing() && setTxStatus(TxStatus.failed());
     updateTxHistoryEventStatus(
       HISTORY_EVENT_STATUS.FAILED,
       extrinsic.hash.toString()
@@ -438,13 +457,16 @@ export const SendContextProvider = (props) => {
 
   const handleTxSuccess = async (status) => {
     try {
+      // Don't show success if the tx was interrupted by disconnection
       const extrinsic = await getExtrinsicGivenBlockHash(
         status.asFinalized,
         externalAccount,
         api
       );
       const extrinsicHash = extrinsic.hash.toHex();
-      setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
+      if (txStatusRef.current?.isProcessing()) {
+        setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
+      }
       updateTxHistoryEventStatus(
         HISTORY_EVENT_STATUS.SUCCESS,
         extrinsic.hash.toString()

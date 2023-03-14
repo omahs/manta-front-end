@@ -12,7 +12,7 @@ const getZkTransactBalanceText = (
   } else if (isInitialSync && isPrivate) {
     return 'Syncing zk account';
   } else if (balance) {
-    return balance.toString();
+    return `Balance: ${balance.toString()}`;
   } else {
     return '';
   }

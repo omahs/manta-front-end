@@ -3,6 +3,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontSize: {
+      0: '0px',
       xsss: '.70rem',
       xss: '.75rem',
       xs: '.825rem',
@@ -40,7 +41,12 @@ module.exports = {
         '70':'17.5rem',
       },
       width: {
-        '68': '272px'
+        '10.5': '42px',
+        '68': '272px',
+        '140': '560px'
+      },
+      lineHeight: {
+        '5.5': '22px'
       },
       backgroundImage: {},
       backgroundColor: {
@@ -62,14 +68,18 @@ module.exports = {
         'gradient-button':'var(--gradient-button-secondary)',
         'light-warning': '#FF8A0020',
         'dropdown-hover': '#00AFA580',
-        'private-public-toggle': '#0E50FC80',
+        'private-public-toggle': 'rgba(14, 80, 252, 0.5)',
+        'green-light-half': 'rgba(41, 204, 185, 0.5)',
       },
       textColor: {
         accent: 'var(--color-text-accent)',
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
+        'bg-thirdry': 'var(--color-bg-button-thirdry)',
         link: 'var(--color-bg-button-primary)',
+        'third-80': 'var(--color-bg-button-third-80)',
+        'link-hover': '#00D8CB',
         warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
@@ -89,7 +99,7 @@ module.exports = {
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00',
         'white-light': '#FFFFFF1A',
-        'public-private-toggle': '#2B49EA'
+        'public-private-toggle': '#2B49EA',
       },
       colors: {
         'manta-gray-secondary': '#4A516B',

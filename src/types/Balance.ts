@@ -29,9 +29,9 @@ export default class Balance {
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
       new Decimal(assetType.numberOfDecimals)
     );
-    const valueAtomicUnits = atomicUnitsPerBaseUnit.mul(
-      new Decimal(valueBaseUnits.toString())
-    );
+    const valueAtomicUnits = atomicUnitsPerBaseUnit
+      .mul(new Decimal(valueBaseUnits.toString()))
+      .floor();
     // This conversion to BN doesn't work if our valueAtomicUnits Decimal
     // is formatted as an exponent
     Decimal.set({ toExpPos: 1000 });
@@ -55,6 +55,10 @@ export default class Balance {
     return this.valueBaseUnits()
       .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
       .toString();
+  }
+
+  toStringUnrounded(): string {
+    return this.valueBaseUnits().toDecimalPlaces(this.assetType.numberOfDecimals, Decimal.ROUND_DOWN).toString();
   }
 
   toDisplayString(decimals = 3, roundDown = true): string {

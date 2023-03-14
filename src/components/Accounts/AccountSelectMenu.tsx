@@ -12,34 +12,35 @@ import ConnectWallet from './ConnectWallet';
 import AccountSelectDropdown from './AccountSelectDropdown';
 
 const DisplayAccountsButton = () => {
-  const { txStatus } = useTxStatus();
   const { ethAddress } = useMetamask();
-  const disabled = txStatus?.isProcessing();
   const { selectedWallet } = useKeyring();
   const { externalAccount } = useExternalAccount();
   const [showAccountList, setShowAccountList] = useState(false);
   const [isMetamaskSelected, setIsMetamaskSelected] = useState(false);
 
   const isMetamaskEnabled =
-    !!ethAddress && window?.location?.pathname?.includes('dolphin/bridge');
+    !!ethAddress && window?.location?.pathname?.includes('bridge');
 
   const succinctAccountName =
-    externalAccount?.meta.name.length > 8
-      ? `${externalAccount?.meta.name.slice(0, 8)}...`
+    externalAccount?.meta.name.length >11
+      ? `${externalAccount?.meta.name.slice(0, 11)}...`
       : externalAccount?.meta.name;
 
   const ExternalAccountBlock = ({ text }) => {
     return (
       <>
         <img
-          className="w-6 h-6 rounded-full"
+          className="unselectable-text w-6 h-6 rounded-full"
           src={selectedWallet.logo.src}
           alt={selectedWallet.logo.alt}
         />
         {isMetamaskEnabled && (
-          <Icon className="w-6 h-6 rounded-full" name="metamask" />
+          <Icon
+            className="unselectable-text w-6 h-6 rounded-full"
+            name="metamask"
+          />
         )}
-        {text}
+        <p className="unselectable-text">{text}</p>
       </>
     );
   };
@@ -49,9 +50,7 @@ const DisplayAccountsButton = () => {
       <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
         <div
           className={classNames(
-            `flex flex-row justify-center h-10 gap-3 border border-white-light bg-fifth dark:text-black dark:text-white font-red-hat-mono text-sm cursor-pointer rounded-lg items-center ${
-              isMetamaskEnabled ? 'w-44' : 'w-36'
-            }`
+            'flex flex-row justify-center h-10 gap-3 border border-white-light bg-fifth dark:text-black dark:text-white font-red-hat-text w-44 text-sm cursor-pointer rounded-lg items-center'
           )}
           onClick={() => setShowAccountList(!showAccountList)}>
           <ExternalAccountBlock
@@ -93,7 +92,7 @@ const AccountSelectMenu = () => {
     <ConnectWallet
       isButtonShape={true}
       className={
-        'bg-connect-wallet-button text-white font-red-hat-mono text-sm h-10 w-36 cursor-pointer rounded-lg'
+        'bg-connect-wallet-button text-white font-red-hat-text text-sm h-10 w-44 cursor-pointer rounded-lg'
       }
     />
   );

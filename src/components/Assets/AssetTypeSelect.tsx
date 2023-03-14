@@ -33,7 +33,7 @@ const AssetTypeSelect = ({
     <Select
       id="selectedAssetType"
       className={classNames(
-        '!absolute right-3 manta-bg-gray rounded-lg whitespace-nowrap text-black dark:text-white',
+        '!absolute right-1 manta-bg-gray rounded-lg whitespace-nowrap text-black dark:text-white',
         { disabled: disabled }
       )}
       isSearchable={false}
@@ -101,7 +101,7 @@ const dropdownStyles = (disabled) => {
     menuList: () => ({
       paddingTop: '0px',
       paddingBottom: '0px',
-    }), 
+    }),
     container: () => ({
       position: 'absolute'
     })
@@ -125,6 +125,7 @@ const AssetTypeSingleValue = ({ data }) => {
 
 const AssetTypeOption = (props) => {
   const { value, innerProps } = props;
+
   return (
     <div {...innerProps}>
       <div
