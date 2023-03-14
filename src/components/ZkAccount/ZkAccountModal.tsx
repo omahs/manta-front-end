@@ -72,7 +72,7 @@ const UsdBalanceDisplay = () => {
   const { totalBalanceString } = useZkAccountBalances();
   return (
     <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-1 mt-4 text-secondary flex flex-col justify-center items-center">
-      <span className="pt-3 pb-1 text-base text-white">Total Balance</span>
+      <span className="pt-3 pb-1 text-base text-white">Total zkBalance</span>
       <div className="text-white pb-3 text-2xl font-bold">{totalBalanceString}</div>
     </div>
   );
