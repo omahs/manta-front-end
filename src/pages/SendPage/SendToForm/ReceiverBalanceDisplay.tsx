@@ -17,7 +17,7 @@ const ReceiverBalanceDisplay = () => {
 
   return (
     <div className="relative gap-4 justify-between items-center px-4 py-2 manta-bg-gray rounded-lg h-20 mb-2">
-      <div className="font-red-hat-mono absolute left-4 bottom-7 p-2 cursor-default w-1/2 text-xl text-gray-500 overflow-hidden">
+      <div className="font-red-hat-mono absolute left-4 bottom-7 py-2 cursor-default w-1/2 text-xl text-gray-500 overflow-hidden">
         {targetBalanceString}
       </div>
       <div className="absolute right-6 top-2 border-0 flex flex-y items-center gap-3 mt-2">
