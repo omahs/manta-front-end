@@ -36,6 +36,7 @@ export const UsdPricesContextProvider = (props) => {
         setUsdPrices({ ...prices });
       }
     } catch (err) {
+      console.error('error fetching usd prices', err);
       setUsdPrices({});
     }
   };
