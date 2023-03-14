@@ -10,6 +10,7 @@
     "KARURA_SUBSCAN_URL": "https://karura.subscan.io",
     "MOONRIVER_SUBSCAN_URL": "https://moonriver.subscan.io",
     "TWITTER_URL": "https://twitter.com/CalamariNetwork",
+    "CALAMARI_URL": "https://calamari.network/",
     "CALAMARI_SOCKET": "wss://ws.calamari.systems/",
     "KUSAMA_SOCKET": "wss://kusama-rpc.polkadot.io",
     "KARURA_SOCKET": "wss://karura-rpc-0.aca-api.network",

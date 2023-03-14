@@ -69,6 +69,7 @@ module.exports = {
         'light-warning': '#FF8A0020',
         'dropdown-hover': '#00AFA580',
         'private-public-toggle': 'rgba(14, 80, 252, 0.5)',
+        'green-light-half': 'rgba(41, 204, 185, 0.5)',
       },
       textColor: {
         accent: 'var(--color-text-accent)',

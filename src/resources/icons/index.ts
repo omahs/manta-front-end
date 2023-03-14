@@ -82,6 +82,15 @@ import { ReactComponent as txSuccess } from 'resources/icons/tx-success.svg';
 import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
 import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
 
+// links icons
+import { ReactComponent as CalamariWebsite } from 'resources/icons/links/CalamariWebsite.svg';
+import { ReactComponent as twitter } from 'resources/icons/links/Twitter.svg';
+import { ReactComponent as Discord } from 'resources/icons/links/Discord.svg';
+import { ReactComponent as Telegram } from 'resources/icons/links/Telegram.svg';
+import { ReactComponent as Medium } from 'resources/icons/links/Medium.svg';
+import { ReactComponent as Docs } from 'resources/icons/links/Docs.svg';
+import { ReactComponent as BugReport } from 'resources/icons/links/BugReport.svg';
+
 const icons = {
   dolphin,
   calamari,
@@ -156,6 +165,13 @@ const icons = {
   txPending,
   grayThinLine,
   blueSolidLine,
-  threeRightArrow
+  threeRightArrow,
+  CalamariWebsite,
+  Twitter: twitter,
+  Discord,
+  Telegram,
+  Medium,
+  Docs,
+  BugReport
 };
 export default icons;
