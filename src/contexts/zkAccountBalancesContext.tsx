@@ -82,20 +82,13 @@ export const ZkAccountBalancesContextProvider = (props) => {
   };
 
   useEffect(() => {
-    if (isReady && privateAddress) {
-      fetchPrivateBalances();
-    }
-  }, [
-    isReady,
-    usdPrices,
-    privateAddress,
-    txStatus,
-    senderAssetCurrentBalance,
-    senderAssetType,
-    receiverAssetType,
-    receiverCurrentBalance,
-    balancesAreStale
-  ]);
+    const interval = setInterval(() => {
+      if (isReady && privateAddress) {
+        fetchPrivateBalances();
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const clearBalancesOnDeleteZkAccount = () => {
