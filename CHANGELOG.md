@@ -183,6 +183,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#652](https://github.com/Manta-Network/manta-front-end/pull/652) Use lower fee estimates for Calamari than for Dolphin
 - [\#653](https://github.com/Manta-Network/manta-front-end/pull/653) Prevent staked balances from being included in MantaPay public balances
 - [\#644](https://github.com/Manta-Network/manta-front-end/pull/644) Prevent Calamari and Dolphin private transaction history from appearing under the wrong network
+- [\#718](https://github.com/Manta-Network/manta-front-end/pull/718) Prevent MOVR transactions less than the minimum of 0.1
+
 
 ### Changed
 - [\#546](https://github.com/Manta-Network/manta-front-end/pull/546) Hide private transaction history older than 6 months

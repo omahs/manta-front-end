@@ -174,7 +174,7 @@ export default class AssetType {
       'MOVR',
       'movr',
       18,
-      new BN('10000000000000000'),
+      new BN('100000000000000000'),
       isPrivate,
       'moonriver',
       config.IS_TESTNET,
