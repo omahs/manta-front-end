@@ -1,6 +1,5 @@
 const { addBeforeLoader, loaderByName } = require('@craco/craco');
 const webpack = require('webpack');
-const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   style: {
@@ -19,10 +18,7 @@ module.exports = {
       new webpack.NormalModuleReplacementPlugin(
         /@ledgerhq\/devices\/hid-framing/,
         '@ledgerhq/devices/lib/hid-framing'
-      ),
-      new Dotenv({
-        systemvars: true
-      })
+      )
     ]},
     configure: (webpackConfig) => {
       webpackConfig.module.rules.push(
