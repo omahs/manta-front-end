@@ -46,7 +46,9 @@ export const ZkAccountBalancesContextProvider = (props) => {
       if (assetUsdValue) {
         usdBalance = privateBalance.toUsd(assetUsdValue);
       }
-      const usdBalanceString = config.IS_TESTNET ? '$0.00' : usdBalance?.toString() || '';
+      const usdBalanceString = config.IS_TESTNET
+        ? '$0.00'
+        : usdBalance?.toString() || '';
       return {
         assetType,
         usdBalance,
@@ -88,7 +90,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isReady, privateAddress]);
 
   useEffect(() => {
     const clearBalancesOnDeleteZkAccount = () => {
