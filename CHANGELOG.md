@@ -166,7 +166,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#684](https://github.com/Manta-Network/manta-front-end/pull/684) Update manta.js to v3.0.0
 
 
-## [5.0.0] - 2023-3-8
+## [5.0.0] - 2023-3-14
 
 ### Fixed
 - [\#440](https://github.com/Manta-Network/manta-front-end/pull/440) Fix small balances appearing as "0" in zkAccount modal
