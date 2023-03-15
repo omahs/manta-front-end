@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useModal } from 'hooks';
 import axios from 'axios';
 
-const blockedCountries = ['US', 'CN', 'IR', 'CU', 'KP', 'SY', 'MM', 'HK', 'MO']; // In fact, 'HK' and 'MO' are not countries.
+const blockedCountries = ['US', 'CN', 'IR', 'CU', 'KP', 'SY', 'MM'];
 const blockedRegions = ['Crimea', 'Luhans\'k', 'Donets\'k'];
 const IPDATA_APIKEY = 'f47f1429b7dfb0d01a6d049b7cd283087b1b75fc3891f249d9c0919b';
 
