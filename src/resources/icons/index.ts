@@ -91,6 +91,8 @@ import { ReactComponent as Medium } from 'resources/icons/links/Medium.svg';
 import { ReactComponent as Docs } from 'resources/icons/links/Docs.svg';
 import { ReactComponent as BugReport } from 'resources/icons/links/BugReport.svg';
 
+import { ReactComponent as activityRightArrow } from 'resources/icons/activity-right-arrow.svg';
+
 const icons = {
   dolphin,
   calamari,
@@ -172,6 +174,7 @@ const icons = {
   Telegram,
   Medium,
   Docs,
-  BugReport
+  BugReport,
+  activityRightArrow
 };
 export default icons;

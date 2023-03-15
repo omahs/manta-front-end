@@ -199,3 +199,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#594](https://github.com/Manta-Network/manta-front-end/pull/594) Set bridge form to the most recently selected chains on page load
 - [\#643](https://github.com/Manta-Network/manta-front-end/pull/643) Prevent users in restricted geographies from using MantaPay on Calamari
 - [\#644](https://github.com/Manta-Network/manta-front-end/pull/644) Enable MantaPay and Bridge pages on Calamari
+
+## [5.0.1] - 2023-3-15
+
+### Added
+- [\#711](https://github.com/Manta-Network/manta-front-end/pull/711) Add Giant Squid activity banner
