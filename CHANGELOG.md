@@ -204,3 +204,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - [\#711](https://github.com/Manta-Network/manta-front-end/pull/711) Add Giant Squid activity banner
+
+## [5.0.2] - 2023-3-15
+
+### Added
+- [\#715](https://github.com/Manta-Network/manta-front-end/pull/715) Remove country-level IP blocking from all pages except MantaPay on Calamari
