@@ -8,13 +8,22 @@ import {
 import { CalamariBasePage, DolphinBasePage } from 'pages/BasePage';
 
 const SendPage = lazy(
-  () => import(/* webpackChunkName: "SendPage" */ './pages/SendPage')
+  () =>
+    import(
+      /* webpackPrefetch: true */ /* webpackChunkName: "SendPage" */ './pages/SendPage'
+    )
 );
 const StakePage = lazy(
-  () => import(/* webpackChunkName: "StakePage" */ './pages/StakePage')
+  () =>
+    import(
+      /* webpackPrefetch: true */ /* webpackChunkName: "StakePage" */ './pages/StakePage'
+    )
 );
 const BridgePage = lazy(
-  () => import(/* webpackChunkName: "BridgePage" */ './pages/BridgePage')
+  () =>
+    import(
+      /* webpackPrefetch: true */ /* webpackChunkName: "BridgePage" */ './pages/BridgePage'
+    )
 );
 
 const DolphinRoutes = () => {
