@@ -69,6 +69,8 @@ export type SBTContextValue = {
   nativeTokenBalance: Balance | null;
   skippedStep: boolean;
   toggleSkippedStep: (skippedStep: boolean) => void;
+  hintStatus: boolean;
+  updateHintStatus: () => void;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -83,6 +85,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     null
   );
   const [skippedStep, toggleSkippedStep] = useState(false);
+  const [hintStatus, setHintStatus] = useState(false);
 
   const { externalAccount } = useExternalAccount();
   const config = useConfig();
@@ -148,6 +151,33 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     getOnGoingTask();
   }, [config.SBT_NODE_SERVICE, currentStep, externalAccount]);
 
+  useEffect(() => {
+    const getHintStatus = async () => {
+      if (externalAccount?.address && currentStep !== Step.Home) {
+        const url = `${config.SBT_NODE_SERVICE}/npo/hint`;
+        const data = {
+          address: externalAccount?.address
+        };
+        const ret = await axios.post<{ status: boolean }>(url, data);
+        if (ret.status === 200 || ret.status === 201) {
+          setHintStatus(ret.data.status);
+        }
+      }
+    };
+    getHintStatus();
+  }, [config.SBT_NODE_SERVICE, currentStep, externalAccount?.address]);
+
+  const updateHintStatus = useCallback(() => {
+    if (externalAccount?.address) {
+      const url = `${config.SBT_NODE_SERVICE}/npo/hints`;
+      const data = {
+        address: externalAccount.address
+      };
+      axios.post<{ status: boolean }>(url, data);
+      setHintStatus(false);
+    }
+  }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
+
   const showOnGoingTask = useMemo(() => {
     return (
       (currentStep === Step.Home || currentStep === Step.Upload) &&
@@ -200,7 +230,9 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       getPublicBalance,
       nativeTokenBalance,
       toggleSkippedStep,
-      skippedStep
+      skippedStep,
+      hintStatus,
+      updateHintStatus
     };
   }, [
     currentStep,
@@ -210,7 +242,9 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
     showOnGoingTask,
     getPublicBalance,
     nativeTokenBalance,
-    skippedStep
+    skippedStep,
+    hintStatus,
+    updateHintStatus
   ]);
 
   return (

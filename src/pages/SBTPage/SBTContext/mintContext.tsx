@@ -4,7 +4,9 @@ import {
   useCallback,
   useMemo,
   useContext,
-  useState
+  useState,
+  useRef,
+  useEffect
 } from 'react';
 import { FrameSystemAccountInfo } from '@polkadot/types/lookup';
 import axios from 'axios';
@@ -26,7 +28,7 @@ import { ThemeItem, useSBTTheme } from './sbtThemeContext';
 import { GenerateStatus, useGenerating } from './generatingContext';
 import { usePolkadotChain } from './PolkadotChainContext';
 import { useKusamaChain } from './KusamaChainContext';
-import { GeneratedImg, useSBT } from './';
+import { GeneratedImg, Step, useSBT } from './';
 
 type WatermarkToken = {
   token: TokenType;
@@ -63,12 +65,15 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     Array<WatermarkToken>
   >([]);
 
+  const addressRef = useRef<string | null>(null);
+
   const config = useConfig();
   const { modelId, toggleCheckedThemeItem } = useSBTTheme();
   const { setGeneratedImgs, setGenerateStatus } = useGenerating();
   const { mintSet, setMintSet } = useGenerated();
   const { externalAccount } = useExternalAccount();
-  const { setImgList, setOnGoingTask, getPublicBalance } = useSBT();
+  const { setImgList, setOnGoingTask, getPublicBalance, setCurrentStep } =
+    useSBT();
   const { ethAddress } = useMetamask();
   const { api: polkadotApi } = usePolkadotChain();
   const { api: kusamaApi } = useKusamaChain();
@@ -205,6 +210,22 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     getPublicBalance,
     getKusamaBalance
   ]);
+
+  useEffect(() => {
+    const goHomePageAfterChangedAddress = () => {
+      if (!addressRef?.current) {
+        addressRef.current = externalAccount?.address;
+        return;
+      }
+      if (externalAccount?.address !== addressRef?.current) {
+        addressRef.current = externalAccount?.address;
+        resetContextData();
+        setCurrentStep(Step.Home);
+      }
+    };
+
+    goHomePageAfterChangedAddress();
+  }, [externalAccount?.address, resetContextData, setCurrentStep]);
 
   const value = useMemo(
     () => ({

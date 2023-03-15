@@ -12,6 +12,7 @@ import { SBTThemeContextProvider } from './SBTContext/sbtThemeContext';
 import { MintContextProvider } from './SBTContext/mintContext';
 import { PolkadotChainProvider } from './SBTContext/PolkadotChainContext';
 import { KusamaChainProvider } from './SBTContext/KusamaChainContext';
+import AddressChangeNotification from './components/AddressChangeNotification';
 
 import 'swiper/swiper.scss'; // core Swiper
 import 'swiper/modules/navigation/navigation.scss'; // Navigation module
@@ -51,6 +52,7 @@ const SBT = () => {
             <Navbar showZkBtn={true} />
             <Main />
             <OnGoingTaskNotification />
+            <AddressChangeNotification />
           </div>
         </SBTPrivateContextProvider>
       </SBTProviders>
