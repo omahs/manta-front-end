@@ -18,6 +18,7 @@ function IPBlockingModal() {
         hideModal();
         return;
       }
+      showModal();
       const res = await axios.get(`https://api.ipdata.co?api-key=${IPDATA_APIKEY}`);
       if (res.status === 200) {
         const country_code = res?.data?.country_code;
