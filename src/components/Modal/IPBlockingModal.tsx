@@ -7,10 +7,15 @@ const blockedRegions = ['Crimea', 'Luhans\'k', 'Donets\'k'];
 const IPDATA_APIKEY = 'f47f1429b7dfb0d01a6d049b7cd283087b1b75fc3891f249d9c0919b';
 
 function IPBlockingModal() {
-  const { ModalWrapper, showModal} = useModal({ closeDisabled: true });
+  const { ModalWrapper, showModal, hideModal } = useModal({ closeDisabled: true });
 
   useEffect(() => {
     async function getUserGeolocation() {
+      if (!window.location.pathname.includes('/calamari/transact')) {
+        hideModal();
+        return;
+      }
+      showModal();
       const res = await axios.get(`https://api.ipdata.co?api-key=${IPDATA_APIKEY}`);
       if (res.status === 200) {
         const country_code = res?.data?.country_code;
