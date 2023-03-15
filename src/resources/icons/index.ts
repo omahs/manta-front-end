@@ -80,7 +80,7 @@ import { ReactComponent as invalid } from 'resources/icons/invalid.svg';
 import { ReactComponent as circleArrow } from 'resources/icons/circle-arrow.svg';
 import { ReactComponent as question } from 'resources/icons/question.svg';
 
-// stb
+// sbt
 import { ReactComponent as masterManta } from 'resources/icons/sbt/master-manta.svg';
 
 // ethereum tokens

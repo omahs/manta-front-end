@@ -20,6 +20,7 @@
     height: 12.7rem;
     background: linear-gradient(180deg, #12193c 0%, rgba(18, 25, 60, 0) 86.21%);
   }
+
   .token-master {
     background: linear-gradient(
       90deg,
@@ -58,5 +59,39 @@
   .token-normal-active {
     background: rgba(41, 204, 185, 0.5);
     border: 1px solid #29ccb9;
+  }
+
+  .sbt-faq-content {
+    .el-collapse {
+      width: 100%;
+      border: none;
+
+      .el-collapse-item__header__arrow {
+        display: none;
+      }
+      .el-collapse-item {
+        margin-top: 8px;
+        .el-collapse-item__header {
+          border: none;
+          border-radius: 8px;
+          background: #050d32;
+          color: rgba(255, 255, 255, 0.8);
+        }
+        .el-collapse-item__wrap,
+        .el-collapse-item__content {
+          border: none;
+          background: #050d32;
+          color: rgba(255, 255, 255, 0.8);
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+      }
+      .el-collapse-item.is-active {
+        .el-collapse-item__header {
+          border-bottom-left-radius: unset;
+          border-bottom-right-radius: unset;
+        }
+      }
+    }
   }
 }
