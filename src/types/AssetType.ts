@@ -8,7 +8,8 @@ const AssetIds = {
   AUSD: 9,
   LKSM: 10,
   MOVR: 11,
-  KSM: 12
+  KSM: 12,
+  DOT: 13 // Asset id is not correct, it's just to initialize an Dot Asset
 };
 
 const getAssetIds = (config) => {
@@ -155,6 +156,19 @@ export default class AssetType {
       new BN('10000000000000000'),
       isPrivate,
       'moonriver'
+    );
+  }
+  static Dot(isPrivate = false) {
+    return new AssetType(
+      getAssetIds().DOT,
+      'Polkadot',
+      'DOT',
+      'dot',
+      10,
+      new BN('100000000'),
+      isPrivate,
+      'polkadot',
+      true
     );
   }
 

@@ -6,15 +6,36 @@ import {
   useContext,
   useState
 } from 'react';
+import { FrameSystemAccountInfo } from '@polkadot/types/lookup';
 import axios from 'axios';
 
 import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
-import { levels } from '../components/TokenButton';
+import { useMetamask } from 'contexts/metamaskContext';
+import Balance from 'types/Balance';
+import AssetType from 'types/AssetType';
+import BN from 'bn.js';
+import {
+  levels,
+  LevelType,
+  Tokens,
+  TokenType
+} from '../components/TokenButton';
 import { useGenerated } from './generatedContext';
 import { ThemeItem, useSBTTheme } from './sbtThemeContext';
 import { GenerateStatus, useGenerating } from './generatingContext';
+import { usePolkadotChain } from './PolkadotChainContext';
+import { useKusamaChain } from './KusamaChainContext';
 import { GeneratedImg, useSBT } from './';
+
+type WatermarkToken = {
+  token: TokenType;
+  level: LevelType;
+  checked?: boolean;
+  price: string;
+  balance: Balance | null;
+  network?: string;
+};
 
 type MintContextValue = {
   getWatermarkedImgs: () => Promise<Set<GeneratedImg>>;
@@ -24,6 +45,8 @@ type MintContextValue = {
   resetContextData: () => void;
   activeWatermarkIndex: number;
   setActiveWatermarkIndex: (index: number) => void;
+  getWatermarkTokenList: () => void;
+  watermarkTokenList: Array<WatermarkToken>;
 };
 const LEVEL_TO_SIZE = {
   [levels.normal]: 1,
@@ -36,13 +59,19 @@ const MintContext = createContext<MintContextValue | null>(null);
 export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const [mintSuccessed, toggleMintSuccessed] = useState(false);
   const [activeWatermarkIndex, setActiveWatermarkIndex] = useState(0);
+  const [watermarkTokenList, setWatermarkTokenList] = useState<
+    Array<WatermarkToken>
+  >([]);
 
   const config = useConfig();
   const { modelId, toggleCheckedThemeItem } = useSBTTheme();
   const { setGeneratedImgs, setGenerateStatus } = useGenerating();
   const { mintSet, setMintSet } = useGenerated();
   const { externalAccount } = useExternalAccount();
-  const { setImgList, setOnGoingTask } = useSBT();
+  const { setImgList, setOnGoingTask, getPublicBalance } = useSBT();
+  const { ethAddress } = useMetamask();
+  const { api: polkadotApi } = usePolkadotChain();
+  const { api: kusamaApi } = useKusamaChain();
 
   const getWatermarkedImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/watermark`;
@@ -115,6 +144,68 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     [config.SBT_NODE_SERVICE, externalAccount?.address, modelId]
   );
 
+  const getPolkadotBalance = useCallback(async () => {
+    if (polkadotApi?.query?.system && externalAccount?.address) {
+      const {
+        data: { free, miscFrozen }
+      } = (await polkadotApi?.query?.system?.account(
+        '13mx7NQBYoo6TY9sRsCAEbZBnen9BBK16AfkxhPf4LcsaTf5' // TODO will replace with the wallet's address later
+      )) as FrameSystemAccountInfo;
+
+      const polkadotAsset = AssetType.Dot();
+      const total = new Balance(polkadotAsset, new BN(free.toString()));
+      const staked = new Balance(polkadotAsset, new BN(miscFrozen.toString()));
+
+      return total.sub(staked);
+    }
+  }, [externalAccount?.address, polkadotApi?.query?.system]);
+
+  const getKusamaBalance = useCallback(async () => {
+    if (kusamaApi?.query?.system && externalAccount?.address) {
+      const {
+        data: { free, miscFrozen }
+      } = (await kusamaApi?.query?.system?.account(
+        'CgaccaysLRMQSNJUznK3SXAZwNRMuM8UURGDUmMzGzJfq6A' // TODO will replace with the wallet's address later
+      )) as FrameSystemAccountInfo;
+      const kusamaAsset = AssetType.Kusama(null, false);
+      const total = new Balance(kusamaAsset, new BN(free.toString()));
+      const staked = new Balance(kusamaAsset, new BN(miscFrozen.toString()));
+
+      return total.sub(staked);
+    }
+  }, [externalAccount?.address, kusamaApi?.query?.system]);
+
+  const getWatermarkTokenList = useCallback(async () => {
+    if (!externalAccount?.address) {
+      return;
+    }
+    if (!ethAddress) {
+      const balance = await getPublicBalance(
+        externalAccount?.address,
+        AssetType.Native(false)
+      );
+      const tokenList = [
+        {
+          token: Tokens.manta,
+          level: levels.normal,
+          price: '0',
+          balance
+        }
+      ];
+      setWatermarkTokenList(tokenList);
+      getPolkadotBalance();
+      getKusamaBalance();
+    } else {
+      // TODO all the tokens info
+    }
+  }, [
+    ethAddress,
+    externalAccount?.address,
+    getPolkadotBalance,
+    getPublicBalance,
+    getKusamaBalance
+  ]);
+
   const value = useMemo(
     () => ({
       getWatermarkedImgs,
@@ -123,14 +214,18 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       toggleMintSuccessed,
       resetContextData,
       activeWatermarkIndex,
-      setActiveWatermarkIndex
+      setActiveWatermarkIndex,
+      getWatermarkTokenList,
+      watermarkTokenList
     }),
     [
       getWatermarkedImgs,
       saveMintInfo,
       mintSuccessed,
       resetContextData,
-      activeWatermarkIndex
+      activeWatermarkIndex,
+      watermarkTokenList,
+      getWatermarkTokenList
     ]
   );
   return <MintContext.Provider value={value}>{children}</MintContext.Provider>;

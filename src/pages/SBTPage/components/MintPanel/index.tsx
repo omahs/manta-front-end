@@ -7,7 +7,7 @@ import { useModal } from 'hooks';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
 import { GeneratedImg, Step, useSBT } from 'pages/SBTPage/SBTContext';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { firstUpperCase } from 'utils/string';
 import { watermarkMap, WatermarkMapType } from 'resources/images/sbt';
 import { useMetamask } from 'contexts/metamaskContext';
@@ -154,7 +154,8 @@ const MintPanel = () => {
     mintSuccessed,
     toggleMintSuccessed,
     resetContextData,
-    activeWatermarkIndex
+    activeWatermarkIndex,
+    getWatermarkTokenList
   } = useMint();
   const { mintSet, setMintSet } = useGenerated();
   const { setCurrentStep } = useSBT();
@@ -167,6 +168,10 @@ const MintPanel = () => {
     useModal({
       closeOnBackdropClick: false
     });
+
+  useEffect(() => {
+    getWatermarkTokenList();
+  }, [getWatermarkTokenList]);
 
   const toHomePage = () => {
     toggleMintSuccessed(false);
@@ -211,38 +216,38 @@ const MintPanel = () => {
         <WatermarkSwiper />
         <div className="flex flex-col flex-1">
           {!ethAddress && (
-            <div className="bg-secondary rounded-lg  ml-6 pb-4 font-red-hat-mono font-medium text-sm">
-              <div className="text-white text-opacity-60 border-b border-split p-4 flex ">
-                {/* 
+            <>
+              <div className="bg-secondary rounded-lg  ml-6 pb-4 font-red-hat-mono font-medium text-sm">
+                <div className="text-white text-opacity-60 border-b border-split p-4 flex ">
+                  {/* 
               // @ts-ignore */}
-                <Popover
-                  trigger="hover"
-                  placement="right"
-                  content={'Need to Update!'}
-                  className="unselectable-text">
-                  <div className="flex items-center">
-                    <span>Advanced Crypto Watermark</span>
-                    <Icon name="question" className="ml-4 cursor-pointer" />
-                  </div>
-                </Popover>
+                  <Popover
+                    trigger="hover"
+                    placement="right"
+                    content={'Need to Update!'}
+                    className="unselectable-text">
+                    <div className="flex items-center">
+                      <span>Advanced Crypto Watermark</span>
+                      <Icon name="question" className="ml-4 cursor-pointer" />
+                    </div>
+                  </Popover>
+                </div>
+                <TokenButton
+                  token={mantaToken.token as TokenType}
+                  level={mantaToken.level as LevelType}
+                  checked={
+                    activeGeneratedImg?.watermarkToken === mantaToken.token
+                  }
+                  handleClickTokenBtn={handleClickTokenBtn}
+                />
               </div>
-              <TokenButton
-                token={mantaToken.token as TokenType}
-                level={mantaToken.level as LevelType}
-                checked={
-                  activeGeneratedImg?.watermarkToken === mantaToken.token
-                }
-                handleClickTokenBtn={handleClickTokenBtn}
-              />
-            </div>
-          )}
-          {!ethAddress && (
-            <div className="bg-secondary rounded-lg mt-4 ml-6 pb-4">
-              <div className="text-white text-opacity-60 border-b border-split p-4 flex font-red-hat-mono font-medium text-sm">
-                Connect your MetaMask to unlock more Crypto Watermarks
+              <div className="bg-secondary rounded-lg mt-4 ml-6 pb-4">
+                <div className="text-white text-opacity-60 border-b border-split p-4 flex font-red-hat-mono font-medium text-sm">
+                  Connect your MetaMask to unlock more Crypto Watermarks
+                </div>
+                <MetamaskButton />
               </div>
-              <MetamaskButton />
-            </div>
+            </>
           )}
           {ethAddress && (
             <WatermarkTokenPanel activeGeneratedImg={activeGeneratedImg} />

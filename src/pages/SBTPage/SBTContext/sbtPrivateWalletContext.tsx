@@ -115,12 +115,12 @@ export const SBTPrivateContextProvider = ({
           ({ event: { section } }) => section === 'system'
         );
         for (const event of systemEvents) {
-          if (api.events.system.ExtrinsicFailed.is(event.event)) {
+          if (api?.events?.system?.ExtrinsicFailed.is(event.event)) {
             const [error] = event.event.data as unknown as ITuple<
               DispatchError[]
             >;
             if (error.isModule) {
-              const decoded = api.registry.findMetaError(
+              const decoded = api?.registry?.findMetaError(
                 error.asModule.toU8a()
               );
               const { docs, method, section } = decoded;
@@ -129,7 +129,7 @@ export const SBTPrivateContextProvider = ({
               console.error(error.toString());
             }
             setTxStatus(TxStatus.failed(''));
-          } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
+          } else if (api?.events?.system?.ExtrinsicSuccess.is(event.event)) {
             try {
               const signedBlock =
                 await sbtPrivateWallet?.api?.rpc?.chain?.getBlock(

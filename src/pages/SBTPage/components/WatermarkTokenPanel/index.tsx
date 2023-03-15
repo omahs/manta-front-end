@@ -1,8 +1,9 @@
+import { useMemo, useState } from 'react';
+
 import Icon from 'components/Icon';
 import { GeneratedImg } from 'pages/SBTPage/SBTContext';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
-import { useMemo, useState } from 'react';
 import { tokenList } from '../MintPanel';
 import TokenButton, { TokenType, LevelType } from '../TokenButton';
 
