@@ -74,7 +74,8 @@
         "build": "craco build",
         "test": "craco test",
         "lint": "npx eslint src/**/*.tsx",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "analyze": "ANALYZE=true craco build"
     },
     "development": [
         "last 1 chrome version",
@@ -100,7 +101,8 @@
         "eslint-plugin-react": "^7.24.0",
         "eslint-plugin-react-hooks": "^4.2.0",
         "eslint-plugin-testing-library": "^4.11.0",
-        "serve": "^13.0.2"
+        "serve": "^13.0.2",
+        "webpack-bundle-analyzer": "^4.8.0"
     },
     "resolutions": {
         "@types/react": "^17.0.43",
