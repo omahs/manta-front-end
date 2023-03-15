@@ -98,7 +98,8 @@ module.exports = {
       },
       maxHeight: {
         120: '30rem',
-        '51vh': '51vh'
+        '51vh': '51vh',
+        '60vh': '60vh'
       },
       height: {
         content: 'max-content',

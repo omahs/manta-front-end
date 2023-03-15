@@ -1,6 +1,7 @@
 import Generated from './components/Generated';
 import Generating from './components/Generating';
 import Home from './components/Home';
+import MintedList from './components/MintedList';
 import MintPanel from './components/MintPanel';
 import ThemePanel from './components/ThemePanel';
 import UploadPanel from './components/UploadPanel';
@@ -25,6 +26,9 @@ const Main = () => {
   }
   if (currentStep === Step.Mint) {
     return <MintPanel />;
+  }
+  if (currentStep === Step.MintedList) {
+    return <MintedList />;
   }
   return <Home />;
 };

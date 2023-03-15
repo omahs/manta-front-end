@@ -26,7 +26,8 @@ export enum Step {
   Theme,
   Mint,
   Generating,
-  Generated
+  Generated,
+  MintedList
 }
 
 export type UploadFile = {
