@@ -160,7 +160,7 @@ export const SBTPrivateContextProvider = ({
       externalAccount.address
     );
 
-    setTxStatus(TxStatus.processing(''));
+    setTxStatus(TxStatus.processing());
     try {
       await reserveSbt.signAndSend(externalAccount.address, handleTxRes);
     } catch (e: any) {
@@ -211,11 +211,11 @@ export const SBTPrivateContextProvider = ({
 
   const mintSBT = useCallback(
     async (newMintSet: Set<GeneratedImg>) => {
-      setTxStatus(TxStatus.processing(''));
+      setTxStatus(TxStatus.processing());
       try {
         const sbtMint = await getBatchMintTx(newMintSet);
         const { batchTx, transactionDatas } = sbtMint ?? {};
-        setTxStatus(TxStatus.processing(''));
+        setTxStatus(TxStatus.processing());
         if (!batchTx) {
           console.error(new Error('can not get batchTx'));
           setTxStatus(TxStatus.failed(''));

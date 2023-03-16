@@ -90,14 +90,14 @@ const UnstakingTable = () => {
           <div className="flex justify-end w-full gap-6">
             {unstakeRequest.canWithdraw && (
               <Button
-                className="btn-secondary flex items-center justify-center h-12"
+                className="px-6 btn-secondary flex items-center justify-center h-10"
                 onClick={onClickWithdraw}
               >
                 Withdraw
               </Button>
             )}
             <Button
-              className="btn-thirdry flex items-center justify-center h-12"
+              className="btn-thirdry flex items-center justify-center h-10 text-bg-thirdry"
               onClick={onClickCancelUnstake}
             >
               Cancel Unstake
@@ -113,7 +113,7 @@ const UnstakingTable = () => {
   }
   return (
     <div className="mt-8 mx-auto sortable-table-wrapper">
-      <h1 className="text-base font-semibold text-white">
+      <h1 className="text-base font-semibold text-white font-red-hat-text">
         Unstaking
       </h1>
       <div className="w-full mt-4">

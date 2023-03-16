@@ -1,36 +1,20 @@
 import React from 'react';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import BalanceDisplay from 'components/Balance/BalanceDisplay';
-import { API_STATE, useSubstrate } from 'contexts/substrateContext';
-import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
 import Icon from 'components/Icon';
 import { useSend } from '../SendContext';
+import useReceiverBalanceText from './useReceiverBalanceText';
 
 const ReceiverBalanceDisplay = () => {
   const {
     receiverAssetType,
-    receiverCurrentBalance,
-    receiverAddress,
-    receiverIsPrivate,
     senderAssetTargetBalance
   } = useSend();
-  const { isInitialSync } = usePrivateWallet();
-  const { apiState } = useSubstrate();
-
-  const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
-
-  const balanceText = getZkTransactBalanceText(
-    receiverCurrentBalance,
-    apiIsDisconnected,
-    receiverIsPrivate(),
-    isInitialSync.current
-  );
-
-  const shouldShowLoader = receiverAddress && !receiverCurrentBalance && !balanceText;
+  const {balanceText,shouldShowLoader} = useReceiverBalanceText();
 
   const targetBalanceString = senderAssetTargetBalance
-    ? senderAssetTargetBalance.toString()
+    ? senderAssetTargetBalance.toStringUnrounded()
     : '0.00';
+
   return (
     <div className="relative gap-4 justify-between items-center px-4 py-2 manta-bg-gray rounded-lg h-20 mb-2">
       <div className="font-red-hat-mono absolute left-4 bottom-7 py-2 cursor-default w-1/2 text-xl text-gray-500 overflow-hidden">

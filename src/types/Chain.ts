@@ -11,6 +11,21 @@ import types from '../config/types.json';
 import AssetType from './AssetType';
 
 export default class Chain {
+  name: string;
+  displayName: string;
+  parachainId: number;
+  icon: string;
+  socket: string;
+  subscanUrl: string;
+  xcmAssets: AssetType[];
+  nativeAsset: AssetType;
+  xcmAdapterClass: any;
+  apiTypes: any;
+  apiOptions: any;
+  apiTypesBundle: any;
+  ethMetadata: any;
+  ethChainId: null | string;
+
   constructor(
     name,
     displayName,
@@ -24,7 +39,8 @@ export default class Chain {
     apiTypes = null,
     apiOptions = null,
     apiTypesBundle = null,
-    ethMetadata = null
+    ethMetadata = null,
+    ethChainId = null
   ) {
     this.name = name;
     this.displayName = displayName;
@@ -39,6 +55,7 @@ export default class Chain {
     this.apiOptions = apiOptions;
     this.apiTypesBundle = apiTypesBundle;
     this.ethMetadata = ethMetadata;
+    this.ethChainId = ethChainId;
     this.api = null;
   }
 
@@ -49,12 +66,8 @@ export default class Chain {
       9997,
       'dolphin',
       config.DOLPHIN_SOCKET,
-      'https://dolphin.subscan.io',
-      [
-        AssetType.Kusama(config),
-        AssetType.Karura(config),
-        AssetType.Moonriver(config)
-      ],
+      config.DOLPHIN_SUBSCAN_URL,
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.DolphinSkinnedCalamari(config),
       CalamariAdapter,
       types
@@ -68,12 +81,8 @@ export default class Chain {
       2084,
       'dolphin',
       config.DOLPHIN_SOCKET,
-      'https://dolphin.subscan.io',
-      [
-        AssetType.Kusama(config),
-        AssetType.Karura(config),
-        AssetType.Moonriver(config)
-      ],
+      config.DOLPHIN_SUBSCAN_URL,
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.DolphinSkinnedCalamari(config),
       CalamariAdapter,
       types
@@ -85,14 +94,10 @@ export default class Chain {
       'calamari',
       'Calamari',
       2084,
-      'calamari',
+      'calamariLogo',
       config.CALAMARI_SOCKET,
-      'https://calamari.subscan.io',
-      [
-        AssetType.Kusama(config),
-        AssetType.Karura(config),
-        AssetType.Moonriver(config)
-      ],
+      config.CALAMARI_SUBSCAN_URL,
+      [AssetType.Kusama(config), AssetType.Moonriver(config)],
       AssetType.Calamari(config),
       CalamariAdapter,
       types
@@ -106,7 +111,7 @@ export default class Chain {
       null,
       'roc',
       config.ROCOCO_SOCKET,
-      'https://rococo.subscan.io',
+      config.ROCOCO_SUBSCAN_URL,
       [AssetType.Rococo(config)],
       AssetType.Rococo(config),
       KusamaAdapter
@@ -120,7 +125,7 @@ export default class Chain {
       null,
       'kusama',
       config.KUSAMA_SOCKET,
-      'https://kusama.subscan.io',
+      config.KUSAMA_SUBSCAN_URL,
       [AssetType.Kusama(config)],
       AssetType.Kusama(config),
       KusamaAdapter
@@ -134,7 +139,7 @@ export default class Chain {
       2000,
       'kar',
       config.KARURA_SOCKET,
-      'https://karura.subscan.io',
+      config.KARURA_SUBSCAN_URL,
       [AssetType.Karura(config)],
       AssetType.Karura(config),
       KaruraAdapter,
@@ -145,8 +150,8 @@ export default class Chain {
 
   static Moonriver(config) {
     const moonriverEthMetadata = {
-      chainId: '0x500',
-      chainName: 'Moonriver Development Testnet',
+      chainId: config.IS_TESTNET ? '0x500' : '0x505',
+      chainName: config.IS_TESTNET ? 'Moonriver Development Testnet' : 'Moonriver',
       nativeCurrency: {
         name: 'MOVR',
         symbol: 'MOVR',
@@ -161,14 +166,15 @@ export default class Chain {
       1000,
       'movr',
       config.MOONRIVER_SOCKET,
-      'https://moonriver.subscan.io',
+      config.MOONRIVER_SUBSCAN_URL,
       [AssetType.Moonriver(config)],
       AssetType.Moonriver(config),
       MoonriverAdapter,
       typesBundlePre900,
       null,
       null,
-      moonriverEthMetadata
+      moonriverEthMetadata,
+      config.IS_TESTNET ? '1280' : '1285'
     );
   }
 
@@ -177,7 +183,7 @@ export default class Chain {
       return [
         Chain.Calamari(config),
         Chain.Kusama(config),
-        Chain.Karura(config),
+        // Chain.Karura(config),
         Chain.Moonriver(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {

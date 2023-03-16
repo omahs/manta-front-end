@@ -1,9 +1,12 @@
 // @ts-nocheck
+
 const FINALIZED = 'finalized';
 const FAILED = 'failed';
 const PROCESSING = 'processing';
+const DISCONNECTED = 'disconnected';
 
 export default class TxStatus {
+  public extrinsic;
   constructor(status, extrinsic = null, subscanUrl = null, message = null) {
     this.status = status;
     this.extrinsic = extrinsic;
@@ -13,8 +16,8 @@ export default class TxStatus {
     this.totalBatches = null;
   }
 
-  static processing(message) {
-    return new TxStatus(PROCESSING, null, null, message);
+  static processing(message = null, extrinsic = null) {
+    return new TxStatus(PROCESSING, extrinsic, null, message);
   }
 
   // Block explorer URL provided only for transactions on non-manta chains
@@ -24,6 +27,10 @@ export default class TxStatus {
 
   static failed(message) {
     return new TxStatus(FAILED, null, null, message);
+  }
+
+  static disconnected(extrinsic = null) {
+    return new TxStatus(DISCONNECTED, extrinsic);
   }
 
   isProcessing() {
@@ -36,6 +43,10 @@ export default class TxStatus {
 
   isFailed() {
     return this.status === FAILED;
+  }
+
+  isDisconnected() {
+    return this.status === DISCONNECTED;
   }
 
   toString() {

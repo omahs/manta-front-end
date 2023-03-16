@@ -2,6 +2,7 @@
 import NETWORK from 'constants/NetworkConstants';
 import React from 'react';
 import PropTypes from 'prop-types';
+import initAxios from 'utils/api/initAxios';
 import { ConfigContextProvider, useConfig } from 'contexts/configContext';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
@@ -9,45 +10,52 @@ import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
 import { useEffect } from 'react';
-import { showError, showInfo, showSuccess } from 'utils/ui/Notifications';
+import {
+  showError,
+  showInfo,
+  showSuccess,
+  showWarning
+} from 'utils/ui/Notifications';
 import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
 import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
 
 const TxStatusHandler = () => {
-  const config = useConfig();
   const { txStatus, setTxStatus } = useTxStatus();
-
-  const subscanUrl = txStatus?.subscanUrl || config.SUBSCAN_URL;
 
   useEffect(() => {
     if (txStatus?.isFinalized()) {
-      showSuccess(subscanUrl, 'Transaction succeeded', txStatus?.extrinsic);
+      showSuccess(txStatus.subscanUrl, txStatus?.extrinsic);
       setTxStatus(null);
     } else if (txStatus?.isFailed()) {
       showError(txStatus.message || 'Transaction failed');
       setTxStatus(null);
     } else if (txStatus?.isProcessing() && txStatus.message) {
       showInfo(txStatus.message);
+    } else if (txStatus?.isDisconnected()) {
+      showWarning('Network disconnected');
+      setTxStatus(null);
     }
-  }, [txStatus]);
+  }, [setTxStatus, txStatus]);
 
-  return (
-    <div />
-  );
+  return <div />;
 };
 
-const BasePage = ({children}) => {
+const BasePage = ({ children }) => {
+  const config = useConfig();
+  useEffect(() => {
+    initAxios(config);
+  }, []);
   return (
-    <SubstrateContextProvider>
-      <ExternalAccountContextProvider>
-        <TxStatusContextProvider>
+    <TxStatusContextProvider>
+      <SubstrateContextProvider>
+        <ExternalAccountContextProvider>
           <DeveloperConsole />
           <TxStatusHandler />
           {children}
-        </TxStatusContextProvider>
-      </ExternalAccountContextProvider>
-    </SubstrateContextProvider>
+        </ExternalAccountContextProvider>
+      </SubstrateContextProvider>
+    </TxStatusContextProvider>
   );
 };
 
@@ -55,11 +63,19 @@ BasePage.propTypes = {
   children: PropTypes.any
 };
 
-export const CalamariBasePage = ({children}) => {
+export const CalamariBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>
       <BasePage>
-        {children}
+        <UsdPricesContextProvider>
+          <MetamaskContextProvider>
+            <PrivateWalletContextProvider>
+              <ZkAccountBalancesContextProvider>
+                {children}
+              </ZkAccountBalancesContextProvider>
+            </PrivateWalletContextProvider>
+          </MetamaskContextProvider>
+        </UsdPricesContextProvider>
       </BasePage>
     </ConfigContextProvider>
   );
@@ -69,7 +85,7 @@ CalamariBasePage.propTypes = {
   children: PropTypes.any
 };
 
-export const DolphinBasePage = ({children}) => {
+export const DolphinBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.DOLPHIN}>
       <BasePage>

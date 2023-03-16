@@ -3,5 +3,7 @@ export const localStorageKeys = {
   CurrentToken: 'current-token',
   IsPrivateReceiver: 'is-private-receiver',
   IsPrivateSender: 'is-private-sender',
-  GeneratingStart: 'generating-start'
+  GeneratingStart: 'generating-start',
+  BridgeOriginChainName: 'bridge-origin-chain',
+  BridgeDestinationChainName: 'bridge-destination-chain'
 };

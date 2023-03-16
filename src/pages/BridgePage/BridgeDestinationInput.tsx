@@ -77,7 +77,7 @@ const BridgeDestinationInput = () => {
 
   const getAccountName = () => {
     if (destinationChainIsEvm) {
-      return 'Metamask';
+      return 'MetaMask';
     } else {
       return externalAccount?.meta.name;
     }
@@ -110,9 +110,10 @@ const BridgeDestinationInput = () => {
   const placeholderMsg = `Enter ${originChainIsEvm ? 'substrate' : 'EVM'} address`;
 
   return (
-    <div className="flex items-center flex-grow h-16 mx-1">
+    <div className="flex items-center flex-grow h-16 mt-6">
       <input
         id="recipientAddress"
+        autoComplete="off"
         className={classNames(
           'w-full h-full rounded-lg manta-bg-gray px-5',
           'text-sm text-black dark:text-white outline-none rounded-lg',
@@ -127,7 +128,7 @@ const BridgeDestinationInput = () => {
         onClick={onClickGetAddress}
         className={classNames(
           'w-32 ml-1 h-full rounded-lg text-black',
-          'dark:text-white outline-none rounded-2xl border-2 border-solid border-blue-500',
+          'dark:text-white outline-none rounded-2xl border-2 border-solid border-white border-opacity-20',
           'text-xs text-black dark:text-white',
           { disabled: disabled }
         )}>

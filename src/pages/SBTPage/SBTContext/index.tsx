@@ -9,8 +9,7 @@ import {
   useEffect
 } from 'react';
 import BN from 'bn.js';
-// @ts-ignore:next-line
-import { MantaUtilities } from 'manta.js-kg-dev';
+import { MantaUtilities } from 'manta.js';
 
 import Balance from 'types/Balance';
 import { useSubstrate } from 'contexts/substrateContext';
@@ -199,7 +198,6 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
         new BN(assetType.assetId),
         address
       );
-
       const balance = balanceRaw ? new Balance(assetType, balanceRaw) : null;
       return balance;
     },

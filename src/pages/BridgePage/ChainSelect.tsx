@@ -36,6 +36,7 @@ const ChainSelect = ({ chain, chainOptions, setChain, isOriginChain }) => {
         components={{
           Control: ChainControl,
           SingleValue: ChainSingleValue,
+          MenuList: ChainMenuList,
           Option: ChainOption,
           IndicatorSeparator: EmptyIndicatorSeparator
         }}></Select>
@@ -64,9 +65,15 @@ const EmptyIndicatorSeparator = () => {
 };
 
 const ChainSingleValue = ({ data }) => {
+  const isCalamari = data.name === 'calamari';
+  const iconStyles = classNames(
+    {'w-5 h-5': isCalamari },
+    { 'rounded-full w-6 h-6': !isCalamari }
+  );
+
   return (
     <div className="ml-2 flex items-center gap-4 cursor-pointer">
-      <Icon className="w-6 h-6 rounded-full" name={data?.icon} />
+      <Icon className={iconStyles} name={data?.icon} />
       <div className="text-black dark:text-white">{data?.displayName}</div>
     </div>
   );
@@ -74,20 +81,35 @@ const ChainSingleValue = ({ data }) => {
 
 const ChainOption = (props) => {
   const { value, innerProps } = props;
+  const isCalamari = value.name === 'calamari';
+  const iconStyles = classNames(
+    'my-2',
+    {'ml-6 w-5 h-5': isCalamari },
+    { 'ml-5 rounded-full w-6 h-6': !isCalamari }
+  );
+
+
   return (
     <div {...innerProps} className="w-full cursor-pointer">
-      <div className="flex items-center inline hover:bg-blue-100">
+      <div className="h-full flex items-center inline bg-primary hover:bg-dropdown-hover z-50 py-1">
         <div>
-          <Icon
-            className="w-9 h-9 ml-3 my-2 manta-bg-secondary rounded-full"
-            name={value?.icon}
-          />
+          <Icon className={iconStyles} name={value?.icon} />
         </div>
-        <div className="pl-4 p-2 text-black">
+        <div className="pl-4 p-2 text-white">
           <components.Option {...props} />
         </div>
       </div>
     </div>
+  );
+};
+
+const ChainMenuList = (props) => {
+  return (
+    <components.MenuList {...props}>
+      <div className="rounded-lg overflow-hidden divide-y divide-white-light border border-white-light bg-primary">
+        {props.children}
+      </div>
+    </components.MenuList>
   );
 };
 
@@ -113,7 +135,13 @@ const dropdownStyles = {
     display: 'flex'
   }),
   menu: (provided) => ({
-    ...provided
+    ...provided,
+    borderRadius: '0.5rem',
+    backgroundColor: 'transparent',
+  }),
+  menuList: () => ({
+    paddingTop: '0px',
+    paddingBottom: '0px'
   })
 };
 

@@ -12,6 +12,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import DotLoader from 'components/Loaders/DotLoader';
 import Icon from 'components/Icon';
+import classNames from 'classnames';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import { MAX_DELEGATIONS } from '../StakeConstants';
@@ -52,17 +53,15 @@ export const StakeModal = ({ hideModal }) => {
     }
   };
 
-  const availableBalanceText = `Available balance: ${getBalanceDisplayString(
+  const availableBalanceNum = `${getBalanceDisplayString(
     userAvailableBalance
   )}`;
   const minStakeAmountString = selectedCollator.minStake.toDisplayString(0);
-  const delegationAmountText = selectedCollatorDelegation
-    ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(
-        0
-      )}`
-    : 'Staked: 0 KMA';
+  const delegationAmountNum = selectedCollatorDelegation
+    ? `${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
+    : '0 KMA';
 
-  const minimumStakeText = ` Minimum stake: ${minStakeAmountString}`;
+  const minimumStakeNum = `${minStakeAmountString}`;
 
   const usdValueText =
     stakeTargetBalance && usdPerKma
@@ -143,47 +142,60 @@ export const StakeModal = ({ hideModal }) => {
   };
 
   return (
-    <div className="w-96 py-4 bg-fifth rounded-2xl">
-      <div className="flex items-center gap-2">
-        <h1 className="font-semibold text-secondary text-lg">
-          {selectedCollator.name}
-        </h1>
+    <div className="w-96 py-4 bg-primary rounded-2xl font-red-hat-text">
+      <div className="relative flex items-center gap-2">
+        <div className="absolute -mt-4">
+          <h1 className="font-semibold text-white text-base font-red-hat-text">
+            {selectedCollator.name}
+          </h1>
+        </div>
       </div>
-      <div className="mt-4">
-        <h1 className="text-secondary text-left text-sm font-medium">
-          {delegationAmountText}
-        </h1>
-        <h1 className="text-secondary text-left text-sm font-medium">
-          {minimumStakeText}
-        </h1>
-        <h1 className="text-secondary text-left text-sm font-medium">
-          {availableBalanceText}
-        </h1>
-        <div
-          className={`mt-2 px-4 pt-6 h-24 flex flex-wrap items-center rounded-lg border border-gray ${
-            errorMessage ? 'border-red-500' : ''
-          }`}>
-          <Icon className="rounded-full mr-3 w-10 bg-primary" name="calamari" />
-          <input
-            className="bg-fifth pl-1 flex-grow h-10 outline-none dark:text-white"
-            placeholder="Amount"
-            onChange={(e) => onChangeStakeAmountInput(e.target.value)}
-            value={inputValue}
-          />
-          <div className="rounded-xl justify-self-end">
-            <span onClick={onClickMax}>
-              <GradientText className="text-link text-base" text="MAX" />
-            </span>
-          </div>
-          <div className="w-full mb-2 text-xss pl-14 text-secondary">
-            {usdValueText}
+      <div className="mt-4 text-white text-opacity-80 text-sm">
+        <div className="flex justify-between mt-2">
+          <span>Staked: </span>
+          <span className="font-red-hat-mono  text-left text-sm font-medium">
+            {delegationAmountNum}
+          </span>
+        </div>
+        <div className="flex justify-between mt-2">
+          <span>Minimum stake:</span>
+          <span className="font-red-hat-mono text-left text-sm font-medium ">
+            {minimumStakeNum}
+          </span>
+        </div>
+        <div className="flex justify-between mt-2">
+          <span>Available balance: </span>
+          <span className="font-red-hat-mono text-left text-sm font-medium ">
+            {availableBalanceNum}
+          </span>
+        </div>
+        <div className="mt-4 px-6 h-24 flex flex-wrap items-center rounded-xl bg-white bg-opacity-5">
+          <Icon className="mr-3 w-7" name="calamari" />
+          <div className="flex flex-row items-center">
+            <div className="flex flex-col items-center">
+              <input
+                className="font-red-hat-mono text-xl bg-transparent pl-1 flex-grow h-8 outline-none dark:text-white"
+                placeholder="Amount"
+                onChange={(e) => onChangeStakeAmountInput(e.target.value)}
+                value={inputValue}
+              />
+              <div className="font-red-hat-mono w-full mb-1 text-xs pl-1 text-secondary">
+                {usdValueText}
+              </div>
+            </div>
+            <div className="rounded-xl justify-self-end" onClick={onClickMax}>
+              <GradientText className="text-base w-full" text="MAX" />
+            </div>
           </div>
           <br />
         </div>
       </div>
       <ErrorText errorMessage={errorMessage} />
-      <div className="mt-2 w-full">
-        <Button className="w-full btn-primary" onClick={onClickStake}>
+      <div className="mt-6 w-full">
+        <Button
+          className={ classNames('font-red-hat-text text-base w-full btn-primary', { 'filter brightness-50': !inputValue }) }
+          onClick={onClickStake}
+          disabled={!inputValue}>
           Stake
         </Button>
       </div>

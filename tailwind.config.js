@@ -3,6 +3,7 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontSize: {
+      0: '0px',
       xsss: '.70rem',
       xss: '.75rem',
       xs: '.825rem',
@@ -28,6 +29,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        'manta-gray-secondary': '#4A516B',
         sbt: {
           'count-down': '#1E2546',
           date: '#51FFE0'
@@ -35,15 +37,26 @@ module.exports = {
       },
       spacing: {
         128: '32rem',
+        120: '30rem',
         108: '27rem',
         113.5: '28.375rem',
-        21: '5.375rem'
+        21: '5.25rem',
+        22: '5.5rem',
+        34: '8.5rem',
+        38: '9.5rem',
+        50: '12.5rem',
+        67: '16.75rem',
+        70: '17.5rem'
       },
       width: {
         68: '272px',
         75: '75rem',
         204: '51rem',
-        108: '27rem'
+        108: '27rem',
+        140: '560px'
+      },
+      lineHeight: {
+        5.5: '22px'
       },
       backgroundImage: {
         gradient: 'var(--gradient-button-third)'
@@ -66,22 +79,28 @@ module.exports = {
         'connect-wallet-button': '#00AFA5',
         'gradient-button': 'var(--gradient-button-secondary)',
         'light-warning': '#FF8A0020',
-        'light-check': '#29CCB950'
+        'light-check': '#29CCB950',
+        'dropdown-hover': '#00AFA580',
+        'private-public-toggle': 'rgba(14, 80, 252, 0.5)',
+        'green-light-half': 'rgba(41, 204, 185, 0.5)'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
         primary: 'var(--color-text-primary) !important',
         secondary: 'var(--color-text-secondary)',
         thirdry: 'var(--color-text-thirdry)',
+        'bg-thirdry': 'var(--color-bg-button-thirdry)',
         link: 'var(--color-bg-button-primary)',
+        'third-80': 'var(--color-bg-button-third-80)',
+        'link-hover': '#00D8CB',
         warning: 'var(--color-text-warning)',
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
-        warning: '#FF8A00',
         check: '#29CCB9',
         error: '#FF472E',
-        tip: '#3894FF'
+        tip: '#3894FF',
+        'green-light': '#29CCB9'
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -91,13 +110,14 @@ module.exports = {
       },
       borderColor: {
         'manta-gray': 'var(--color-bg-manta-gray)',
-        'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
         warning: '#FF8A00',
         check: '#29CCB9',
         split: 'var(--color-bg-primary)',
-        'dash-gray': 'rgba(255, 255, 255, 0.1)'
+        'dash-gray': 'rgba(255, 255, 255, 0.1)',
+        'white-light': '#FFFFFF1A',
+        'public-private-toggle': '#2B49EA'
       },
       scale: {
         200: '2'
@@ -111,6 +131,9 @@ module.exports = {
         content: 'max-content',
         70: '17.5rem',
         68: '272px'
+      },
+      divideColor: {
+        'white-light': '#FFFFFF1A'
       }
     }
   },

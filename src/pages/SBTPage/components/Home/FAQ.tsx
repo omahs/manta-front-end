@@ -8,9 +8,11 @@ interface FAQProps {}
 const FAQ: React.FC<FAQProps> = () => {
   return (
     <>
-      {/* @ts-expect-error Element Component */}
+      {/* 
+        // @ts-ignore */}
       <Collapse>
-        {/* @ts-expect-error Element Component */}
+        {/* 
+          // @ts-ignore */}
         <Collapse.Item
           title={
             <div className="flex justify-between items-center">
@@ -36,7 +38,8 @@ const FAQ: React.FC<FAQProps> = () => {
             gravida justo, at tristique sem volutpat vel.
           </div>
         </Collapse.Item>
-        {/* @ts-expect-error Element Component */}
+        {/* 
+          // @ts-ignore */}
         <Collapse.Item
           title={
             <div className="flex justify-between items-center">

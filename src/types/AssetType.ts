@@ -2,7 +2,16 @@
 import NETWORK from 'constants/NetworkConstants';
 import BN from 'bn.js';
 
-const AssetIds = {
+const CalamariAssetIds = {
+  KMA: 1,
+  KAR: 8,
+  AUSD: 9,
+  LKSM: 10,
+  MOVR: 11,
+  KSM: 12
+};
+
+const DolphinAssetIds = {
   DOL: 1,
   KAR: 8,
   AUSD: 9,
@@ -13,7 +22,11 @@ const AssetIds = {
 };
 
 const getAssetIds = (config) => {
-  return AssetIds;
+  if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+    return CalamariAssetIds;
+  } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+    return DolphinAssetIds;
+  }
 };
 
 export default class AssetType {
@@ -28,6 +41,7 @@ export default class AssetType {
   publicExistentialDeposit: BN;
   existentialDeposit: BN;
   isPrivate: boolean;
+  isTestnet: boolean;
   isNativeToken: boolean;
   coingeckoId: string;
 
@@ -40,6 +54,7 @@ export default class AssetType {
     publicExistentialDeposit,
     isPrivate,
     coingeckoId,
+    isTestnet,
     isNativeToken = false,
     logicalTicker = null
   ) {
@@ -47,13 +62,14 @@ export default class AssetType {
     this.baseName = baseName;
     this.baseTicker = baseTicker;
     this.logicalTicker = logicalTicker || baseTicker;
-    this.name = AssetType._getFullName(baseName, isPrivate);
+    this.name = AssetType._getFullName(baseName, isPrivate, isTestnet);
     this.ticker = AssetType._getFullTicker(baseTicker, isPrivate);
     this.icon = icon;
     this.numberOfDecimals = numberOfDecimals;
     this.publicExistentialDeposit = publicExistentialDeposit;
     this.existentialDeposit = isPrivate ? new BN(0) : publicExistentialDeposit;
     this.isPrivate = isPrivate;
+    this.isTestnet = isTestnet;
     this.isNativeToken = isNativeToken;
     this.coingeckoId = coingeckoId;
   }
@@ -76,6 +92,7 @@ export default class AssetType {
       new BN('100000000000000000'), // TODO: just for test only, will remove this later
       isPrivate,
       'dolphin',
+      config.IS_TESTNET,
       true,
       'KMA'
     );
@@ -91,6 +108,7 @@ export default class AssetType {
       new BN('100000000000'),
       isPrivate,
       'calamari-network',
+      config.IS_TESTNET,
       true
     );
   }
@@ -104,7 +122,8 @@ export default class AssetType {
       12,
       new BN('100000000000'),
       isPrivate,
-      'karura'
+      'karura',
+      config.IS_TESTNET,
     );
   }
   static Kusama(config, isPrivate) {
@@ -116,7 +135,8 @@ export default class AssetType {
       12,
       new BN('500000000'),
       isPrivate,
-      'kusama'
+      'kusama',
+      config.IS_TESTNET,
     );
   }
 
@@ -129,7 +149,8 @@ export default class AssetType {
       12,
       new BN('1'),
       isPrivate,
-      'rococo'
+      'rococo',
+      config.IS_TESTNET,
     );
   }
 
@@ -142,7 +163,8 @@ export default class AssetType {
       8,
       new BN('1'),
       isPrivate,
-      'bitcoin'
+      'bitcoin',
+      config.IS_TESTNET,
     );
   }
 
@@ -153,9 +175,10 @@ export default class AssetType {
       'MOVR',
       'movr',
       18,
-      new BN('10000000000000000'),
+      new BN('100000000000000000'),
       isPrivate,
-      'moonriver'
+      'moonriver',
+      config.IS_TESTNET,
     );
   }
   static Dot(isPrivate = false) {
@@ -183,15 +206,19 @@ export default class AssetType {
     } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
         AssetType.Calamari(config, isPrivate),
-        AssetType.Karura(config, isPrivate),
+        // AssetType.Karura(config, isPrivate),
         AssetType.Kusama(config, isPrivate),
         AssetType.Moonriver(config, isPrivate)
       ];
     }
   }
 
-  static _getFullName(baseName, isPrivate) {
-    return isPrivate ? `Test zk${baseName}` : `Test ${baseName}`;
+  static _getFullName(baseName, isPrivate, isTestnet) {
+    let name = isTestnet ? 'Test ' : '';
+    if (isPrivate) {
+      name += 'zk';
+    }
+    return name + baseName;
   }
 
   static _getFullTicker(baseTicker, isPrivate) {
@@ -208,6 +235,7 @@ export default class AssetType {
       this.publicExistentialDeposit,
       true,
       this.coingeckoId,
+      this.isTestnet,
       this.isNativeToken,
       this.logicalTicker
     );
@@ -223,6 +251,7 @@ export default class AssetType {
       this.publicExistentialDeposit,
       false,
       this.coingeckoId,
+      this.isTestnet,
       this.isNativeToken,
       this.logicalTicker
     );

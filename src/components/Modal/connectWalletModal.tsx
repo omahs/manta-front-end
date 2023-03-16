@@ -1,9 +1,8 @@
 // @ts-nocheck
-import React from 'react';
-import { getWallets } from '@talismn/connect-wallets';
+import Icon from 'components/Icon';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import Icon from 'components/Icon';
+import { getSubstrateWallets } from 'utils';
 import getWalletDisplayName from 'utils/display/getWalletDisplayName';
 
 const WalletNotInstalledBlock = ({
@@ -12,7 +11,7 @@ const WalletNotInstalledBlock = ({
   walletInstallLink
 }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -35,10 +34,11 @@ const WalletNotInstalledBlock = ({
 };
 
 const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
+  const { isTalismanExtConfigured } = useKeyring();
   return (
     <button
       onClick={connectHandler}
-      className="mt-5 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+      className="relative mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -54,13 +54,21 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
       <div className="rounded-lg bg-button-fourth text-white py-2 px-4 text-xs">
         Connect
       </div>
+
+      {walletName === 'Talisman' && !isTalismanExtConfigured && (
+        <p className="absolute left-0 -bottom-5 flex flex-row gap-2 b-0 text-warning text-xsss">
+          <Icon name="information" />
+          You have no account in Talisman. Please create one first.
+        </p>
+      )}
+
     </button>
   );
 };
 
 const WalletEnabledBlock = ({ walletName, walletLogo }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -127,7 +135,7 @@ const MetamaskConnectWalletBlock = ({ hideModal }) => {
   return (
     <ConnectWalletBlock
       key={'metamask'}
-      walletName={'Metamask (for Moonriver)'}
+      walletName={'MetaMask (for Moonriver)'}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
       walletLogo="metamask"
@@ -142,6 +150,7 @@ export const SubstrateConnectWalletBlock = ({
   hideModal
 }) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
+  const substrateWallets = getSubstrateWallets();
 
   const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
@@ -152,7 +161,7 @@ export const SubstrateConnectWalletBlock = ({
     }
   };
 
-  return getWallets().map((wallet) => {
+  return substrateWallets.map((wallet) => {
     // wallet.extension would not be defined if enabled not called
     const isWalletEnabled = wallet.extension ? true : false;
     return (
@@ -170,7 +179,7 @@ export const SubstrateConnectWalletBlock = ({
 };
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
-  const isBridgePage = window?.location?.pathname?.includes('dolphin/bridge');
+  const isBridgePage = window?.location?.pathname?.includes('bridge');
   return (
     <div className="w-96">
       <h1 className="text-xl text-white">Connect Wallet</h1>

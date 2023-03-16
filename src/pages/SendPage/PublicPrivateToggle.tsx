@@ -26,18 +26,18 @@ const PublicPrivateToggle = ({ isPrivate, onToggle, prefix }) => {
         id={buttonId}
         onClick={onClick}
         className={classNames(
-          'flex text-center cursor-pointer place-items-center btn-hover unselectable-text',
-          'rounded-full bg-button-secondary text-white',
+          'flex text-center cursor-pointer place-items-center private-public-toggle-hover unselectable-text',
+          'rounded-full bg-private-public-toggle border border-public-private-toggle text-white',
           { disabled: disabled }
         )}>
         {isPrivate ? (
-          <div className="flex flex-row gap-2 w-24 justify-center items-center text-xss">
-            <Icon name="lock" className="w-3 h-3 place-self-center" />
+          <div className="flex flex-row gap-2 w-22 justify-center items-center text-xss">
+            <Icon name="lock" className="w-2.5 h-2.5 place-self-center" />
             Private
           </div>
         ) : (
-          <div className="flex flex-row gap-2 w-24 justify-center items-center text-xss">
-            <Icon name="internet" className="w-3 h-3 place-self-center" />
+          <div className="flex flex-row gap-2 w-22 justify-center items-center text-xss">
+            <Icon name="internet" className="w-2.5 h-2.5 place-self-center" />
             Public
           </div>
         )}

@@ -1,5 +1,6 @@
 import { ReactComponent as dolphin } from 'resources/images/dolphin.svg';
 import { ReactComponent as calamari } from 'resources/images/calamari.svg';
+import { ReactComponent as calamariLogo } from 'resources/images/calamariLogo.svg';
 import { ReactComponent as manta } from 'resources/images/manta.svg';
 import { ReactComponent as talisman } from 'resources/icons/talisman.svg';
 import { ReactComponent as metamask } from 'resources/icons/metamask.svg';
@@ -47,6 +48,10 @@ import { ReactComponent as search } from 'resources/icons/search.svg';
 import { ReactComponent as greenCheck } from 'resources/icons/green-check-solid.svg';
 import { ReactComponent as information } from 'resources/icons/information-solid.svg';
 import { ReactComponent as qrCode } from 'resources/icons/qr-code.svg';
+import { ReactComponent as threeRightArrow } from 'resources/icons/three-right-arrow.svg';
+import { ReactComponent as grayThinLine } from 'resources/icons/gray-thin-line.svg';
+import { ReactComponent as blueSolidLine } from 'resources/icons/blue-solid-line.svg';
+import { ReactComponent as unfilledCircle } from 'resources/icons/unfilled-circle.svg';
 
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
@@ -74,6 +79,18 @@ import { ReactComponent as arrowRight } from 'resources/icons/arrow-right.svg';
 import { ReactComponent as cancel } from 'resources/icons/cancel.svg';
 import { ReactComponent as heart } from 'resources/icons/heart.svg';
 import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg';
+import { ReactComponent as txSuccess } from 'resources/icons/tx-success.svg';
+import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
+import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
+
+// links icons
+import { ReactComponent as CalamariWebsite } from 'resources/icons/links/CalamariWebsite.svg';
+import { ReactComponent as twitter } from 'resources/icons/links/Twitter.svg';
+import { ReactComponent as Discord } from 'resources/icons/links/Discord.svg';
+import { ReactComponent as Telegram } from 'resources/icons/links/Telegram.svg';
+import { ReactComponent as Medium } from 'resources/icons/links/Medium.svg';
+import { ReactComponent as Docs } from 'resources/icons/links/Docs.svg';
+import { ReactComponent as BugReport } from 'resources/icons/links/BugReport.svg';
 
 import { ReactComponent as defaultImg } from 'resources/icons/default-img.svg';
 import { ReactComponent as invalid } from 'resources/icons/invalid.svg';
@@ -101,6 +118,7 @@ import { ReactComponent as eth } from 'resources/icons/coins/eth.svg';
 const icons = {
   dolphin,
   calamari,
+  calamariLogo,
   manta,
   talisman,
   metamask,
@@ -143,6 +161,7 @@ const icons = {
   greenCheck,
   information,
   qrCode,
+  unfilledCircle,
   Blocks,
   Sign,
   transfer,
@@ -184,6 +203,19 @@ const icons = {
   op,
   avax,
   dot,
-  ksm: kusama
+  ksm: kusama,
+  txSuccess,
+  txFailed,
+  txPending,
+  grayThinLine,
+  blueSolidLine,
+  threeRightArrow,
+  CalamariWebsite,
+  Twitter: twitter,
+  Discord,
+  Telegram,
+  Medium,
+  Docs,
+  BugReport
 };
 export default icons;

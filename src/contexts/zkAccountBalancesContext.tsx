@@ -14,10 +14,18 @@ import { useConfig } from './configContext';
 
 const ZkAccountBalancesContext = createContext();
 
+export type ZkAccountBalance = {
+  assetType: AssetType;
+  usdBalance: Usd;
+  usdBalanceString: string;
+  privateBalance: Balance;
+};
+
 export const ZkAccountBalancesContextProvider = (props) => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
-  const { privateAddress, getSpendableBalance, isReady, balancesAreStale } = usePrivateWallet();
+  const { privateAddress, getSpendableBalance, isReady, balancesAreStale } =
+    usePrivateWallet();
   const {
     senderAssetCurrentBalance,
     senderAssetType,
@@ -34,10 +42,11 @@ export const ZkAccountBalancesContextProvider = (props) => {
     let usdBalance = null;
     const privateBalance = await getSpendableBalance(assetType);
     if (privateBalance) {
-      const assetUsdValue =
-        usdPrices[assetType.baseTicker] || new Usd(new Decimal(0));
-      usdBalance = privateBalance.toUsd(assetUsdValue);
-      const usdBalanceString = usdBalance?.toString();
+      const assetUsdValue = usdPrices[assetType.baseTicker] || null;
+      if (assetUsdValue) {
+        usdBalance = privateBalance.toUsd(assetUsdValue);
+      }
+      const usdBalanceString = config.IS_TESTNET ? '$0.00' : usdBalance?.toString() || '';
       return {
         assetType,
         usdBalance,
@@ -48,7 +57,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
     return {
       assetType,
       usdBalance,
-      usdBalanceString: '$0.00',
+      usdBalanceString: '',
       privateBalance
     };
   };
@@ -73,20 +82,23 @@ export const ZkAccountBalancesContextProvider = (props) => {
   };
 
   useEffect(() => {
-    if (isReady && privateAddress) {
-      fetchPrivateBalances();
-    }
-  }, [
-    isReady,
-    usdPrices,
-    privateAddress,
-    txStatus,
-    senderAssetCurrentBalance,
-    senderAssetType,
-    receiverAssetType,
-    receiverCurrentBalance,
-    balancesAreStale
-  ]);
+    const interval = setInterval(() => {
+      if (isReady && privateAddress) {
+        fetchPrivateBalances();
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isReady, privateAddress]);
+
+  useEffect(() => {
+    const clearBalancesOnDeleteZkAccount = () => {
+      if (!privateAddress) {
+        setBalances([]);
+        setTotalBalanceString('$0.00');
+      }
+    };
+    clearBalancesOnDeleteZkAccount();
+  }, [privateAddress]);
 
   const value = {
     balances,

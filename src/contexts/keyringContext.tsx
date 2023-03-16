@@ -1,24 +1,19 @@
 // @ts-nocheck
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
+import keyring from '@polkadot/ui-keyring';
+import { getSubstrateWallets } from 'utils';
 import PropTypes from 'prop-types';
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useRef
-} from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
-  setHasAuthToConnectWalletStorage,
-  getHasAuthToConnectWalletStorage
+  getHasAuthToConnectWalletStorage,
+  setHasAuthToConnectWalletStorage
 } from 'utils/persistence/connectAuthorizationStorage';
+import { getLastAccessedExternalAccount } from 'utils/persistence/externalAccountStorage';
 import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
-import keyring from '@polkadot/ui-keyring';
-import { getWallets } from '@talismn/connect-wallets';
 
 const KeyringContext = createContext();
 const MAX_WAIT_COUNT = 5;
@@ -29,6 +24,7 @@ export const KeyringContextProvider = (props) => {
   const [keyringAddresses, setKeyringAddresses] = useState([]);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState(null);
+  const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState(true);
   const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(
     getHasAuthToConnectWalletStorage()
   );
@@ -52,45 +48,53 @@ export const KeyringContextProvider = (props) => {
     setHasAuthToConnectWallet(walletNames);
   };
 
-  const subscribeWalletAccounts = async (wallet, saveToStorage = true) => {
-    let unsubscribe = () => {};
-    if (wallet) {
-      wallet.enable(APP_NAME).then(() => {
-        keyringIsBusy.current = true;
-        unsubscribe = wallet.subscribeAccounts(async (accounts) => {
-          let currentKeyringAddresses = keyring
-            .getAccounts()
-            .map((account) => account.address);
+  const refreshWalletAccounts = async (wallet) => {
+    await wallet.enable(APP_NAME);
+    keyringIsBusy.current = true;
+    let currentKeyringAddresses = keyring
+      .getAccounts()
+      .map((account) => account.address);
 
-          const updatedAccounts = await wallet.getAccounts();
-          const updatedAddresses = updatedAccounts.map(
-            (account) => account.address
-          );
+    const originUpdatedAccounts = await wallet.getAccounts();
+    const updatedAccounts = originUpdatedAccounts.filter((a) =>
+      ['ecdsa', 'ed25519', 'sr25519'].includes(a.type)
+    ); // ethereum account address should be avoid in substrate (tailsman)
+    const substrateAddresses = updatedAccounts.map((account) => account.address);
+    currentKeyringAddresses.forEach((address) => {
+      keyring.forgetAccount(address);
+    });
+    // keyring has the possibility to still contain accounts
+    currentKeyringAddresses = keyring
+      .getAccounts()
+      .map((account) => account.address);
 
-          currentKeyringAddresses.forEach((address) => {
-            keyring.forgetAccount(address);
-          });
-
-          // keyring has the possibility to still contain accounts
-          currentKeyringAddresses = keyring
-            .getAccounts()
-            .map((account) => account.address);
-
-          if (currentKeyringAddresses.length === 0) {
-            updatedAccounts.forEach((account) => {
-              keyring.loadInjected(account.address, { ...account });
-            });
-
-            setSelectedWallet(wallet);
-            saveToStorage && setLastAccessedWallet(wallet);
-            setKeyringAddresses(updatedAddresses);
-          }
-          keyringIsBusy.current = false;
-        });
+    if (currentKeyringAddresses.length === 0) {
+      updatedAccounts.forEach((account) => {
+        keyring.loadInjected(account.address, { ...account }, account.type);
       });
+
+      setSelectedWallet(wallet);
+      setKeyringAddresses(substrateAddresses);
     }
-    return unsubscribe;
+
+    keyringIsBusy.current = false;
   };
+
+  const getLatestAccountAndPairs = () => {
+    const pairs = keyring.getPairs();
+    const {
+      meta: { source }
+    } = pairs[0] || { meta: {} };
+    const account = getLastAccessedExternalAccount(keyring, source) || pairs[0];
+    return { account, pairs };
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      selectedWallet && refreshWalletAccounts(selectedWallet);
+    }, 1000);
+    return () => interval && clearInterval(interval);
+  }, [selectedWallet]);
 
   const triggerInitKeyringWhenWeb3ExtensionsInjected = async () => {
     if (!isKeyringInit) {
@@ -148,16 +152,25 @@ export const KeyringContextProvider = (props) => {
     if (!isKeyringInit) {
       return;
     }
-    const substrateWallets = getWallets();
+    const substrateWallets = getSubstrateWallets();
     const selectedWallet = substrateWallets.find(
       (wallet) => wallet.extensionName === extensionName
     );
     if (!selectedWallet?.extension) {
       try {
+        if (extensionName.toLowerCase() === 'talisman' && !isTalismanExtConfigured) {
+          // hide tips
+          setIsTalismanExtConfigured(true);
+        }
         await selectedWallet.enable(APP_NAME);
-        subscribeWalletAccounts(selectedWallet, saveToStorage);
+        await refreshWalletAccounts(selectedWallet);
+        saveToStorage && setLastAccessedWallet(selectedWallet);
         return true;
       } catch (e) {
+        if (e.message === 'Talisman extension has not been configured yet. Please continue with onboarding.') {
+          // show tips
+          setIsTalismanExtConfigured(false);
+        }
         const walletNames = removeWalletName(
           extensionName,
           hasAuthToConnectWallet
@@ -173,7 +186,6 @@ export const KeyringContextProvider = (props) => {
     if (!isKeyringInit) {
       return;
     }
-
     const withoutLastAccessedWallet = removeWalletName(
       getLastAccessedWallet()?.extensionName,
       hasAuthToConnectWallet
@@ -189,15 +201,17 @@ export const KeyringContextProvider = (props) => {
   }, [isKeyringInit]);
 
   const value = {
-    keyring: keyring, // keyring object would not change even if properties changed
-    isKeyringInit: isKeyringInit,
-    keyringAddresses: keyringAddresses, //keyring object would not change so use keyringAddresses to trigger re-render
-    web3ExtensionInjected: web3ExtensionInjected,
-    connectWalletExtension: connectWalletExtension,
-    subscribeWalletAccounts: subscribeWalletAccounts,
-    selectedWallet: selectedWallet,
-    connectWallet: connectWallet,
-    keyringIsBusy: keyringIsBusy
+    keyring, // keyring object would not change even if properties changed
+    isKeyringInit,
+    keyringAddresses, //keyring object would not change so use keyringAddresses to trigger re-render
+    web3ExtensionInjected,
+    selectedWallet,
+    keyringIsBusy,
+    connectWallet,
+    connectWalletExtension,
+    refreshWalletAccounts,
+    isTalismanExtConfigured,
+    getLatestAccountAndPairs
   };
 
   return (

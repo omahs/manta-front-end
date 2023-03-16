@@ -18,6 +18,10 @@
 }
 
 .dark .btn-thirdry {
+  color: $blue-secondary-bgcolor;
+}
+
+.dark .btn-thirdry:hover {
   color: white;
 }
 
