@@ -74,7 +74,7 @@ const Menu = () => {
   };
 
   const DotMenuContent = () => (
-    <div className="w-60 h-68 flex-column flex-grow mt-3 bg-fifth rounded-lg gap-y-4 py-4 px-1 absolute right-0 top-full z-50 border border-white-light">
+    <div className="w-60 flex-column flex-grow mt-3 bg-fifth rounded-lg gap-y-4 py-4 px-1 absolute right-0 top-full z-50 border border-white-light">
       {/* {theme === themeType.Dark ? <ChangeThemeMenuItem theme={themeType.Light} setTheme={setTheme} name={'Light Mode'} icon={faSun} /> : <ChangeThemeMenuItem theme={themeType.Dark} setTheme={setTheme} name={'Dark Mode'} icon={faMoon} />} */}
       <MenuItem
         link={config.CALAMARI_URL}

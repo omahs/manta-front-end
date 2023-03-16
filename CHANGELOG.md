@@ -211,4 +211,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#751](https://github.com/Manta-Network/manta-front-end/pull/751) Remove country-level IP blocking from all pages except MantaPay on Calamari
 - [\#742](https://github.com/Manta-Network/manta-front-end/pull/742) Stop blocking Hong Kong and Macau IPs
 
+## [5.0.3] - 2023-3-15
 
+### Fixed
+- [\#755](https://github.com/Manta-Network/manta-front-end/pull/755) Fix dotmenu content height style
