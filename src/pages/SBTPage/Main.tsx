@@ -27,9 +27,6 @@ const Main = () => {
   if (currentStep === Step.Mint) {
     return <MintPanel />;
   }
-  if (currentStep === Step.MintedList) {
-    return <MintedList />;
-  }
   return <Home />;
 };
 

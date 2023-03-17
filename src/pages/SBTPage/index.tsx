@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 
 import Navbar from 'components/Navbar';
+import { Route, Routes } from 'react-router-dom';
 import OnGoingTaskNotification from './components/OnGoingTaskModal';
 import Main from './Main';
 import { SBTContextProvider } from './SBTContext';
@@ -13,6 +14,7 @@ import { MintContextProvider } from './SBTContext/mintContext';
 import { PolkadotChainProvider } from './SBTContext/PolkadotChainContext';
 import { KusamaChainProvider } from './SBTContext/KusamaChainContext';
 import AddressChangeNotification from './components/AddressChangeNotification';
+import MintedList from './components/MintedList';
 
 import 'swiper/swiper.scss'; // core Swiper
 import 'swiper/modules/navigation/navigation.scss'; // Navigation module
@@ -50,9 +52,12 @@ const SBT = () => {
         <SBTPrivateContextProvider>
           <div className="text-white min-h-screen flex flex-col sbt-page">
             <Navbar showZkBtn={true} />
-            <Main />
-            <OnGoingTaskNotification />
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/list" element={<MintedList />} />
+            </Routes>
             <AddressChangeNotification />
+            <OnGoingTaskNotification />
           </div>
         </SBTPrivateContextProvider>
       </SBTProviders>

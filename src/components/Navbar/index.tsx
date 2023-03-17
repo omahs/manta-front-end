@@ -9,15 +9,14 @@ export type NavbarProps = {
 };
 
 export const Navbar = ({ showZkBtn }: NavbarProps) => {
-  const isSendPage = window?.location?.pathname?.includes('/transact');
   return (
     <div className="h-20 py-4 px-10 flex justify-between items-center relative sticky left-0 right-0 top-0 z-50 bg-primary">
       <div className="flex items-center">
-        <ChainSelector/>
+        <ChainSelector />
         <NavLinks />
       </div>
       <div className="h-10 gap-4 flex flex-wrap justify-end items-center">
-      {showZkBtn && <ZkAccountButton />}
+        {showZkBtn && <ZkAccountButton />}
         <AccountSelectMenu />
         <Menu />
       </div>

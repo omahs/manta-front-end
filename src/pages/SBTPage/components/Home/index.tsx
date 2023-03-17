@@ -4,6 +4,7 @@ import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import dayjs from 'utils/time/dayjs';
 import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 import CountDown from './CountDown';
@@ -108,22 +109,19 @@ const Home = () => {
     setCurrentStep(Step.Upload);
   };
 
-  const toMinted = () => {
-    setCurrentStep(Step.MintedList);
-  };
-
   return (
     <div className="flex flex-col items-center mx-auto bg-secondary rounded-xl p-6 w-75">
       <div className="w-full mb-6">
         {hasWallet && hasNFT && (
           <>
             <div className="text-2xl mb-4">My Account</div>
-            <ButtonWithSignerAndWallet
-              onClick={toMinted}
-              btnComponent="My NFTs"
-              className="px-14 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
-              noWalletComponent="Connect wallet to mint"
-            />
+            <Link to="/dolphin/sbt/list">
+              <ButtonWithSignerAndWallet
+                btnComponent="My NFTs"
+                className="px-14 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter"
+                noWalletComponent="Connect wallet to mint"
+              />
+            </Link>
           </>
         )}
       </div>

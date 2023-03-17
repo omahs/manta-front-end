@@ -15,12 +15,12 @@ const SendPage = () => {
   return (
     <SendContextProvider>
       <PrivateTxHistoryContextProvider>
-        <Navbar />
+        <Navbar showZkBtn={true} />
         <PageContent>
           <SendForm />
         </PageContent>
         <IPBlockingModal />
-        { isDolphinPage && <DowntimeModal />}
+        {isDolphinPage && <DowntimeModal />}
       </PrivateTxHistoryContextProvider>
     </SendContextProvider>
   );

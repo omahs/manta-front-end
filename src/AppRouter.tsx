@@ -15,7 +15,7 @@ const DolphinRoutes = () => {
           <Route index element={<Navigate to="transact" />} />
           <Route path="bridge" element={<BridgePage />} />
           <Route path="transact" element={<SendPage />} />
-          <Route path="sbt" element={<SBTPage />} />
+          <Route path="sbt/*" element={<SBTPage />} />
         </Route>
       </Routes>
     </DolphinBasePage>
@@ -31,7 +31,7 @@ const CalamariRoutes = () => {
           <Route path="bridge" element={<BridgePage />} />
           <Route path="transact" element={<SendPage />} />
           <Route path="stake" element={<StakePage />} />
-        </ Route >
+        </Route>
       </Routes>
     </CalamariBasePage>
   );
@@ -40,10 +40,7 @@ const CalamariRoutes = () => {
 const RedirectRoutes = () => {
   return (
     <Routes>
-      <Route
-        index
-        element={<Navigate to="/calamari/transact" replace />}
-      />
+      <Route index element={<Navigate to="/calamari/transact" replace />} />
       <Route
         path="/stake"
         element={<Navigate to="/calamari/stake" replace />}
