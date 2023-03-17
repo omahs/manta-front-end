@@ -61,10 +61,7 @@ export type SBTContextValue = {
   onGoingTask: OnGoingTaskResult | null;
   setOnGoingTask: (onGoingTask: OnGoingTaskResult | null) => void;
   showOnGoingTask: boolean;
-  getPublicBalance: (
-    address: string,
-    assetType: AssetType
-  ) => Promise<Balance | null>;
+  getPublicBalance: () => void;
   nativeTokenBalance: Balance | null;
   skippedStep: boolean;
   toggleSkippedStep: (skippedStep: boolean) => void;
@@ -187,33 +184,39 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
 
   const nativeAsset = AssetType.Native(config);
 
-  const getPublicBalance = useCallback(
-    async (address: string, assetType: AssetType) => {
-      if (!api?.isConnected || !address) {
-        return null;
-      }
+  const getPublicBalance = useCallback(async () => {
+    const address = externalAccount?.address;
+    if (!api?.isConnected || !address) {
+      return null;
+    }
 
-      const balanceRaw = await MantaUtilities.getPublicBalance(
-        api,
-        new BN(assetType.assetId),
-        address
-      );
-      const balance = balanceRaw ? new Balance(assetType, balanceRaw) : null;
-      return balance;
-    },
-    [api]
-  );
+    const balanceRaw = await MantaUtilities.getPublicBalance(
+      api,
+      new BN(nativeAsset.assetId),
+      address
+    );
+    const balance = balanceRaw ? new Balance(nativeAsset, balanceRaw) : null;
+    setNativeTokenBalance(balance);
+  }, [api, externalAccount?.address, nativeAsset]);
 
   useEffect(() => {
+    // get native public balance under condition to improve the performance
     const fetchPublicBalance = async () => {
-      const balance = await getPublicBalance(
-        externalAccount?.address,
-        nativeAsset
-      );
-      setNativeTokenBalance(balance);
+      if (
+        (currentStep === Step.Theme || currentStep === Step.Mint) &&
+        !nativeTokenBalance
+      ) {
+        getPublicBalance();
+      }
     };
     fetchPublicBalance();
-  }, [externalAccount, getPublicBalance, nativeAsset]);
+  }, [
+    externalAccount,
+    getPublicBalance,
+    nativeAsset,
+    currentStep,
+    nativeTokenBalance
+  ]);
 
   const value: SBTContextValue = useMemo(() => {
     return {

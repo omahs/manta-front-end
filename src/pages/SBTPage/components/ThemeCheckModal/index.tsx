@@ -24,7 +24,7 @@ const BtnComponent = ({ loading }: { loading: boolean }) => {
 const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const [loading, toggleLoading] = useState(false);
 
-  const { setCurrentStep, nativeTokenBalance } = useSBT();
+  const { setCurrentStep, nativeTokenBalance, getPublicBalance } = useSBT();
   const { checkedThemeItems, generateImgs } = useSBTTheme();
   const { reserveSBT, getReserveGasFee, reserveGasFee } = useSBTPrivateWallet();
   const config = useConfig();
@@ -50,6 +50,11 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   useEffect(() => {
     getReserveGasFee();
   }, [getReserveGasFee]);
+
+  // get latest public balance
+  useEffect(() => {
+    getPublicBalance();
+  }, [getPublicBalance]);
 
   useEffect(() => {
     const handleTxFinalized = async () => {

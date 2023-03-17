@@ -72,7 +72,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const { setGeneratedImgs, setGenerateStatus } = useGenerating();
   const { mintSet, setMintSet } = useGenerated();
   const { externalAccount } = useExternalAccount();
-  const { setImgList, setOnGoingTask, getPublicBalance, setCurrentStep } =
+  const { setImgList, setOnGoingTask, nativeTokenBalance, setCurrentStep } =
     useSBT();
   const { ethAddress } = useMetamask();
   const { api: polkadotApi } = usePolkadotChain();
@@ -185,16 +185,12 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     if (!ethAddress) {
-      const balance = await getPublicBalance(
-        externalAccount?.address,
-        AssetType.Native(false)
-      );
       const tokenList = [
         {
           token: Tokens.manta,
           level: levels.normal,
           price: '0',
-          balance
+          balance: nativeTokenBalance
         }
       ];
       setWatermarkTokenList(tokenList);
@@ -204,10 +200,10 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       // TODO all the tokens info
     }
   }, [
-    ethAddress,
     externalAccount?.address,
+    ethAddress,
+    nativeTokenBalance,
     getPolkadotBalance,
-    getPublicBalance,
     getKusamaBalance
   ]);
 

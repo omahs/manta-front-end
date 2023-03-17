@@ -84,7 +84,7 @@ const MintCheckModal = ({
   const mintResultRef = useRef<MintResult[]>();
 
   const { mintSet, setMintSet } = useGenerated();
-  const { nativeTokenBalance } = useSBT();
+  const { nativeTokenBalance, getPublicBalance } = useSBT();
   const { mintGasFee, mintSBT, getMintGasFee } = useSBTPrivateWallet();
   const config = useConfig();
   const { txStatus, setTxStatus } = useTxStatus();
@@ -104,6 +104,11 @@ const MintCheckModal = ({
     }
     getMintGasFee();
   }, [getMintGasFee, mintGasFee]);
+
+  // get latest public balance
+  useEffect(() => {
+    getPublicBalance();
+  }, [getPublicBalance]);
 
   const mintSBTConfirm = useCallback(async () => {
     toggleLoading(true);
