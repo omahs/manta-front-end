@@ -17,8 +17,11 @@ import { useMetamask } from 'contexts/metamaskContext';
 import Balance from 'types/Balance';
 import AssetType from 'types/AssetType';
 import BN from 'bn.js';
+import Usd from 'types/Usd';
+import Decimal from 'decimal.js';
+import { useUsdPrices } from 'contexts/usdPricesContext';
 import {
-  levels,
+  Levels,
   LevelType,
   Tokens,
   TokenType
@@ -34,7 +37,7 @@ type WatermarkToken = {
   token: TokenType;
   level: LevelType;
   checked?: boolean;
-  price: string;
+  value: Usd;
   balance: Balance | null;
   network?: string;
 };
@@ -51,12 +54,140 @@ type MintContextValue = {
   watermarkTokenList: Array<WatermarkToken>;
 };
 const LEVEL_TO_SIZE = {
-  [levels.normal]: 1,
-  [levels.supreme]: 2,
-  [levels.master]: 3
+  [Levels.normal]: 1,
+  [Levels.supreme]: 2,
+  [Levels.master]: 3
 };
 
 const MintContext = createContext<MintContextValue | null>(null);
+
+export type EvmBalance = {
+  name: string;
+  symbol: string;
+  value: number;
+};
+
+const zeroUsd = new Usd(new Decimal(0));
+
+const initTokenMap: Record<TokenType, WatermarkToken> = {
+  [Tokens.manta]: {
+    token: Tokens.manta,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.eth]: {
+    token: Tokens.eth,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.usdc]: {
+    token: Tokens.usdc,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.uni]: {
+    token: Tokens.uni,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.wbtc]: {
+    token: Tokens.wbtc,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.link]: {
+    token: Tokens.link,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.matic]: {
+    token: Tokens.matic,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.bnb]: {
+    token: Tokens.bnb,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.usdt]: {
+    token: Tokens.usdt,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.shib]: {
+    token: Tokens.shib,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.ldo]: {
+    token: Tokens.ldo,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.op]: {
+    token: Tokens.op,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.avax]: {
+    token: Tokens.avax,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.dot]: {
+    token: Tokens.dot,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  },
+  [Tokens.ksm]: {
+    token: Tokens.ksm,
+    checked: false,
+    level: Levels.normal,
+    value: zeroUsd,
+    balance: null
+  }
+};
+
+const LEVEL_NORMAL_MAX = new Usd(new Decimal(100));
+const LEVEL_SUPREME_MAX = new Usd(new Decimal(2000));
+
+const getLevel = (usd: Usd) => {
+  if (usd.value.gt(LEVEL_SUPREME_MAX.value)) {
+    return Levels.master;
+  } else if (usd.value.gt(LEVEL_NORMAL_MAX.value)) {
+    return Levels.supreme;
+  }
+  return Levels.normal;
+};
 
 export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const [mintSuccessed, toggleMintSuccessed] = useState(false);
@@ -64,6 +195,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const [watermarkTokenList, setWatermarkTokenList] = useState<
     Array<WatermarkToken>
   >([]);
+  const [evmBalances, setEvmBalances] = useState([] as EvmBalance[]);
 
   const addressRef = useRef<string | null>(null);
 
@@ -77,6 +209,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const { ethAddress } = useMetamask();
   const { api: polkadotApi } = usePolkadotChain();
   const { api: kusamaApi } = useKusamaChain();
+  const { usdPrices } = useUsdPrices();
 
   const getWatermarkedImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/watermark`;
@@ -85,7 +218,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
         return {
           url,
           token: watermarkToken,
-          size: LEVEL_TO_SIZE[watermarkLevel ?? levels.normal]
+          size: LEVEL_TO_SIZE[watermarkLevel ?? Levels.normal]
         };
       }),
       address: externalAccount?.address,
@@ -157,12 +290,13 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
         '13mx7NQBYoo6TY9sRsCAEbZBnen9BBK16AfkxhPf4LcsaTf5' // TODO will replace with the wallet's address later
       )) as FrameSystemAccountInfo;
 
-      const polkadotAsset = AssetType.Dot();
+      const polkadotAsset = AssetType.Dot(config);
       const total = new Balance(polkadotAsset, new BN(free.toString()));
       const staked = new Balance(polkadotAsset, new BN(miscFrozen.toString()));
 
       return total.sub(staked);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalAccount?.address, polkadotApi?.query?.system]);
 
   const getKusamaBalance = useCallback(async () => {
@@ -172,39 +306,117 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       } = (await kusamaApi?.query?.system?.account(
         'CgaccaysLRMQSNJUznK3SXAZwNRMuM8UURGDUmMzGzJfq6A' // TODO will replace with the wallet's address later
       )) as FrameSystemAccountInfo;
-      const kusamaAsset = AssetType.Kusama(null, false);
+      const kusamaAsset = AssetType.Kusama(config, false);
       const total = new Balance(kusamaAsset, new BN(free.toString()));
       const staked = new Balance(kusamaAsset, new BN(miscFrozen.toString()));
 
       return total.sub(staked);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalAccount?.address, kusamaApi?.query?.system]);
+
+  useEffect(() => {
+    const getEvmTokenBalance = async () => {
+      if (ethAddress) {
+        const url = `${config.SBT_NODE_SERVICE}/npo/balance`;
+        const ret = await axios.post<{
+          status: boolean;
+          data: EvmBalance[];
+        }>(url, {
+          // TODO replace this with metamask wallet address
+          address: '0x690b9a9e9aa1c9db991c7721a92d351db4fac990'
+        });
+        if (ret.status === 200 || ret.status === 201) {
+          setEvmBalances(ret.data.data);
+        }
+      }
+    };
+    getEvmTokenBalance();
+  }, [config.SBT_NODE_SERVICE, ethAddress]);
 
   const getWatermarkTokenList = useCallback(async () => {
     if (!externalAccount?.address) {
       return;
     }
+    // TODO use the true usd price of manta
+    const mantaValue =
+      nativeTokenBalance?.toUsd(new Usd(new Decimal(1))) ??
+      new Usd(new Decimal(0));
+    const mantaToken = {
+      token: Tokens.manta,
+      level: getLevel(mantaValue),
+      balance: nativeTokenBalance,
+      value: mantaValue
+    };
+
     if (!ethAddress) {
-      const tokenList = [
-        {
-          token: Tokens.manta,
-          level: levels.normal,
-          price: '0',
-          balance: nativeTokenBalance
-        }
-      ];
+      const tokenList: WatermarkToken[] = [mantaToken];
       setWatermarkTokenList(tokenList);
-      getPolkadotBalance();
-      getKusamaBalance();
     } else {
-      // TODO all the tokens info
+      const [polkadotBalance, kusamaBalance] = await Promise.all([
+        getPolkadotBalance(),
+        getKusamaBalance()
+      ]);
+
+      const polkadotValue =
+        polkadotBalance?.toUsd(usdPrices.DOT ?? zeroUsd) ?? zeroUsd;
+      const kusamaValue =
+        kusamaBalance?.toUsd(usdPrices.KSM ?? zeroUsd) ?? zeroUsd;
+
+      const tokensMap: Record<TokenType, WatermarkToken> = {} as Record<
+        TokenType,
+        WatermarkToken
+      >;
+      Object.values(initTokenMap).forEach((tokenItem) => {
+        for (const evmBalance of evmBalances) {
+          const targetToken = tokenItem.token;
+          if (evmBalance.symbol.toLowerCase() === tokenItem.token) {
+            const usd = new Usd(new Decimal(evmBalance.value));
+            if (tokensMap[targetToken]) {
+              tokensMap[targetToken].value.add(usd);
+            } else {
+              tokensMap[targetToken] = {
+                ...initTokenMap[targetToken],
+                value: usd
+              };
+            }
+            tokensMap[targetToken].level = getLevel(
+              tokensMap[targetToken].value
+            );
+          }
+        }
+      });
+
+      tokensMap[Tokens.manta] = {
+        ...mantaToken,
+        level: getLevel(mantaToken.value)
+      };
+      tokensMap[Tokens.dot] = {
+        ...initTokenMap[Tokens.dot],
+        value: polkadotValue,
+        level: getLevel(polkadotValue)
+      };
+      tokensMap[Tokens.ksm] = {
+        ...initTokenMap[Tokens.ksm],
+        value: kusamaValue,
+        level: getLevel(kusamaValue)
+      };
+
+      const list = Object.values(tokensMap).sort((a, b) => {
+        return b.value.value.minus(a.value.value).toNumber();
+      });
+
+      setWatermarkTokenList(list);
     }
   }, [
     externalAccount?.address,
-    ethAddress,
     nativeTokenBalance,
+    ethAddress,
     getPolkadotBalance,
-    getKusamaBalance
+    getKusamaBalance,
+    usdPrices.DOT,
+    usdPrices.KSM,
+    evmBalances
   ]);
 
   useEffect(() => {

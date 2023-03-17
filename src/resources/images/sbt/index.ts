@@ -22,9 +22,9 @@ import maticNormal from './matic-normal.png';
 import bnbMaster from './bnb-master.png';
 import bnbSupreme from './bnb-supreme.png';
 import bnbNormal from './bnb-normal.png';
-import ustdMaster from './ustd-master.png';
-import ustdSupreme from './ustd-supreme.png';
-import ustdNormal from './ustd-normal.png';
+import usdtMaster from './usdt-master.png';
+import usdtSupreme from './usdt-supreme.png';
+import usdtNormal from './usdt-normal.png';
 import shibMaster from './shib-master.png';
 import shibSupreme from './shib-supreme.png';
 import shibNormal from './shib-normal.png';
@@ -69,9 +69,9 @@ export const watermarkMap = {
   bnbMaster,
   bnbSupreme,
   bnbNormal,
-  ustdMaster,
-  ustdSupreme,
-  ustdNormal,
+  usdtMaster,
+  usdtSupreme,
+  usdtNormal,
   shibMaster,
   shibSupreme,
   shibNormal,

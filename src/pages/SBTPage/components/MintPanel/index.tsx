@@ -70,92 +70,14 @@ const WatermarkSwiper = () => {
   );
 };
 
-export const tokenList = [
-  {
-    token: 'manta',
-    checked: true,
-    level: 'supreme'
-  },
-  {
-    token: 'eth',
-    checked: false,
-    level: 'supreme'
-  },
-  {
-    token: 'usdc',
-    checked: true,
-    level: 'master'
-  },
-  {
-    token: 'uni',
-    checked: false,
-    level: 'master'
-  },
-  {
-    token: 'wbtc',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'link',
-    checked: true,
-    level: 'normal'
-  },
-  {
-    token: 'matic',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'bnb',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'ustd',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'shib',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'ldo',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'op',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'avax',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'dot',
-    checked: false,
-    level: 'normal'
-  },
-  {
-    token: 'ksm',
-    checked: false,
-    level: 'normal'
-  }
-];
-const mantaToken = tokenList[0];
-
 const MintPanel = () => {
   const {
     mintSuccessed,
     toggleMintSuccessed,
     resetContextData,
     activeWatermarkIndex,
-    getWatermarkTokenList
+    getWatermarkTokenList,
+    watermarkTokenList
   } = useMint();
   const { mintSet, setMintSet } = useGenerated();
   const { setCurrentStep } = useSBT();
@@ -232,14 +154,20 @@ const MintPanel = () => {
                     </div>
                   </Popover>
                 </div>
-                <TokenButton
-                  token={mantaToken.token as TokenType}
-                  level={mantaToken.level as LevelType}
-                  checked={
-                    activeGeneratedImg?.watermarkToken === mantaToken.token
-                  }
-                  handleClickTokenBtn={handleClickTokenBtn}
-                />
+                {watermarkTokenList?.map((watermarkToken) => {
+                  return (
+                    <TokenButton
+                      key={watermarkToken.token}
+                      token={watermarkToken?.token as TokenType}
+                      level={watermarkToken?.level as LevelType}
+                      checked={
+                        activeGeneratedImg?.watermarkToken ===
+                        watermarkToken?.token
+                      }
+                      handleClickTokenBtn={handleClickTokenBtn}
+                    />
+                  );
+                })}
               </div>
               <div className="bg-secondary rounded-lg mt-4 ml-6 pb-4">
                 <div className="text-white text-opacity-60 border-b border-split p-4 flex font-red-hat-mono font-medium text-sm">

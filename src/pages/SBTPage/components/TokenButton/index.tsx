@@ -10,7 +10,7 @@ export enum Tokens {
   link = 'link',
   matic = 'matic',
   bnb = 'bnb',
-  ustd = 'ustd',
+  usdt = 'usdt',
   shib = 'shib',
   ldo = 'ldo',
   op = 'op',
@@ -19,12 +19,12 @@ export enum Tokens {
   ksm = 'ksm'
 }
 export type TokenType = keyof typeof Tokens;
-export enum levels {
+export enum Levels {
   normal = 'normal',
   supreme = 'supreme',
   master = 'master'
 }
-export type LevelType = keyof typeof levels;
+export type LevelType = keyof typeof Levels;
 
 type TypeButtonProps = {
   checked: boolean;
@@ -42,7 +42,7 @@ const TokenButton = ({
   ...otherProps
 }: TypeButtonProps) => {
   const btnTxt =
-    level !== levels.normal
+    level !== Levels.normal
       ? `${token.toLocaleUpperCase()} - ${level.toLocaleUpperCase()}`
       : token.toLocaleUpperCase();
 
@@ -53,7 +53,7 @@ const TokenButton = ({
     <button
       onClick={() => handleClickTokenBtn(token, level)}
       {...otherProps}
-      className={`text-sm ml-4 mt-4 unselectable-text inline-flex justify-between border-2 border-white rounded-2xl cursor-pointer px-3 py-1 ${finalStyle} ${className}`}>
+      className={`text-sm ml-4 mt-4 unselectable-text inline-flex items-center justify-between border-2 border-white rounded-2xl cursor-pointer px-3 py-1 ${finalStyle} ${className}`}>
       <Icon name={token as IconName} className="w-6 h-6 rounded-full mr-2" />
       {btnTxt}
     </button>

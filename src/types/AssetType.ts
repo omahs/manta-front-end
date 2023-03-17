@@ -123,7 +123,7 @@ export default class AssetType {
       new BN('100000000000'),
       isPrivate,
       'karura',
-      config.IS_TESTNET,
+      config.IS_TESTNET
     );
   }
   static Kusama(config, isPrivate) {
@@ -136,7 +136,7 @@ export default class AssetType {
       new BN('500000000'),
       isPrivate,
       'kusama',
-      config.IS_TESTNET,
+      config.IS_TESTNET
     );
   }
 
@@ -150,7 +150,7 @@ export default class AssetType {
       new BN('1'),
       isPrivate,
       'rococo',
-      config.IS_TESTNET,
+      config.IS_TESTNET
     );
   }
 
@@ -164,7 +164,7 @@ export default class AssetType {
       new BN('1'),
       isPrivate,
       'bitcoin',
-      config.IS_TESTNET,
+      config.IS_TESTNET
     );
   }
 
@@ -178,12 +178,12 @@ export default class AssetType {
       new BN('100000000000000000'),
       isPrivate,
       'moonriver',
-      config.IS_TESTNET,
+      config.IS_TESTNET
     );
   }
-  static Dot(isPrivate = false) {
+  static Dot(config, isPrivate = false) {
     return new AssetType(
-      getAssetIds().DOT,
+      getAssetIds(config).DOT,
       'Polkadot',
       'DOT',
       'dot',
@@ -201,7 +201,8 @@ export default class AssetType {
         AssetType.DolphinSkinnedCalamari(config, isPrivate),
         AssetType.Karura(config, isPrivate),
         AssetType.Kusama(config, isPrivate),
-        AssetType.Moonriver(config, isPrivate)
+        AssetType.Moonriver(config, isPrivate),
+        AssetType.Dot(config, isPrivate)
       ];
     } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [

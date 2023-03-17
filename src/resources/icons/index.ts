@@ -109,7 +109,7 @@ import { ReactComponent as uni } from 'resources/icons/coins/uni.svg';
 import { ReactComponent as wbtc } from 'resources/icons/coins/wbtc.svg';
 import { ReactComponent as link } from 'resources/icons/coins/link.svg';
 import { ReactComponent as matic } from 'resources/icons/coins/matic.svg';
-import { ReactComponent as ustd } from 'resources/icons/coins/ustd.svg';
+import { ReactComponent as usdt } from 'resources/icons/coins/usdt.svg';
 import { ReactComponent as shib } from 'resources/icons/coins/shib.svg';
 import { ReactComponent as ldo } from 'resources/icons/coins/ldo.svg';
 import { ReactComponent as op } from 'resources/icons/coins/op.svg';
@@ -197,7 +197,7 @@ const icons = {
   link,
   matic,
   bnb,
-  ustd,
+  usdt,
   shib,
   ldo,
   op,

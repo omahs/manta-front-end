@@ -4,7 +4,6 @@ import Icon from 'components/Icon';
 import { GeneratedImg } from 'pages/SBTPage/SBTContext';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
-import { tokenList } from '../MintPanel';
 import TokenButton, { TokenType, LevelType } from '../TokenButton';
 
 const WatermarkTokenPanel = ({
@@ -15,7 +14,7 @@ const WatermarkTokenPanel = ({
   const [applyAll, toggleApplyAll] = useState(false);
 
   const { mintSet, setMintSet } = useGenerated();
-  const { activeWatermarkIndex } = useMint();
+  const { activeWatermarkIndex, watermarkTokenList } = useMint();
 
   const handleClickTokenBtn = (token: TokenType, level: LevelType) => {
     const newMintSet = new Set<GeneratedImg>();
@@ -71,11 +70,11 @@ const WatermarkTokenPanel = ({
       <div className="text-white text-opacity-60 border-b border-split p-4 flex font-red-hat-mono font-medium text-sm">
         Please select up to one Crypto Watermark to include in your zkSBT
       </div>
-      {tokenList.map(({ token, level }, index) => {
+      {watermarkTokenList.map(({ token, level }, index) => {
         return (
           <TokenButton
-            token={token as TokenType}
-            level={level as LevelType}
+            token={token}
+            level={level}
             checked={activeGeneratedImg?.watermarkToken === token}
             key={index}
             handleClickTokenBtn={handleClickTokenBtn}
