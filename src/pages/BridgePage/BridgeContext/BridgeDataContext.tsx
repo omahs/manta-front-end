@@ -77,7 +77,7 @@ export const BridgeDataContextProvider = (props) => {
       isApiDisconnected: true,
       chain
     });
-    if (txStatusRef.current?.isProcessing()) {
+    if (txStatusRef.current?.isProcessing() && chain.name === originChain.name) {
       setTxStatus(TxStatus.disconnected());
     }
   };
