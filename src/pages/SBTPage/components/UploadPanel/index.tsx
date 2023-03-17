@@ -8,7 +8,7 @@ import UploadImg from '../UploadImg';
 import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 
 export const MAX_UPLOAD_LEN = 20;
-const MIN_UPLOAD_LEN = 5;
+const MIN_UPLOAD_LEN = 3;
 
 const UploadItem = memo(function UploadItem({
   file,
@@ -85,7 +85,7 @@ const Cover = () => <div className="upload-img-cover" />;
 const BtnComponent = ({ detectLoading }: { detectLoading: boolean }) => {
   return (
     <>
-      {detectLoading ? 'Refreshing' : 'Confirm'}
+      {detectLoading ? 'Processing' : 'Confirm'}
       {detectLoading && <DotLoader cls="transform scale-150 ml-4" />}
     </>
   );
@@ -140,15 +140,15 @@ const UploadPanel = () => {
       </div>
       <h1 className="text-3xl my-6">Upload Photos</h1>
       <p className="text-sm text-opacity-60 text-white">
-        Please upload at least 5 selfies. Adding more photos will produce a
-        better zkSBT. Please make sure the image clearly depicts your face.
-        Avoid using any images that have other faces in them. Please also make
-        sure the background is clean. This will ensure the best generation of
-        your zkSBT.
+        Please upload at least {MIN_UPLOAD_LEN} selfies. Adding more photos will
+        produce a better zkSBT. Please make sure the image clearly depicts your
+        face. Avoid using any images that have other faces in them. Please also
+        make sure the background is clean. This will ensure the best generation
+        of your zkSBT.
       </p>
       <TipComponent />
       <div
-        className="grid w-full gap-6 grid-cols-5 mb-16 pt-4 mt-9 max-h-51vh overflow-y-auto relative"
+        className="grid w-full gap-6 grid-cols-5 mb-16 pt-4 pr-4 mt-9 max-h-44vh overflow-y-auto relative"
         ref={imgContainer}
         onScroll={handleScroll}>
         {imgList?.map(({ file }, index) => {
@@ -167,7 +167,7 @@ const UploadPanel = () => {
         onClick={toThemePage}
         disabled={btnDisabled}
         className={
-          'flex items-center absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-4 left-1/2 -translate-x-1/2 transform'
+          'flex items-center absolute px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 left-1/2 -translate-x-1/2 transform'
         }
       />
     </div>

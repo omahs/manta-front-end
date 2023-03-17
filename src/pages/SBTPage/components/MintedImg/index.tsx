@@ -31,7 +31,7 @@ const MintedImg = ({ blur_url, url, proofId = '', style }: GeneratedImg) => {
       )}
       <div className="px-2 py-2 pt-2.5 flex items-center w-44 justify-between text-xs unselectable-text">
         <div className="flex-1">
-          <p className="text-white text-opacity-60 text-xsss font-red-hat-text">
+          <p className="text-white text-opacity-60 text-xsss">
             Proof Key
           </p>
           <p className="text-white text-sm font-red-hat-mono">{`${proofId?.slice(

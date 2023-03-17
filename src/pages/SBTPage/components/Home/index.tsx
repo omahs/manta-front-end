@@ -113,7 +113,7 @@ const Home = () => {
   };
 
   return (
-    <div className="font-red-hat-text flex flex-col items-center mx-auto bg-secondary rounded-xl p-6 w-75">
+    <div className="flex flex-col items-center mx-auto bg-secondary rounded-xl p-6 w-75">
       <div className="w-full mb-6">
         {hasWallet && hasNFT && (
           <>
@@ -128,7 +128,7 @@ const Home = () => {
         )}
       </div>
       <div className="w-full">
-        <h1 className="font-red-hat-text text-2xl">Ongoing Projects</h1>
+        <h1 className="text-2xl">Ongoing Projects</h1>
         <div className=" flex justify-between align-bottom mt-4">
           <div className="left ">
             <div className="flex h-80 w-80 bg-primary">
@@ -183,7 +183,7 @@ const Home = () => {
       </div>
 
       <div className="mt-4 w-full">
-        <h1 className="font-red-hat-text text-2xl">Coming Soon</h1>
+        <h1 className="text-2xl">Coming Soon</h1>
         <div className="flex justify-between align-bottom mt-4">
           <div className="left ">
             <div className="flex h-80 w-80 bg-primary">
@@ -198,7 +198,7 @@ const Home = () => {
       </div>
 
       {/* <div className="mt-4 w-full">
-        <h1 className="font-red-hat-text text-2xl">FAQ</h1>
+        <h1 className="text-2xl">FAQ</h1>
         <div className="sbt-faq-content w-full flex justify-between align-bottom mt-4">
           <FAQ />
         </div>

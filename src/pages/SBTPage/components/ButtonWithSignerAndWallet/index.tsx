@@ -27,8 +27,8 @@ const ButtonWithSignerAndWallet = (props: ButtonWithSignerAndWalletProps) => {
   const {
     onClick,
     btnComponent,
-    noSignerComponent = 'Connect Signer to Continue',
-    noWalletComponent = 'Connect Wallet to Continue',
+    noSignerComponent = 'Connect Signer',
+    noWalletComponent = 'Connect Wallet',
     disabled,
     disabledCls = 'brightness-50 cursor-not-allowed',
     className,
