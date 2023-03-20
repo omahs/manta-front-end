@@ -10,7 +10,7 @@ import Icon from 'components/Icon';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import BridgeAssetSelect from './BridgeAssetSelect';
 import BridgeFeeDisplay from './BridgeFeeDisplay';
-import BridgeDestinationInput from './BridgeDestinationInput';
+import BridgeDestinationForm from './BridgeDestinationForm';
 
 const BridgeForm = () => {
   const config = useConfig();
@@ -41,7 +41,7 @@ const BridgeForm = () => {
     }
   };
 
-  const shouldShowDestinationInput = originChainIsEvm || destinationChainIsEvm;
+  const shouldShowDestinationForm = originChainIsEvm || destinationChainIsEvm;
 
   return (
     <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2 pt-21">
@@ -72,7 +72,7 @@ const BridgeForm = () => {
             <BridgeAssetSelect />
           </div>
         </div>
-        {shouldShowDestinationInput && <BridgeDestinationInput />}
+        {shouldShowDestinationForm && <BridgeDestinationForm />}
         <BridgeFeeDisplay />
         <SendButton />
       </div>

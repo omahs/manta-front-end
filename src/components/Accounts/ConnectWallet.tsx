@@ -7,30 +7,60 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTxStatus } from 'contexts/txStatusContext';
 import ConnectWalletModal from 'components/Modal/connectWalletModal';
 
-const ConnectWallet = ({
-  isButtonShape,
-  setIsMetamaskSelected,
+export const ConnectWalletButton = ({
+  setIsMetamaskSelected = null,
   text = 'Connect Wallet',
   className = ''
+}) => {
+  const component = (
+    <button className={classNames(className)}>
+      <p className="unselectable-text">{text}</p>
+    </button>
+  );
+
+  return (
+    <ConnectWallet
+      component={component}
+      setIsMetamaskSelected={setIsMetamaskSelected}
+      className={className}
+    />
+  );
+};
+
+export const ConnectWalletIcon = ({
+  setIsMetamaskSelected = null,
+}) => {
+  const component = (
+    <FontAwesomeIcon
+      className={'w-6 h-6 px-5 py-4 cursor-pointer z-10 text-secondary'}
+      icon={faPlusCircle}
+    />
+  );
+  return (
+    <ConnectWallet
+      component={component}
+      setIsMetamaskSelected={setIsMetamaskSelected}
+    />
+  );
+};
+
+const ConnectWallet = ({
+  component,
+  setIsMetamaskSelected = null,
 }) => {
   const { ModalWrapper, showModal, hideModal } = useModal();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const onClickPlusIcon = () => !disabled && showModal();
+  const onClick = () => !disabled && showModal();
 
   return (
     <>
-      {isButtonShape ? (
-        <button className={classNames(className)} onClick={onClickPlusIcon}>
-          <p className="unselectable-text">{text}</p>
-        </button>
-      ) : (
-        <FontAwesomeIcon
-          className={classNames('w-6 h-6 px-5 py-4 cursor-pointer z-10 text-secondary', {disabled: disabled})}
-          icon={faPlusCircle}
-          onClick={onClickPlusIcon}
-        />
-      )}
+      <div
+        className={classNames({disabled: disabled})}
+        onClick={onClick}
+      >
+        {component}
+      </div>
       <ModalWrapper>
         <ConnectWalletModal
           setIsMetamaskSelected={setIsMetamaskSelected}
@@ -40,5 +70,3 @@ const ConnectWallet = ({
     </>
   );
 };
-
-export default ConnectWallet;

@@ -153,7 +153,7 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     connectWalletExtension(walletName);
     const isConnected = await connectWallet(walletName);
     if (isConnected) {
-      setIsMetamaskSelected(false);
+      setIsMetamaskSelected && setIsMetamaskSelected(false);
       hideModal();
     }
   };

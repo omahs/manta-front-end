@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import classNames from 'classnames';
-import ConnectWallet from 'components/Accounts/ConnectWallet';
+import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
 import { useConfig } from 'contexts/configContext';
@@ -145,8 +145,7 @@ const ValidationSendButton = ({ showModal }) => {
         />
       )}
       {shouldShowWalletMissingValidation && (
-        <ConnectWallet
-          isButtonShape={true}
+        <ConnectWalletButton
           className={
             'bg-connect-wallet-button py-2 unselectable-text text-center text-white rounded-lg w-full'
           }
