@@ -57,15 +57,15 @@ module.exports = {
             test: new RegExp(`[\\/]node_modules[\\/]${moduleName}[\\/]`),
             name: `${moduleName}`,
             priority: 40,
-            enforce: true
+            reuseExistingChunk:true
           }
         }),
         {}
       );
+
       webpackConfig.optimization.splitChunks.cacheGroups = {
         default: false,
         vendors: false,
-        ...singleLoadCacheGroups,
         framework: {
           name: 'framework',
           test: new RegExp(
@@ -73,7 +73,7 @@ module.exports = {
               `|`
             )})[\\/]`
           ),
-          priority: 40,
+          priority: 60,
           enforce: true
         },
         manta: {
@@ -83,9 +83,10 @@ module.exports = {
               `|`
             )})[\\/]`
           ),
-          priority: 40,
+          priority: 50,
           enforce: true
         },
+        ...singleLoadCacheGroups,
         commons: {
           name: 'commons',
           minChunks: 10,
