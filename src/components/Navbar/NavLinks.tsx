@@ -27,6 +27,9 @@ const NavLinks = () => {
   return (
     <div className="ml-5 flex flex-row justify-between w-113.5 shadow-2xl items-center text-sm font-red-hat-text">
       <NavLink
+        onMouseOver={() => {
+          import('pages/SendPage');
+        }}
         to={`${networkUrlParam}${NAVLINKPATH.Transact}`}
         className={classNames(
           'py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
@@ -37,6 +40,9 @@ const NavLinks = () => {
         MantaPay
       </NavLink>
       <NavLink
+        onMouseOver={() => {
+          import('pages/BridgePage');
+        }}
         to={`${networkUrlParam}${NAVLINKPATH.Bridge}`}
         className={classNames(
           'py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
@@ -48,6 +54,9 @@ const NavLinks = () => {
       </NavLink>
       {!isDolphinPage && (
         <NavLink
+          onMouseOver={() => {
+            import('pages/StakePage');
+          }}
           to={`${networkUrlParam}${NAVLINKPATH.Stake}`}
           className={classNames(
             'py-3 w-1/4  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
