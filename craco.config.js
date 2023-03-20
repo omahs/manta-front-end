@@ -44,10 +44,9 @@ module.exports = {
 
       const MANTA_BUNDLES = [
         'manta.js',
-        'manta.js-kg-dev',
+        'mantasbt.js',
         'manta-wasm-wallet-api',
-        'manta-polkawallet-bridge',
-        'mantasbt.js'
+        'manta-polkawallet-bridge'
       ];
 
       const singleLoadCacheGroups = ['element-react'].reduce(
