@@ -271,13 +271,15 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     async (mintSet: Set<GeneratedImg>) => {
       const url = `${config.SBT_NODE_SERVICE}/npo/proofs`;
       const data = {
-        proof_info: [...mintSet].map(({ proofId, assetId, blur_url }) => ({
-          proof_id: proofId,
-          asset_id: assetId,
-          blur_url,
-          token: 'manta',
-          size: '1'
-        })),
+        proof_info: [...mintSet].map(
+          ({ proofId, assetId, blur_url, watermarkToken, watermarkLevel }) => ({
+            proof_id: proofId,
+            asset_id: assetId,
+            blur_url,
+            token: watermarkToken,
+            size: LEVEL_TO_SIZE[watermarkLevel ?? Levels.normal]
+          })
+        ),
         address: externalAccount?.address,
         model_id: modelId
       };
