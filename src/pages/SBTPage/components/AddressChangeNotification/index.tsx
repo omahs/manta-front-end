@@ -1,14 +1,14 @@
 import Icon from 'components/Icon';
 import { Notification } from 'element-react';
-import { useSBT } from 'pages/SBTPage/SBTContext';
+import { Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useEffect, useState } from 'react';
 
 const AddressChangeNotification = () => {
-  const { hintStatus, updateHintStatus } = useSBT();
+  const { hintStatus, updateHintStatus, currentStep } = useSBT();
 
   useEffect(() => {
     const toggleNotification = () => {
-      if (hintStatus) {
+      if (hintStatus && currentStep !== Step.Home) {
         if (!document.getElementById('address-change-content')) {
           Notification({
             title: '',
@@ -30,7 +30,7 @@ const AddressChangeNotification = () => {
     };
 
     toggleNotification();
-  }, [hintStatus, updateHintStatus]);
+  }, [currentStep, hintStatus, updateHintStatus]);
 
   return null;
 };

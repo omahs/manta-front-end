@@ -11,7 +11,7 @@ import SignerButton from '../SignerButton';
 import WalletButton from '../WalletButton';
 
 const UploadedImg = ({ url }: { url: string }) => {
-  return <img src={url} className={'w-25 h-25 rounded-lg'} />;
+  return <img src={url} className={'w-24 h-24 rounded-lg'} />;
 };
 
 const Generating = () => {

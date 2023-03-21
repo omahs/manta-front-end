@@ -3,8 +3,8 @@ import Icon from 'components/Icon';
 import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
-import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import dayjs from 'utils/time/dayjs';
 import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 import CountDown from './CountDown';
@@ -21,89 +21,49 @@ const Home = () => {
   const hasWallet = externalAccount;
   const config = useConfig();
   const [totalCount, setTotalCount] = useState(0);
-  const [countDown, setCountDown] = useState('');
   const [hasNFT, setHasNFT] = useState(false);
-  const [isWhiteList, setIsWhiteList] = useState(true);
-  // TODO
-  // const endTime = dayjs('2024-04-24');
-  // const started = endTime.diff(dayjs(Date.now())) < 0;
-  const endTime = dayjs(countDown);
-  const started = countDown ? endTime.diff(dayjs(Date.now())) < 0 : true;
 
-  const getTotalCount = useCallback(async () => {
-    const url = `${config.SBT_NODE_SERVICE}/npo/count`;
-    try {
-      const res = await axios.post<number>(url);
-      if (res.status === 200 || res.status === 201) {
-        const totalCount = Number(res.data) || 0;
-        setTotalCount(totalCount);
-      }
-    } catch (error) {
-      // TODO
-    }
-  }, [config.SBT_NODE_SERVICE]);
+  // TODO replace this with the real start time
+  const endTime = dayjs('2024-04-24');
+  const started = endTime.diff(dayjs(Date.now())) > 0;
 
-  const getHasNFT = useCallback(async () => {
-    const url = `${config.SBT_NODE_SERVICE}/npo/hasnft`;
-    const address = externalAccount?.address;
-    if (!address) return;
-    const data = { address };
-    try {
-      const res = await axios.post<hasNFTRes>(url, data);
-      if (res.status === 200 || res.status === 201) {
-        const hasNFT = res.data?.count || false;
-        setHasNFT(hasNFT);
-      }
-    } catch (error) {
-      // TODO
-    }
-  }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
-
-  const getCountDown = useCallback(async () => {
-    const url = `${config.SBT_NODE_SERVICE}/npo/countdown`;
-    try {
-      const res = await axios.post<string>(url);
-      if (res.status === 200 || res.status === 201) {
-        const countDown = res.data || '';
-        setCountDown(countDown);
-      }
-    } catch (error) {
-      // TODO
-    }
-  }, [config.SBT_NODE_SERVICE]);
-
-  const getIsWhiteList = useCallback(async () => {
-    const url = `${config.SBT_NODE_SERVICE}/npo/whitelist`;
-    const address = externalAccount?.address;
-    if (!address) return;
-    const data = { address };
-    try {
-      const res = await axios.post<boolean>(url, data);
-      if (res.status === 200 || res.status === 201) {
-        const isWhiteList = res.data || false;
-        setIsWhiteList(isWhiteList);
-      }
-    } catch (error) {
-      // TODO
-    }
-  }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
-
-  // TODO
   useEffect(() => {
+    const getTotalCount = async () => {
+      const url = `${config.SBT_NODE_SERVICE}/npo/count`;
+      try {
+        const res = await axios.post<{ count: number }>(url);
+        if (res.status === 200 || res.status === 201) {
+          const totalCount = Number(res.data.count) || 0;
+          setTotalCount(totalCount);
+        }
+      } catch (error) {
+        console.error('get total minted count error: ', error);
+      }
+    };
     getTotalCount();
-    // getCountDown();
-    if (externalAccount?.address) {
-      getHasNFT();
-      // getIsWhiteList();
-    }
-  }, [
-    config.SBT_NODE_SERVICE,
-    externalAccount?.address,
-    getCountDown,
-    getHasNFT,
-    getIsWhiteList,
-    getTotalCount
-  ]);
+  }, [config.SBT_NODE_SERVICE]);
+
+  useEffect(() => {
+    const getHasNFT = async () => {
+      if (!externalAccount?.address) {
+        return;
+      }
+      const url = `${config.SBT_NODE_SERVICE}/npo/hasnft`;
+      const address = externalAccount?.address;
+      if (!address) return;
+      const data = { address };
+      try {
+        const res = await axios.post<hasNFTRes>(url, data);
+        if (res.status === 200 || res.status === 201) {
+          const hasNFT = res.data?.count || false;
+          setHasNFT(hasNFT);
+        }
+      } catch (error) {
+        console.error('get address nft error: ', error);
+      }
+    };
+    getHasNFT();
+  }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
 
   const toUpload = () => {
     setCurrentStep(Step.Upload);
@@ -157,27 +117,21 @@ const Home = () => {
                   <CountDown endTime={endTime} started={started} />
                 </div>
                 <div className="flex justify-between mt-3">
-                  <div className="text-xl">40 Manta</div>
+                  <div className="text-xl">40 $Manta</div>
                   <ButtonWithSignerAndWallet
-                    disabled={!isWhiteList || !started}
+                    disabled={!started}
                     btnComponent={started ? 'Generate' : 'Coming Soon'}
                     onClick={toUpload}
                     className="mb-2 px-12 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 "
                   />
                 </div>
-                {!isWhiteList && (
-                  <div className="flex justify-end gap-2">
-                    <Icon name="information" className="text-error" />
-                    <div className="text-xs text-error">
-                      Only open to WL zkAddress
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         </div>
-        <div>Total Minted: {totalCount}</div>
+        <div className="text-white text-opacity-60">
+          Total Minted: {totalCount}
+        </div>
       </div>
 
       <div className="mt-4 w-full">
@@ -187,20 +141,23 @@ const Home = () => {
             <div className="flex h-80 w-80 bg-primary">
               <div className="m-auto flex flex-col items-center font-red-hat-mono">
                 <Icon className="w-20 h-20" name="manta" />
-                <div className="mt-4 text-xl text-center">MANTA NETWORK</div>
-                <div className=" text-xl text-center">NAME SERVICE</div>
+                <div className="mt-4 text-xl text-center">
+                  MANTA <span className="ml-3">NETWORK</span>
+                </div>
+                <div className=" text-xl text-center">
+                  NAME <span className="ml-3">SERVICE</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* <div className="mt-4 w-full">
+      <div className="mt-4 w-full">
         <h1 className="text-2xl">FAQ</h1>
         <div className="sbt-faq-content w-full flex justify-between align-bottom mt-4">
           <FAQ />
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

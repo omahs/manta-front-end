@@ -41,7 +41,7 @@ const CountDown: React.FC<CountDownProps> = ({ endTime, started }) => {
 
   return (
     <div className="flex items-end mb-4">
-      {!started && (
+      {started && (
         <>
           <span>Ends in</span>
           <div className="ml-4 flex items-end gap-2">

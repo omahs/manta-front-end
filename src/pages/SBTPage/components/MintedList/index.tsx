@@ -2,12 +2,14 @@ import axios from 'axios';
 import Icon from 'components/Icon';
 import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
+import dayjs from 'dayjs';
 import { GeneratedImg } from 'pages/SBTPage/SBTContext';
 import { useEffect, useState } from 'react';
 import MintedImg from '../MintedImg';
 
 type GeneratedImgType = GeneratedImg & {
   proof_id?: string;
+  asset_id?: string;
 };
 
 type MintedMap = Record<string, GeneratedImgType[]>;
@@ -21,11 +23,16 @@ const MintedImgItem = ({
 }) => (
   <div key={date} className="my-4">
     <p className="text-white text-opacity-60 text-sm font-red-mono-text">
-      {date}
+      {dayjs(date).format('MMM DD，YYYY')}
     </p>
     <div className="grid grid-cols-5 gap-2 mt-4">
       {mintedMap[date].map((item, index) => (
-        <MintedImg {...item} key={index} proofId={item.proof_id} />
+        <MintedImg
+          {...item}
+          key={index}
+          proofId={item.proof_id}
+          assetId={`#${item.asset_id}`}
+        />
       ))}
     </div>
   </div>

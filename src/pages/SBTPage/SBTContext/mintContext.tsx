@@ -204,8 +204,13 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const { setGeneratedImgs, setGenerateStatus } = useGenerating();
   const { mintSet, setMintSet } = useGenerated();
   const { externalAccount } = useExternalAccount();
-  const { setImgList, setOnGoingTask, nativeTokenBalance, setCurrentStep } =
-    useSBT();
+  const {
+    setImgList,
+    setOnGoingTask,
+    nativeTokenBalance,
+    setCurrentStep,
+    setHintStatus
+  } = useSBT();
   const { ethAddress } = useMetamask();
   const { api: polkadotApi } = usePolkadotChain();
   const { api: kusamaApi } = useKusamaChain();
@@ -245,6 +250,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   ]);
 
   const resetContextData = useCallback(() => {
+    setHintStatus(false);
     setImgList([]);
     setOnGoingTask(null);
     toggleCheckedThemeItem(new Map<string, ThemeItem>());
@@ -257,7 +263,8 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     setImgList,
     setOnGoingTask,
     setMintSet,
-    toggleCheckedThemeItem
+    toggleCheckedThemeItem,
+    setHintStatus
   ]);
 
   const saveMintInfo = useCallback(
@@ -427,8 +434,11 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       }
       if (externalAccount?.address !== addressRef?.current) {
         addressRef.current = externalAccount?.address;
-        resetContextData();
         setCurrentStep(Step.Home);
+        // to home first
+        setTimeout(() => {
+          resetContextData();
+        });
       }
     };
 

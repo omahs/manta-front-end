@@ -2,8 +2,13 @@ import Icon from 'components/Icon';
 import { Notification } from 'element-react';
 import { SBTContextValue, Step, useSBT } from 'pages/SBTPage/SBTContext';
 import { useEffect } from 'react';
+import { NavigateFunction } from 'react-router-dom';
 
-const OnGoingTaskNotification = () => {
+const OnGoingTaskNotification = ({
+  navigate
+}: {
+  navigate: NavigateFunction;
+}) => {
   const { showOnGoingTask, setCurrentStep, onGoingTask, toggleSkippedStep } =
     useSBT();
 
@@ -17,6 +22,7 @@ const OnGoingTaskNotification = () => {
               onGoingTask={onGoingTask}
               setCurrentStep={setCurrentStep}
               toggleSkippedStep={toggleSkippedStep}
+              navigate={navigate}
             />
           ),
           duration: 0,
@@ -31,7 +37,13 @@ const OnGoingTaskNotification = () => {
       }
       dom?.remove();
     }
-  }, [onGoingTask, setCurrentStep, showOnGoingTask, toggleSkippedStep]);
+  }, [
+    navigate,
+    onGoingTask,
+    setCurrentStep,
+    showOnGoingTask,
+    toggleSkippedStep
+  ]);
 
   return null;
 };
@@ -39,13 +51,20 @@ const OnGoingTaskNotification = () => {
 const OnGoingTaskContent = ({
   onGoingTask,
   setCurrentStep,
-  toggleSkippedStep
+  toggleSkippedStep,
+  navigate
 }: Pick<
   SBTContextValue,
   'onGoingTask' | 'setCurrentStep' | 'toggleSkippedStep'
->) => {
+> & {
+  navigate: NavigateFunction;
+}) => {
   const handleStep = () => {
     toggleSkippedStep(true);
+    //TODO will replace dolphin with the variable according to config
+    if (window.location.href.includes('/sbt/list')) {
+      navigate('/dolphin/sbt');
+    }
     if (onGoingTask?.status && onGoingTask?.urls?.length) {
       setCurrentStep(Step.Generated);
     } else {

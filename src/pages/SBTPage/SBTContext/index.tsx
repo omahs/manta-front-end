@@ -66,6 +66,7 @@ export type SBTContextValue = {
   toggleSkippedStep: (skippedStep: boolean) => void;
   hintStatus: boolean;
   updateHintStatus: () => void;
+  setHintStatus: (hintStatus: boolean) => void;
 };
 
 const SBTContext = createContext<SBTContextValue | null>(null);
@@ -148,7 +149,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
 
   useEffect(() => {
     const getHintStatus = async () => {
-      if (externalAccount?.address && currentStep !== Step.Home) {
+      if (externalAccount?.address) {
         const url = `${config.SBT_NODE_SERVICE}/npo/hint`;
         const data = {
           address: externalAccount?.address
@@ -160,7 +161,7 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       }
     };
     getHintStatus();
-  }, [config.SBT_NODE_SERVICE, currentStep, externalAccount?.address]);
+  }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
 
   const updateHintStatus = useCallback(() => {
     if (externalAccount?.address) {
@@ -232,7 +233,8 @@ export const SBTContextProvider = (props: { children: ReactElement }) => {
       toggleSkippedStep,
       skippedStep,
       hintStatus,
-      updateHintStatus
+      updateHintStatus,
+      setHintStatus
     };
   }, [
     currentStep,

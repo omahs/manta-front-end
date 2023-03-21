@@ -11,7 +11,6 @@ import { MAX_MINT_SIZE } from '../Generated';
 const PRE_SCALE = 0.07;
 const MAX_Z_INDEX = 60;
 const MAX_IMG_LEN = 10;
-const MIN_LOOP = 10;
 
 type ItemType = {
   generatedImg: GeneratedImg;
@@ -117,7 +116,7 @@ const GeneratedImgs = () => {
               scaleSwiperSlide();
             }, 100)
           }
-          loop={generatedImgs.length >= MIN_LOOP}
+          loop={false}
           allowTouchMove={false}>
           {generatedImgs.map((generatedImg, index) => {
             return (

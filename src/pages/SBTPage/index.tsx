@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 import Navbar from 'components/Navbar';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import OnGoingTaskNotification from './components/OnGoingTaskModal';
 import Main from './Main';
 import { SBTContextProvider } from './SBTContext';
@@ -46,6 +46,7 @@ const SBTProviders = ({ children }: { children: ReactNode }) => {
 };
 
 const SBT = () => {
+  const navigate = useNavigate();
   return (
     <ChainsProviders>
       <SBTProviders>
@@ -57,7 +58,7 @@ const SBT = () => {
               <Route path="/list" element={<MintedList />} />
             </Routes>
             <AddressChangeNotification />
-            <OnGoingTaskNotification />
+            <OnGoingTaskNotification navigate={navigate} />
           </div>
         </SBTPrivateContextProvider>
       </SBTProviders>
