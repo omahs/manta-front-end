@@ -4,7 +4,7 @@ import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import dayjs from 'dayjs';
 import { GeneratedImg } from 'pages/SBTPage/SBTContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import MintedImg from '../MintedImg';
 
 type GeneratedImgType = GeneratedImg & {
@@ -61,6 +61,19 @@ const MintedList = () => {
     getMintedMap();
   }, [config.SBT_NODE_SERVICE, externalAccount?.address]);
 
+  // display the minted list by date desc
+  const orderedDates = useMemo(() => {
+    return Object.keys(mintedMap).sort((a, b) => {
+      if (a > b) {
+        return -1;
+      }
+      if (a < b) {
+        return 1;
+      }
+      return 0;
+    });
+  }, [mintedMap]);
+
   return (
     <div className="flex-1 flex flex-col mx-auto mb-8 bg-secondary rounded-xl p-6 w-75 relative">
       <div className="flex items-center">
@@ -71,7 +84,7 @@ const MintedList = () => {
       </div>
       <h1 className="text-3xl mt-4">Minted</h1>
       <div className="overflow-y-auto max-h-60vh">
-        {Object.keys(mintedMap).map((date) => {
+        {orderedDates.map((date) => {
           return <MintedImgItem date={date} key={date} mintedMap={mintedMap} />;
         })}
       </div>

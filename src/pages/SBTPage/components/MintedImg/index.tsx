@@ -14,8 +14,8 @@ const MintedImg = ({
 }: GeneratedImg) => {
   const [showQrCode, toggleQrCode] = useState(false);
   return (
-    <div className="relative w-max bg-primary rounded-lg">
-      <img src={blur_url ?? url} className="rounded-lg w-44 h-44" />
+    <div className="relative w-max bg-primary rounded-lg unselectable-text">
+      <img src={blur_url ?? url} className="rounded-lg w-44 h-44 img-bg" />
       <div className="absolute bottom-16 w-full flex px-2 justify-between items-end">
         <span className="text-white text-sm font-red-hat-mono font-bold">
           {style ?? assetId}
