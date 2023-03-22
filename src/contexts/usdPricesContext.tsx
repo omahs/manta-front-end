@@ -23,7 +23,7 @@ export const UsdPricesContextProvider = (props) => {
       }, '');
 
       const res = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
+        `${config.COINGECKO_PROXY_URL}/prices/${ids}`
       );
 
       if (res.data) {
@@ -36,6 +36,7 @@ export const UsdPricesContextProvider = (props) => {
         setUsdPrices({ ...prices });
       }
     } catch (err) {
+      console.error(err);
       setUsdPrices({});
     }
   };

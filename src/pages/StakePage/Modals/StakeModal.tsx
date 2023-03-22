@@ -13,6 +13,7 @@ import { useConfig } from 'contexts/configContext';
 import DotLoader from 'components/Loaders/DotLoader';
 import Icon from 'components/Icon';
 import classNames from 'classnames';
+import { useUsdPrices } from 'contexts/usdPricesContext';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import { MAX_DELEGATIONS } from '../StakeConstants';
@@ -25,7 +26,6 @@ export const StakeModal = ({ hideModal }) => {
     setStakeTargetBalance,
     stakeTargetBalance,
     userAvailableBalance,
-    usdPerKma
   } = useStakeData();
   const {
     getMaxStakeableBalance,
@@ -39,6 +39,8 @@ export const StakeModal = ({ hideModal }) => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
   const { externalAccount } = useExternalAccount();
+  const { usdPrices } = useUsdPrices();
+  const nativeTokenUsdValue = usdPrices?.[AssetType.Native(config).baseTicker];
 
   const [inputValue, setInputValue] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
@@ -64,8 +66,8 @@ export const StakeModal = ({ hideModal }) => {
   const minimumStakeNum = `${minStakeAmountString}`;
 
   const usdValueText =
-    stakeTargetBalance && usdPerKma
-      ? stakeTargetBalance.toUsd(usdPerKma).toString()
+    stakeTargetBalance && nativeTokenUsdValue
+      ? stakeTargetBalance.toUsd(nativeTokenUsdValue).toString()
       : '';
 
   const notes = [

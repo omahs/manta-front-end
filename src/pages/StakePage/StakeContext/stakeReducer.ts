@@ -13,7 +13,6 @@ export const STAKE_INIT_STATE = {
   selectedCollator: null,
   selectedDelegation: null,
   selectedUnstakeRequest: null,
-  usdPerKma: null,
 };
 
 export const stakeReducer = (state, action) => {
@@ -41,9 +40,6 @@ export const stakeReducer = (state, action) => {
 
   case STAKE_ACTIONS.SET_SELECTED_UNSTAKE_REQUEST:
     return setSelectedUnstakeRequest(state, action);
-
-  case STAKE_ACTIONS.SET_USD_PER_KMA:
-    return setUsdPerKma(state, action);
 
   case STAKE_ACTIONS.SET_USER_TOTAL_RECENT_REWARDS:
     return setUserTotalRecentRewards(state, action);
@@ -126,13 +122,6 @@ const setSelectedUnstakeRequest = (state, {selectedUnstakeRequest}) => {
   return {
     ...state,
     selectedUnstakeRequest
-  };
-};
-
-const setUsdPerKma = (state, {usdPerKma}) => {
-  return {
-    ...state,
-    usdPerKma
   };
 };
 
