@@ -1,30 +1,9 @@
-import React, { lazy, Suspense } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate
-} from 'react-router-dom';
+// @ts-nocheck
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { SendPage, StakePage, BridgePage } from 'pages';
 import { CalamariBasePage, DolphinBasePage } from 'pages/BasePage';
 
-const SendPage = lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true */ /* webpackChunkName: "SendPage" */ './pages/SendPage'
-    )
-);
-const StakePage = lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true */ /* webpackChunkName: "StakePage" */ './pages/StakePage'
-    )
-);
-const BridgePage = lazy(
-  () =>
-    import(
-      /* webpackPrefetch: true */ /* webpackChunkName: "BridgePage" */ './pages/BridgePage'
-    )
-);
 
 const DolphinRoutes = () => {
   return (
@@ -32,9 +11,9 @@ const DolphinRoutes = () => {
       <Routes>
         <Route path="dolphin">
           <Route index element={<Navigate to="transact" />} />
-          <Route path="bridge" element={<BridgePage />} />
-          <Route path="transact" element={<SendPage />} />
-        </Route>
+          <Route path="bridge" element={<BridgePage />} exact />
+          <Route path="transact" element={<SendPage />} exact />
+        </ Route >
       </Routes>
     </DolphinBasePage>
   );
@@ -46,10 +25,10 @@ const CalamariRoutes = () => {
       <Routes>
         <Route path="calamari">
           <Route index element={<Navigate to="transact" />} />
-          <Route path="bridge" element={<BridgePage />} />
-          <Route path="transact" element={<SendPage />} />
-          <Route path="stake" element={<StakePage />} />
-        </Route>
+          <Route path="bridge" element={<BridgePage />} exact />
+          <Route path="transact" element={<SendPage />} exact />
+          <Route path="stake" element={<StakePage />} exact />
+        </ Route >
       </Routes>
     </CalamariBasePage>
   );
@@ -58,10 +37,15 @@ const CalamariRoutes = () => {
 const RedirectRoutes = () => {
   return (
     <Routes>
-      <Route index element={<Navigate to="/calamari/transact" replace />} />
+      <Route
+        index
+        element={<Navigate to="/calamari/transact" replace />}
+        exact
+      />
       <Route
         path="/stake"
         element={<Navigate to="/calamari/stake" replace />}
+        exact
       />
     </Routes>
   );
@@ -70,11 +54,9 @@ const RedirectRoutes = () => {
 const AppRouter = () => {
   return (
     <Router>
-      <Suspense fallback="loading">
-        <RedirectRoutes />
-        <CalamariRoutes />
-        <DolphinRoutes />
-      </Suspense>
+      <RedirectRoutes />
+      <CalamariRoutes/>
+      <DolphinRoutes/>
     </Router>
   );
 };
