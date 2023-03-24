@@ -20,6 +20,8 @@ import BN from 'bn.js';
 import Usd from 'types/Usd';
 import Decimal from 'decimal.js';
 import { useUsdPrices } from 'contexts/usdPricesContext';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { NAVLINKPATH } from 'components/Navbar/NavLinks';
 import {
   Levels,
   LevelType,
@@ -177,10 +179,10 @@ const initTokenMap: Record<TokenType, WatermarkToken> = {
   }
 };
 
-const LEVEL_NORMAL_MAX = new Usd(new Decimal(100));
-const LEVEL_SUPREME_MAX = new Usd(new Decimal(2000));
+// const LEVEL_NORMAL_MAX = new Usd(new Decimal(100));
+// const LEVEL_SUPREME_MAX = new Usd(new Decimal(2000));
 
-const getLevel = (usd: Usd) => {
+const getLevel = (usd: Usd, LEVEL_NORMAL_MAX: Usd, LEVEL_SUPREME_MAX: Usd) => {
   if (usd.value.gt(LEVEL_SUPREME_MAX.value)) {
     return Levels.master;
   } else if (usd.value.gt(LEVEL_NORMAL_MAX.value)) {
@@ -215,6 +217,8 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const { api: polkadotApi } = usePolkadotChain();
   const { api: kusamaApi } = useKusamaChain();
   const { usdPrices } = useUsdPrices();
+
+  const [searchParams] = useSearchParams();
 
   const getWatermarkedImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/watermark`;
@@ -293,10 +297,13 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
 
   const getPolkadotBalance = useCallback(async () => {
     if (polkadotApi?.query?.system && externalAccount?.address) {
+      const address =
+        searchParams.get('dotAddress') ??
+        '13mx7NQBYoo6TY9sRsCAEbZBnen9BBK16AfkxhPf4LcsaTf5';
       const {
         data: { free, miscFrozen }
       } = (await polkadotApi?.query?.system?.account(
-        '13mx7NQBYoo6TY9sRsCAEbZBnen9BBK16AfkxhPf4LcsaTf5' // TODO will replace with the wallet's address later
+        address // TODO will replace with the wallet's address later
       )) as FrameSystemAccountInfo;
 
       const polkadotAsset = AssetType.Dot(config);
@@ -310,10 +317,13 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
 
   const getKusamaBalance = useCallback(async () => {
     if (kusamaApi?.query?.system && externalAccount?.address) {
+      const address =
+        searchParams.get('ksmAddress') ??
+        'CgaccaysLRMQSNJUznK3SXAZwNRMuM8UURGDUmMzGzJfq6A';
       const {
         data: { free, miscFrozen }
       } = (await kusamaApi?.query?.system?.account(
-        'CgaccaysLRMQSNJUznK3SXAZwNRMuM8UURGDUmMzGzJfq6A' // TODO will replace with the wallet's address later
+        address // TODO will replace with the wallet's address later
       )) as FrameSystemAccountInfo;
       const kusamaAsset = AssetType.Kusama(config, false);
       const total = new Balance(kusamaAsset, new BN(free.toString()));
@@ -327,21 +337,33 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const getEvmTokenBalance = async () => {
       if (ethAddress) {
+        const address =
+          searchParams.get('ethAddress') ??
+          '0x690b9a9e9aa1c9db991c7721a92d351db4fac990';
+
         const url = `${config.SBT_NODE_SERVICE}/npo/balance`;
         const ret = await axios.post<{
           status: boolean;
           data: EvmBalance[];
         }>(url, {
           // TODO replace this with metamask wallet address
-          address: '0x690b9a9e9aa1c9db991c7721a92d351db4fac990'
+          address
         });
         if (ret.status === 200 || ret.status === 201) {
-          setEvmBalances(ret.data.data);
+          setEvmBalances(ret.data.data ?? []);
         }
       }
     };
     getEvmTokenBalance();
-  }, [config.SBT_NODE_SERVICE, ethAddress]);
+  }, [config.SBT_NODE_SERVICE, ethAddress, searchParams]);
+
+  const levelNormalMax = useMemo(() => {
+    return new Usd(new Decimal(searchParams.get('normalMax') ?? 100));
+  }, [searchParams]);
+
+  const levelSupremeMax = useMemo(() => {
+    return new Usd(new Decimal(searchParams.get('supremeMax') ?? 2000));
+  }, [searchParams]);
 
   const getWatermarkTokenList = useCallback(async () => {
     if (!externalAccount?.address) {
@@ -353,7 +375,7 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       new Usd(new Decimal(0));
     const mantaToken = {
       token: Tokens.manta,
-      level: getLevel(mantaValue),
+      level: getLevel(mantaValue, levelNormalMax, levelSupremeMax),
       balance: nativeTokenBalance,
       value: mantaValue
     };
@@ -390,26 +412,34 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
               };
             }
             tokensMap[targetToken].level = getLevel(
-              tokensMap[targetToken].value
+              tokensMap[targetToken].value,
+              levelNormalMax,
+              levelSupremeMax
             );
           }
         }
       });
-
-      tokensMap[Tokens.manta] = {
-        ...mantaToken,
-        level: getLevel(mantaToken.value)
-      };
-      tokensMap[Tokens.dot] = {
-        ...initTokenMap[Tokens.dot],
-        value: polkadotValue,
-        level: getLevel(polkadotValue)
-      };
-      tokensMap[Tokens.ksm] = {
-        ...initTokenMap[Tokens.ksm],
-        value: kusamaValue,
-        level: getLevel(kusamaValue)
-      };
+      // only display tokens with value greater than zero
+      if (mantaToken.value.value.gt(zeroUsd.value)) {
+        tokensMap[Tokens.manta] = {
+          ...mantaToken,
+          level: getLevel(mantaToken.value, levelNormalMax, levelSupremeMax)
+        };
+      }
+      if (polkadotValue.value.gt(zeroUsd.value)) {
+        tokensMap[Tokens.dot] = {
+          ...initTokenMap[Tokens.dot],
+          value: polkadotValue,
+          level: getLevel(polkadotValue, levelNormalMax, levelSupremeMax)
+        };
+      }
+      if (kusamaValue.value.gt(zeroUsd.value)) {
+        tokensMap[Tokens.ksm] = {
+          ...initTokenMap[Tokens.ksm],
+          value: kusamaValue,
+          level: getLevel(kusamaValue, levelNormalMax, levelSupremeMax)
+        };
+      }
 
       const list = Object.values(tokensMap).sort((a, b) => {
         return b.value.value.minus(a.value.value).toNumber();
@@ -420,6 +450,8 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   }, [
     externalAccount?.address,
     nativeTokenBalance,
+    levelNormalMax,
+    levelSupremeMax,
     ethAddress,
     getPolkadotBalance,
     getKusamaBalance,
@@ -427,6 +459,9 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
     usdPrices.KSM,
     evmBalances
   ]);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const goHomePageAfterChangedAddress = () => {
@@ -437,6 +472,10 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
       if (externalAccount?.address !== addressRef?.current) {
         addressRef.current = externalAccount?.address;
         setCurrentStep(Step.Home);
+        if (location.pathname.includes(NAVLINKPATH.NPOList)) {
+          navigate(NAVLINKPATH.NPO);
+          return;
+        }
         // to home first
         setTimeout(() => {
           resetContextData();

@@ -4,11 +4,12 @@ import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
 import { dolphinConfig } from 'config';
 
-const NAVLINKPATH = {
+export const NAVLINKPATH = {
   Transact: '/transact',
   Bridge: '/bridge',
   Stake: '/stake',
-  NPO: '/sbt'
+  NPO: '/sbt',
+  NPOList: '/sbt/list'
 };
 
 const NavLinks = () => {

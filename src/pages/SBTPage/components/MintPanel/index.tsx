@@ -7,7 +7,7 @@ import { useModal } from 'hooks';
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
 import { useMint } from 'pages/SBTPage/SBTContext/mintContext';
 import { GeneratedImg, Step, useSBT } from 'pages/SBTPage/SBTContext';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { firstUpperCase } from 'utils/string';
 import { watermarkMap, WatermarkMapType } from 'resources/images/sbt';
 import { useMetamask } from 'contexts/metamaskContext';
@@ -43,7 +43,7 @@ const WatermarkSwiper = () => {
         onSlideChange={handleSwiperChange}
         modules={[Navigation, Pagination]}
         autoplay={false}
-        loop={true}
+        loop={mintSet.size > 1}
         className="w-80 h-80 rounded-3xl unselectable-text sbt-watermark-swiper">
         {[...mintSet].map((generateImg, index) => {
           const watermarkName =
@@ -71,6 +71,8 @@ const WatermarkSwiper = () => {
 };
 
 const MintPanel = () => {
+  const [applyAll, toggleApplyAll] = useState(false);
+
   const {
     mintSuccessed,
     toggleMintSuccessed,
@@ -109,7 +111,7 @@ const MintPanel = () => {
   const handleClickTokenBtn = (token: TokenType, level: LevelType) => {
     const newMintSet = new Set<GeneratedImg>();
     [...mintSet].forEach((generatedImg, index) => {
-      if (index === activeWatermarkIndex) {
+      if (index === activeWatermarkIndex || applyAll) {
         const isSelected = generatedImg.watermarkToken === token;
         newMintSet.add({
           ...generatedImg,
@@ -123,6 +125,35 @@ const MintPanel = () => {
       }
     });
     setMintSet(newMintSet);
+  };
+
+  const applyAllDisabled = useMemo(
+    () => !applyAll && !activeGeneratedImg?.watermarkToken,
+    [activeGeneratedImg?.watermarkToken, applyAll]
+  );
+  const applyAllDisabledStyle = applyAllDisabled
+    ? 'cursor-not-allowed'
+    : 'cursor-pointer';
+
+  const clickApplyAll = () => {
+    if (applyAllDisabled) {
+      return;
+    }
+    if (!applyAll) {
+      const { watermarkLevel, watermarkToken } = activeGeneratedImg;
+      if (watermarkLevel && watermarkToken) {
+        const newMintSet = new Set<GeneratedImg>();
+        [...mintSet].forEach((generatedImg) => {
+          newMintSet.add({
+            ...generatedImg,
+            watermarkToken: watermarkToken,
+            watermarkLevel: watermarkLevel
+          });
+        });
+        setMintSet(newMintSet);
+      }
+    }
+    toggleApplyAll(!applyAll);
   };
 
   return (
@@ -178,8 +209,21 @@ const MintPanel = () => {
             </>
           )}
           {ethAddress && (
-            <WatermarkTokenPanel activeGeneratedImg={activeGeneratedImg} />
+            <WatermarkTokenPanel
+              activeGeneratedImg={activeGeneratedImg}
+              handleClickTokenBtn={handleClickTokenBtn}
+            />
           )}
+          <div
+            className={`ml-2 p-4 text-white text-opacity-60 text-sm flex items-center ${applyAllDisabledStyle}`}
+            onClick={clickApplyAll}>
+            {applyAll ? (
+              <Icon name="greenCheck" className="mr-2 w-4 h-4" />
+            ) : (
+              <Icon name="unfilledCircle" className="mr-2 w-4 h-4" />
+            )}
+            Apply all
+          </div>
         </div>
       </div>
       {mintSuccessed ? (

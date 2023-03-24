@@ -22,8 +22,8 @@ import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import BN from 'bn.js';
 import Balance from 'types/Balance';
 import { u8aToHex } from '@polkadot/util';
+import { useSubstrate } from 'contexts/substrateContext';
 import { useConfig } from '../../../contexts/configContext';
-import { useSubstrate } from '../../../contexts/substrateContext';
 import { usePrivateWallet } from '../../../contexts/privateWalletContext';
 import { useExternalAccount } from '../../../contexts/externalAccountContext';
 import { useGenerated } from './generatedContext';
@@ -66,27 +66,31 @@ export const SBTPrivateContextProvider = ({
   const { mintSet } = useGenerated();
 
   useEffect(() => {
-    const canInitWallet = api && !isInitialSync.current && !sbtPrivateWallet;
-
+    const canInitWallet = !isInitialSync.current && !sbtPrivateWallet;
     const initWallet = async () => {
-      isInitialSync.current = true;
-      const privateWalletConfig = {
-        environment: Environment.Production,
-        network: Network.Dolphin,
-        loggingEnabled: true
-      };
-      const sbtPrivateWallet = await SbtMantaPrivateWallet.initSBT(
-        privateWalletConfig
-      );
+      try {
+        isInitialSync.current = true;
+        const privateWalletConfig = {
+          environment: Environment.Production,
+          network: Network.Dolphin,
+          loggingEnabled: true
+        };
+        const sbtPrivateWallet = await SbtMantaPrivateWallet.initSBT(
+          privateWalletConfig
+        );
 
-      setSBTPrivateWallet(sbtPrivateWallet);
-      isInitialSync.current = false;
+        setSBTPrivateWallet(sbtPrivateWallet);
+        isInitialSync.current = false;
+      } catch (e) {
+        console.error('init sbtPrivateWallet error: ', e);
+        isInitialSync.current = false;
+      }
     };
 
     if (canInitWallet && !isReady) {
       initWallet();
     }
-  }, [api, config, isReady, sbtPrivateWallet]);
+  }, [isReady, sbtPrivateWallet]);
 
   const getReserveGasFee = useCallback(async () => {
     if (!sbtPrivateWallet || !externalAccount) {
@@ -144,6 +148,9 @@ export const SBTPrivateContextProvider = ({
             } catch (error) {
               console.error(error);
             }
+          } else if (!api) {
+            console.error('can not get api from substate');
+            setTxStatus(TxStatus.failed(''));
           }
         }
       }
@@ -177,36 +184,46 @@ export const SBTPrivateContextProvider = ({
 
   const getBatchMintTx = useCallback(
     async (newMintSet: Set<GeneratedImg> = mintSet) => {
-      if (!sbtPrivateWallet || !externalAccount || !api?.query) {
-        return;
-      }
-      const assetIdRange: any =
-        await sbtPrivateWallet.api.query.mantaSbt.reservedIds(
-          externalAccount.address
+      if (!sbtPrivateWallet || !externalAccount) {
+        console.error(
+          'can not call getBatchMintTx function without sbtPrivateWallet'
         );
-      if (assetIdRange.isNone) {
-        console.error('no assetId in storage mapped to this account');
         return;
       }
-      const assetId = assetIdRange.unwrap()[0];
+      try {
+        const assetIdRange: any =
+          await sbtPrivateWallet.api.query.mantaSbt.reservedIds(
+            externalAccount.address
+          );
+        if (assetIdRange.isNone) {
+          console.error('no assetId in storage mapped to this account');
+          return;
+        }
+        const assetId = assetIdRange.unwrap()[0];
 
-      await sbtPrivateWallet.getPrivateBalance(assetId);
+        await sbtPrivateWallet.getPrivateBalance(assetId);
 
-      const numberOfMints = newMintSet.size;
-      const metadata = [...newMintSet]?.map(
-        (genereatedImg) => genereatedImg?.cid ?? ''
-      );
+        const numberOfMints = newMintSet.size;
+        const metadata = [...newMintSet]?.map(
+          (genereatedImg) => genereatedImg?.cid ?? ''
+        );
 
-      const sbtMint = await sbtPrivateWallet.buildSbtBatch(
-        extensionSigner,
-        externalAccount.address,
-        assetId,
-        numberOfMints,
-        metadata
-      );
-      return sbtMint;
+        const sbtMint = await sbtPrivateWallet.buildSbtBatch(
+          extensionSigner,
+          externalAccount.address,
+          assetId,
+          numberOfMints,
+          metadata
+        );
+        if (!sbtMint) {
+          throw new Error('Unable to build mintSbt transaction');
+        }
+        return sbtMint;
+      } catch (e) {
+        console.error('Unable to build mintSbt transaction: ', e);
+      }
     },
-    [api?.query, extensionSigner, externalAccount, mintSet, sbtPrivateWallet]
+    [extensionSigner, externalAccount, mintSet, sbtPrivateWallet]
   );
 
   const mintSBT = useCallback(
@@ -233,7 +250,7 @@ export const SBTPrivateContextProvider = ({
           };
         }) as MintResult[];
       } catch (e) {
-        console.error(e);
+        console.error('mint SBT error: ', e);
         setTxStatus(TxStatus.failed(''));
       }
     },

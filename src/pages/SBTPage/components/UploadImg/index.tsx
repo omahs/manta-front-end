@@ -1,12 +1,17 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useRef } from 'react';
 
 import Icon from 'components/Icon';
 import { useSBT } from 'pages/SBTPage/SBTContext';
 import DotLoader from 'components/Loaders/DotLoader';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 
-const UploadImg = () => {
-  const [loading, toggleLoading] = useState(false);
+const UploadImg = ({
+  uploadLoading,
+  toggleUploadLoading
+}: {
+  uploadLoading: boolean;
+  toggleUploadLoading: (uploadLoading: boolean) => void;
+}) => {
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const { externalAccount } = useExternalAccount();
@@ -14,9 +19,9 @@ const UploadImg = () => {
 
   const onImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.files?.length) {
-      toggleLoading(true);
+      toggleUploadLoading(true);
       await uploadImgs([...e.target.files]);
-      toggleLoading(false);
+      toggleUploadLoading(false);
     }
     // fix the same file can not upload twice bug
     if (fileRef?.current) {
@@ -24,13 +29,14 @@ const UploadImg = () => {
     }
   };
   const disabledStyle =
-    loading || !externalAccount
+    uploadLoading || !externalAccount
       ? 'brightness-50 cursor-not-allowed'
       : 'cursor-pointer';
+
   return (
     <div className="relative w-max">
       <div className="border border-dash-gray border-dashed bg-secondary rounded-lg w-52 h-52 flex justify-center items-center">
-        {loading ? (
+        {uploadLoading ? (
           <DotLoader cls="transform scale-200" />
         ) : (
           <Icon name="defaultImg" />
@@ -42,7 +48,7 @@ const UploadImg = () => {
         multiple
         accept="image/*"
         onChange={onImageChange}
-        disabled={loading}
+        disabled={uploadLoading}
         ref={fileRef}
       />
     </div>

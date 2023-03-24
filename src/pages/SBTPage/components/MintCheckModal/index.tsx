@@ -33,12 +33,12 @@ const MintImg = ({
 }) => {
   const watermarkName = token + firstUpperCase(level ?? '');
   return (
-    <div className="relative w-24 h-24 rounded-lg">
-      <img src={url} className="w-24 h-24 rounded-lg" />
+    <div className="relative w-18 h-18 rounded-lg">
+      <img src={url} className="w-18 h-18 rounded-lg" />
       {watermarkName && (
         <img
           src={watermarkMap[watermarkName as WatermarkMapType]}
-          className="absolute top-0 left-0 w-24 h-24 rounded-lg"
+          className="absolute top-0 left-0 w-18 h-18 rounded-lg"
         />
       )}
     </div>
@@ -205,13 +205,13 @@ const MintCheckModal = ({
   return (
     <div className="text-white w-128 text-center">
       <h2 className="text-2xl text-left font-bold">Checkout</h2>
-      <div className="bg-secondary rounded-lg mt-6 mb-4">
+      <div className="bg-secondary rounded-lg mt-6 mb-3">
         <MintImgs />
-        <div className="flex justify-between border-b border-split p-4">
+        <div className="flex justify-between px-4">
           <p>{mintInfo?.txt}</p>
           <span className={`font-bold ${mintCostStyle}`}>{mintInfo?.cost}</span>
         </div>
-        <div className="flex justify-between border-b border-split p-4">
+        <div className="flex justify-between border-b border-split px-4 py-2">
           <p>Gas Fee</p>
           <span className="ml-auto text-opacity-60 text-white mr-2">
             + approximately
@@ -234,7 +234,7 @@ const MintCheckModal = ({
         Balance: {nativeTokenBalance?.toDisplayString() ?? '-'}
       </p>
       {errorMsg && (
-        <p className={`${errorMsgStyle} mt-2 text-left`}>
+        <p className={`${errorMsgStyle} mt-2 text-left absolute`}>
           <Icon name="information" className="mr-2 inline-block" />
           {errorMsg}
         </p>
@@ -243,7 +243,7 @@ const MintCheckModal = ({
         onClick={mintSBTConfirm}
         disabled={disabled}
         btnComponent={<BtnComponent loading={loading} />}
-        className="px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-6"
+        className="px-36 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter mt-12"
       />
     </div>
   );

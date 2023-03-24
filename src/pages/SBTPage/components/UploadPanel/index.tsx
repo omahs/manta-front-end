@@ -82,17 +82,26 @@ const TipComponent = () => {
 
 const Cover = () => <div className="upload-img-cover" />;
 
-const BtnComponent = ({ detectLoading }: { detectLoading: boolean }) => {
+const BtnComponent = ({
+  detectLoading,
+  uploadLoading
+}: {
+  detectLoading: boolean;
+  uploadLoading: boolean;
+}) => {
   return (
     <>
-      {detectLoading ? 'Processing' : 'Confirm'}
-      {detectLoading && <DotLoader cls="transform scale-150 ml-4" />}
+      {detectLoading || uploadLoading ? 'Processing' : 'Confirm'}
+      {(detectLoading || uploadLoading) && (
+        <DotLoader cls="transform scale-150 ml-4" />
+      )}
     </>
   );
 };
 
 const UploadPanel = () => {
   const [showCover, toggleCover] = useState(false);
+  const [uploadLoading, toggleUploadLoading] = useState(false);
 
   const imgContainer = useRef<HTMLDivElement>(null);
 
@@ -159,11 +168,21 @@ const UploadPanel = () => {
             <UploadItem file={file} index={index} key={index + file.name} />
           );
         })}
-        {imgList.length < MAX_UPLOAD_LEN ? <UploadImg /> : null}
+        {imgList.length < MAX_UPLOAD_LEN ? (
+          <UploadImg
+            toggleUploadLoading={toggleUploadLoading}
+            uploadLoading={uploadLoading}
+          />
+        ) : null}
         {showCover && <Cover />}
       </div>
       <ButtonWithSignerAndWallet
-        btnComponent={<BtnComponent detectLoading={detectLoading} />}
+        btnComponent={
+          <BtnComponent
+            detectLoading={detectLoading}
+            uploadLoading={uploadLoading}
+          />
+        }
         onClick={toThemePage}
         disabled={btnDisabled}
         className={

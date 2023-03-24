@@ -92,6 +92,10 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     reserveGasFee == null;
 
   const errorMsg = useMemo(() => {
+    // no need to show the static error message during a transaction
+    if (loading) {
+      return '';
+    }
     if (nativeTokenBalance == null) {
       return 'Some problems occurred, please try again later.';
     }
@@ -99,7 +103,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
       return 'Your account does not have enough balance for this transaction.';
     }
     return '';
-  }, [nativeTokenBalance, totalValue]);
+  }, [nativeTokenBalance, totalValue, loading]);
 
   return (
     <div className="text-white w-128 text-center">

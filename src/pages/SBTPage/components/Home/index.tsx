@@ -3,17 +3,24 @@ import Icon from 'components/Icon';
 import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import dayjs from 'utils/time/dayjs';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import dayjs, { twoDP } from 'utils/time/dayjs';
 import ButtonWithSignerAndWallet from '../ButtonWithSignerAndWallet';
 import CountDown from './CountDown';
 import FAQ from './FAQ';
 
+export enum DateStatus {
+  comingSoon,
+  started,
+  ended
+}
 export type hasNFTRes = {
   status: boolean;
   count: boolean;
 };
+
+const ONE_DAY_SECONDS = 3600 * 24;
 
 const Home = () => {
   const { setCurrentStep } = useSBT();
@@ -22,10 +29,29 @@ const Home = () => {
   const config = useConfig();
   const [totalCount, setTotalCount] = useState(0);
   const [hasNFT, setHasNFT] = useState(false);
+  const [dateStatus, setDateStatus] = useState<null | DateStatus>(null);
 
-  // TODO replace this with the real start time
-  const endTime = dayjs('2024-04-24');
-  const started = endTime.diff(dayjs(Date.now())) > 0;
+  const [searchParams] = useSearchParams();
+
+  const endDate = useMemo(
+    () => dayjs(searchParams.get('endDate') ?? '2024-04-24'),
+    [searchParams]
+  );
+  const startDate = useMemo(
+    () => dayjs(searchParams.get('startDate') ?? '2023-03-20'),
+    [searchParams]
+  );
+
+  useEffect(() => {
+    const curDate = dayjs(Date.now());
+    if (curDate.diff(startDate) < 0) {
+      setDateStatus(DateStatus.comingSoon);
+    } else if (curDate.diff(endDate) > 0) {
+      setDateStatus(DateStatus.ended);
+    } else {
+      setDateStatus(DateStatus.started);
+    }
+  }, [endDate, searchParams, startDate]);
 
   useEffect(() => {
     const getTotalCount = async () => {
@@ -68,6 +94,31 @@ const Home = () => {
   const toUpload = () => {
     setCurrentStep(Step.Upload);
   };
+
+  const btnText = useMemo(() => {
+    if (dateStatus === DateStatus.comingSoon) {
+      return 'Coming Soon';
+    }
+    if (dateStatus === DateStatus.started) {
+      return 'Generate';
+    }
+    return 'Ended';
+  }, [dateStatus]);
+
+  const title = dateStatus === DateStatus.started ? 'Ends in' : 'Start in';
+
+  const startInDays = useMemo(() => {
+    const curDate = dayjs();
+    const diffTime = startDate.unix() - curDate.unix();
+
+    const startInMoreThanOneDay =
+      dateStatus === DateStatus.comingSoon && diffTime > ONE_DAY_SECONDS;
+    if (startInMoreThanOneDay) {
+      const duration = dayjs.duration(diffTime * 1000, 'milliseconds');
+      return twoDP(Math.ceil(duration.asDays()));
+    }
+    return '';
+  }, [dateStatus, startDate]);
 
   return (
     <div className="flex flex-col items-center mx-auto bg-secondary rounded-xl p-6 w-75">
@@ -114,13 +165,33 @@ const Home = () => {
               <div className="flex flex-col justify-between w-full ">
                 <div className="flex  justify-between">
                   <div className="text-2xl">WL Mint</div>
-                  <CountDown endTime={endTime} started={started} />
+                  {dateStatus !== DateStatus.ended && (
+                    <div className="flex items-end mb-4">
+                      <span>{title}</span>
+                      {startInDays ? (
+                        <div className="ml-4 flex items-end gap-2">
+                          <span className="font-red-hat-mono text-2xl text-center text-sbt-date">
+                            {startInDays}
+                          </span>
+                          <span>DAY(S) (UTC)</span>
+                        </div>
+                      ) : (
+                        <CountDown
+                          targetTime={
+                            dateStatus === DateStatus.comingSoon
+                              ? startDate
+                              : endDate
+                          }
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-between mt-3">
                   <div className="text-xl">40 $Manta</div>
                   <ButtonWithSignerAndWallet
-                    disabled={!started}
-                    btnComponent={started ? 'Generate' : 'Coming Soon'}
+                    disabled={dateStatus !== DateStatus.started}
+                    btnComponent={btnText}
                     onClick={toUpload}
                     className="mb-2 px-12 py-2 unselectable-text text-center text-white rounded-lg gradient-button filter bottom-16 "
                   />
