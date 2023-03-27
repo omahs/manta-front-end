@@ -215,3 +215,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - [\#755](https://github.com/Manta-Network/manta-front-end/pull/755) Fix dotmenu content height style
+
+## [5.0.5] - 2023-3-27
+
+### Fixed
+- [\#827](https://github.com/Manta-Network/manta-front-end/pull/827) Fix giant-squid galxe url
