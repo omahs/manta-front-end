@@ -4,6 +4,7 @@ import { KaruraAdapter } from 'manta-polkawallet-bridge/build/adapters/acala';
 import { CalamariAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
 import { KusamaAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
 import { MoonriverAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
+import { StatemineAdapter } from 'manta-polkawallet-bridge/build/adapters/statemint';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -59,21 +60,6 @@ export default class Chain {
     this.api = null;
   }
 
-  static Dolphin(config) {
-    return new Chain(
-      'dolphin',
-      'Dolphin',
-      9997,
-      'dolphin',
-      config.DOLPHIN_SOCKET,
-      config.DOLPHIN_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
-      AssetType.DolphinSkinnedCalamari(config),
-      CalamariAdapter,
-      types
-    );
-  }
-
   static DolphinSkinnedCalamari(config) {
     return new Chain(
       'calamari',
@@ -82,7 +68,7 @@ export default class Chain {
       'dolphin',
       config.DOLPHIN_SOCKET,
       config.DOLPHIN_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config), AssetType.Tether(config)],
       AssetType.DolphinSkinnedCalamari(config),
       CalamariAdapter,
       types
@@ -104,20 +90,6 @@ export default class Chain {
     );
   }
 
-  static Rococo(config) {
-    return new Chain(
-      'rococo',
-      'Rococo',
-      null,
-      'roc',
-      config.ROCOCO_SOCKET,
-      config.ROCOCO_SUBSCAN_URL,
-      [AssetType.Rococo(config)],
-      AssetType.Rococo(config),
-      KusamaAdapter
-    );
-  }
-
   static Kusama(config) {
     return new Chain(
       'kusama',
@@ -131,6 +103,21 @@ export default class Chain {
       KusamaAdapter
     );
   }
+
+  static Statemine(config) {
+    return new Chain(
+      'statemine',
+      'Statemine',
+      1000,
+      'statemine',
+      config.STATEMINE_SOCKET, // todo: find
+      config.STATEMINE_SUBSCAN_URL,
+      [AssetType.Tether(config)],
+      AssetType.Kusama(config),
+      StatemineAdapter
+    );
+  }
+
 
   static Karura(config) {
     return new Chain(
@@ -184,14 +171,16 @@ export default class Chain {
         Chain.Calamari(config),
         Chain.Kusama(config),
         Chain.Karura(config),
-        Chain.Moonriver(config)
+        Chain.Moonriver(config),
+        // Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
       return [
         Chain.DolphinSkinnedCalamari(config),
         Chain.Kusama(config),
-        Chain.Karura(config),
-        Chain.Moonriver(config)
+        // Chain.Karura(config),
+        Chain.Moonriver(config),
+        Chain.Statemine(config)
       ];
     }
   }
@@ -212,6 +201,8 @@ export default class Chain {
   }
 
   canTransferXcm(otherChain) {
+    console.log('111');
+    console.log(this, otherChain);
     if (this.name === otherChain.name) {
       return false;
     }
