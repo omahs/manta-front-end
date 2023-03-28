@@ -9,11 +9,11 @@ const CalamariAssetIds = {
   LKSM: 10,
   MOVR: 11,
   KSM: 12,
-  USDT: 13, // todo: check this
-  WBTC: 14, // todo: check this
-  WETH: 15, // todo: check this
-  DAI: 16, // todo: check this
-  USDC: 17, // todo: check this
+  USDT: 14,
+  DAI: 15,
+  USDC: 16,
+  // WBTC: 17, // todo: check this
+  // WETH: 18, // todo: check this
 
 };
 
@@ -24,11 +24,11 @@ const DolphinAssetIds = {
   LKSM: 10,
   MOVR: 11,
   KSM: 12,
-  USDT: 13, // todo: check this
-  WBTC: 14, // todo: check this
-  WETH: 15, // todo: check this
+  USDT: 14, // todo: check this
   DAI: 16, // todo: check this
   USDC: 17, // todo: check this
+  // WBTC: 14, // todo: check this
+  // WETH: 15, // todo: check this
 };
 
 const getAssetIds = (config) => {
@@ -182,44 +182,44 @@ export default class AssetType {
   static Tether(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).USDT,
-      'Tether',
+      'Tether USD',
       'USDT',
       'usdt', // need to find image
-      6, // not sure
-      new BN('10000'), // not sure
+      6,
+      new BN('1000'),
       isPrivate,
       'tether',
       config.IS_TESTNET,
     );
   }
 
-  static WrappedBitcoin(config, isPrivate) {
-    return new AssetType(
-      getAssetIds(config).WBTC,
-      'Wrapped Bitcoin',
-      'WBTC',
-      'wbtc', // need to find image (just bitcoin image maybe okay)
-      8, // pretty sure, check
-      new BN('1'), // not sure
-      isPrivate,
-      'wrapped-bitcoin',
-      config.IS_TESTNET,
-    );
-  }
+  // static WrappedBitcoin(config, isPrivate) {
+  //   return new AssetType(
+  //     getAssetIds(config).WBTC,
+  //     'Wrapped Bitcoin',
+  //     'WBTC',
+  //     'wbtc', // need to find image (just bitcoin image maybe okay)
+  //     8, // pretty sure, check
+  //     new BN('1'), // not sure
+  //     isPrivate,
+  //     'wrapped-bitcoin',
+  //     config.IS_TESTNET,
+  //   );
+  // }
 
-  static WrappedEthereum(config, isPrivate) {
-    return new AssetType(
-      getAssetIds(config).WETH,
-      'Wrapped Ethereum',
-      'WETH',
-      'weth', // need to find image (just ETH image maybe okay)
-      18, // pretty sure, check
-      new BN('1'), // not sure
-      isPrivate,
-      'weth',
-      config.IS_TESTNET,
-    );
-  }
+  // static WrappedEthereum(config, isPrivate) {
+  //   return new AssetType(
+  //     getAssetIds(config).WETH,
+  //     'Wrapped Ethereum',
+  //     'WETH',
+  //     'weth', // need to find image (just ETH image maybe okay)
+  //     18, // pretty sure, check
+  //     new BN('1'), // not sure
+  //     isPrivate,
+  //     'weth',
+  //     config.IS_TESTNET,
+  //   );
+  // }
 
   static Dai(config, isPrivate) {
     return new AssetType(
@@ -227,8 +227,8 @@ export default class AssetType {
       'Dai',
       'DAI',
       'dai', // need to find image (just ETH image maybe okay)
-      18, // pretty sure, check
-      new BN('1'), // not sure
+      18,
+      new BN('10000000000000000'),
       isPrivate,
       'dai',
       config.IS_TESTNET,
@@ -238,11 +238,11 @@ export default class AssetType {
   static UsdCoin(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).USDC,
-      'Wrapped Ethereum',
-      'WETH',
-      'weth', // need to find image (just ETH image maybe okay)
-      18, // pretty sure, check
-      new BN('1'), // not sure
+      'USD Coin',
+      'USDC',
+      'usdc', // need to find image (just ETH image maybe okay)
+      18,
+      new BN('10000'),
       isPrivate,
       'usd-coin',
       config.IS_TESTNET,
