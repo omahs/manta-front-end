@@ -187,6 +187,8 @@ export const BridgeDataContextProvider = (props) => {
       senderAssetType,
       originAddress
     );
+
+    console.log('senderAssetCurrentBalance', senderAssetCurrentBalance);
     dispatch({
       type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
       senderAssetCurrentBalance

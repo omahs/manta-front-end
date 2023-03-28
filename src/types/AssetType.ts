@@ -269,7 +269,7 @@ export default class AssetType {
         AssetType.Karura(config, isPrivate),
         AssetType.Kusama(config, isPrivate),
         AssetType.Moonriver(config, isPrivate),
-        // AssetType.Tether(config, isPrivate),
+        AssetType.Tether(config, isPrivate),
         // AssetType.WrappedBitcoin(config, isPrivate),
         // AssetType.WrappedEthereum(config, isPrivate),
         // AssetType.Dai(config, isPrivate),
