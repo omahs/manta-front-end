@@ -20,7 +20,6 @@ import { STAKE_INIT_STATE, stakeReducer } from './stakeReducer';
 import STAKE_ACTIONS from './stakeActions';
 import {
   getCollatorComission,
-  getCalamariTokenValue,
   getAnnualInflation,
   getCollatorsAreActive,
   getCollatorCandidateInfo,
@@ -43,25 +42,6 @@ export const StakeDataContextProvider = (props) => {
     collatorCandidates,
     userTotalRecentRewards
   } = state;
-
-  useEffect(() => {
-    // Sets the USD value of the native token e.g. KMA on Calamari network
-    const setNativeTokenValue = async () => {
-      if (AssetType.Native(config).baseTicker !== 'KMA') {
-        return;
-      }
-      try {
-        const usdPerKma = await getCalamariTokenValue();
-        dispatch({
-          type: STAKE_ACTIONS.SET_USD_PER_KMA,
-          usdPerKma,
-        });
-      } catch (error) {
-        console.error('failed to fetch USD per KMA', error);
-      }
-    };
-    setNativeTokenValue();
-  }, []);
 
   useEffect(() => {
     // Sets the user's total and available balances

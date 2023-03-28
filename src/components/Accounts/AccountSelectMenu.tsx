@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import Icon from 'components/Icon';
 import WalletSelectBar from './WalletSelectIconBar';
-import ConnectWallet from './ConnectWallet';
+import { ConnectWalletIcon, ConnectWalletButton } from './ConnectWallet';
 import AccountSelectDropdown from './AccountSelectDropdown';
 
 const DisplayAccountsButton = () => {
@@ -67,10 +67,7 @@ const DisplayAccountsButton = () => {
                 />
               </div>
               <div className="relative top-1">
-                <ConnectWallet
-                  isButtonShape={false}
-                  setIsMetamaskSelected={setIsMetamaskSelected}
-                />
+                <ConnectWalletIcon setIsMetamaskSelected={setIsMetamaskSelected} />
               </div>
             </div>
             <div className="max-h-96 overflow-y-auto bg-primary px-5 py-5 rounded-b-lg">
@@ -89,8 +86,7 @@ const AccountSelectMenu = () => {
   return externalAccount ? (
     <DisplayAccountsButton />
   ) : (
-    <ConnectWallet
-      isButtonShape={true}
+    <ConnectWalletButton
       className={
         'bg-connect-wallet-button text-white font-red-hat-text text-sm h-10 w-44 cursor-pointer rounded-lg'
       }

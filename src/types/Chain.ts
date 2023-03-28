@@ -97,7 +97,7 @@ export default class Chain {
       'calamariLogo',
       config.CALAMARI_SOCKET,
       config.CALAMARI_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Moonriver(config)],
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.Calamari(config),
       CalamariAdapter,
       types
@@ -183,7 +183,7 @@ export default class Chain {
       return [
         Chain.Calamari(config),
         Chain.Kusama(config),
-        // Chain.Karura(config),
+        Chain.Karura(config),
         Chain.Moonriver(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {

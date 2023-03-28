@@ -13,6 +13,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import Icon from 'components/Icon';
 import classNames from 'classnames';
+import { useUsdPrices } from 'contexts/usdPricesContext';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import ModalNotes from './ModalNotes';
@@ -24,7 +25,6 @@ export const UnstakeModal = ({ hideModal }) => {
     setUnstakeTargetBalance,
     unstakeTargetBalance,
     userAvailableBalance,
-    usdPerKma
   } = useStakeData();
   const {
     getUserCanUnstake,
@@ -38,6 +38,9 @@ export const UnstakeModal = ({ hideModal }) => {
   const config = useConfig();
   const { externalAccount } = useExternalAccount();
   const { txStatus } = useTxStatus();
+  const { usdPrices } = useUsdPrices();
+  const nativeTokenUsdValue = usdPrices?.[AssetType.Native(config).baseTicker];
+
 
   const [inputValue, setInputValue] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
@@ -51,8 +54,8 @@ export const UnstakeModal = ({ hideModal }) => {
   const minimumStakeNum = `${minimumStakeAmountString}`;
 
   const usdValueText =
-    unstakeTargetBalance && usdPerKma
-      ? unstakeTargetBalance.toUsd(usdPerKma).toString()
+    unstakeTargetBalance && nativeTokenUsdValue
+      ? unstakeTargetBalance.toUsd(nativeTokenUsdValue).toString()
       : '';
 
   const notes = [

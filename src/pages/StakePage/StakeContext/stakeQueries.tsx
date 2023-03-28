@@ -68,7 +68,6 @@ export const getDelegations = async (api, config, userAddress) => {
   });
 };
 
-
 // Gets the number of blocks that this collator authored during the previous round
 export const getBlocksPreviousRound = async (api, round, collatorAddresses) => {
   if (round.current === 0) {
@@ -77,14 +76,6 @@ export const getBlocksPreviousRound = async (api, round, collatorAddresses) => {
   const args = collatorAddresses.map(address => [round.current - 1, address]);
   const pointsPreviousRoundRaw = await api.query.parachainStaking.awardedPts.multi(args);
   return pointsPreviousRoundRaw.map(pointsRaw => pointsRaw.toNumber() / POINTS_PER_BLOCK);
-};
-
-// Gets Calamari value denominated in USD
-export const getCalamariTokenValue = async () => {
-  const res = await axios.get(
-    'https://api.coingecko.com/api/v3/simple/price?ids=calamari-network&vs_currencies=usd'
-  );
-  return new Usd(new Decimal(res.data['calamari-network']['usd']));
 };
 
 // Gets the user's total rewards across all delegations for the past round

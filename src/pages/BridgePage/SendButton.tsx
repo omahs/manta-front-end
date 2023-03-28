@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import MantaLoading from 'components/Loading';
-import ConnectWallet from 'components/Accounts/ConnectWallet';
+import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
@@ -46,7 +46,7 @@ const ValidationButton = () => {
     connectWalletText = 'Connect MetaMask';
   } else if (apiIsDisconnected) {
     validationMsg = 'Connecting to network';
-  } else if (evmIsEnabled && chainId !== Chain.Moonriver(config).ethChainId) {
+  } else if (evmIsEnabled && originChainIsEvm && chainId !== Chain.Moonriver(config).ethChainId) {
     isSwitchNetwork = true;
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
@@ -86,9 +86,8 @@ const ValidationButton = () => {
       {disabled && <MantaLoading className="py-3" />}
       {shouldShowSendButton && <SendButton />}
       {shouldShowConnectWallet && (
-        <ConnectWallet
+        <ConnectWalletButton
           text={connectWalletText}
-          isButtonShape={true}
           className={classNames(
             'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
             'text-center text-white rounded-lg w-full'
@@ -107,6 +106,7 @@ const SwitchNetworkButton = () => {
   const onClick = () => {
     configureMoonRiver();
   };
+
   return (
     <button
       onClick={onClick}

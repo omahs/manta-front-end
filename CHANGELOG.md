@@ -215,3 +215,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - [\#755](https://github.com/Manta-Network/manta-front-end/pull/755) Fix dotmenu content height style
+
+## [5.0.4] - 2023-3-28
+
+### Fixed
+- [\#829](https://github.com/Manta-Network/manta-front-end/pull/829) Fix a single disconnected network on Bridge Page from preventing all transactions
+- [\#753](https://github.com/Manta-Network/manta-front-end/pull/753) Fix a single disconnected network on Bridge Page from preventing all transactions
+
+### Added
+- [\#753](https://github.com/Manta-Network/manta-front-end/pull/753) Enable Karura on Calamari MantaPay and Bridge Page
+- [\#821](https://github.com/Manta-Network/manta-front-end/pull/821) Allow users to connect a source account when sending to or from Moonriver by clicking on button next to the address input form
+- [\#754](https://github.com/Manta-Network/manta-front-end/pull/754) Get Coingecko asset prices in USD by querying our own proxy server that holds an API key, instead of using the public Coingecko endpoint.
