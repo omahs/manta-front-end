@@ -45,6 +45,8 @@ export const BridgeTxContextProvider = (props) => {
   const userCanPayOriginFee = () => {
     if (!senderNativeAssetCurrentBalance || !senderAssetTargetBalance || !originChain) {
       return null;
+    } else if (senderNativeAssetCurrentBalance.assetType.assetId !== originFee.assetType.assetId) {
+      return null;
     }
 
     const nativeAsset = originChain.nativeAsset;
