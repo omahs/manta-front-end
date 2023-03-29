@@ -184,7 +184,7 @@ export default class AssetType {
       getAssetIds(config).USDT,
       'Tether USD',
       'USDT',
-      'usdt', // need to find image
+      'tether',
       6,
       new BN('1000'),
       isPrivate,
@@ -226,7 +226,7 @@ export default class AssetType {
       getAssetIds(config).DAI,
       'Dai',
       'DAI',
-      'dai', // need to find image (just ETH image maybe okay)
+      'dai',
       18,
       new BN('10000000000000000'),
       isPrivate,
@@ -240,7 +240,7 @@ export default class AssetType {
       getAssetIds(config).USDC,
       'USD Coin',
       'USDC',
-      'usdc', // need to find image (just ETH image maybe okay)
+      'usdc',
       18,
       new BN('10000'),
       isPrivate,
