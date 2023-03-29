@@ -201,8 +201,6 @@ export default class Chain {
   }
 
   canTransferXcm(otherChain) {
-    console.log('111');
-    console.log(this, otherChain);
     if (this.name === otherChain.name) {
       return false;
     }

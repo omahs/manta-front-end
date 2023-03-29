@@ -9,6 +9,7 @@
     "KUSAMA_SUBSCAN_URL": "https://kusama.subscan.io",
     "KARURA_SUBSCAN_URL": "https://karura.subscan.io",
     "MOONRIVER_SUBSCAN_URL": "https://moonriver.subscan.io",
+    "STATEMINE_SUBSCAN_URL": "https://statemine.subscan.io",
     "TWITTER_URL": "https://twitter.com/CalamariNetwork",
     "CALAMARI_URL": "https://calamari.network/",
     "CALAMARI_SOCKET": "wss://ws.calamari.systems/",

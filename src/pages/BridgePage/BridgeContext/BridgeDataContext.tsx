@@ -188,7 +188,6 @@ export const BridgeDataContextProvider = (props) => {
       originAddress
     );
 
-    console.log('senderAssetCurrentBalance', senderAssetCurrentBalance);
     dispatch({
       type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
       senderAssetCurrentBalance
@@ -263,9 +262,6 @@ export const BridgeDataContextProvider = (props) => {
         const ARBITRARY_EVM_ADDRESS = '0x000000000000000000000000000000000000dead';
         address = ARBITRARY_EVM_ADDRESS;
       }
-
-      console.log('address??', address);
-
       return {
         signer: originAddress,
         address: address,

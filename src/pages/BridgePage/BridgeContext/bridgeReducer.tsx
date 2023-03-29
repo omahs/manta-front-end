@@ -56,8 +56,6 @@ export const buildInitState = (config) => {
   } else {
     initDestinationChain = initDestinationChainOptions[0];
   }
-
-  console.log('initSenderAssetTypeOptions', initOriginChain, initDestinationChain);
   const initSenderAssetTypeOptions = getSenderAssetTypeOptions(
     config, initOriginChain, initDestinationChain
   );

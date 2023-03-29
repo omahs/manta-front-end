@@ -331,9 +331,6 @@ export default class AssetType {
   }
 
   canTransferXcm = (originChain, destinationChain) => {
-    console.log('originChain', originChain);
-    console.log('destinationChain', destinationChain);
-
     return (
       originChain.xcmAssets.find((asset) => asset.name === this.name) &&
       destinationChain.xcmAssets.find((asset) => asset.name === this.name)
