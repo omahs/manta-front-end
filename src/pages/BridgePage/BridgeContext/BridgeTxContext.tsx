@@ -122,6 +122,8 @@ export const BridgeTxContextProvider = (props) => {
             const decoded = originApi.registry.findMetaError(error.asModule.toU8a());
             const { docs, method, section } = decoded;
             console.error(`${section}.${method}: ${docs.join(' ')}`);
+            console.log('error', error);
+            console.log('decoded', decoded);
           } else {
             console.error(error.toString());
           }
@@ -169,6 +171,8 @@ export const BridgeTxContextProvider = (props) => {
       token: senderAssetTargetBalance.assetType.logicalTicker,
       address: destinationAddress,
     });
+    tx.args[0].pop();
+    console.log('tx', tx);
     try {
       setApiSigner(originApi);
       await tx.signAndSend(externalAccountSigner, handleTxRes);
