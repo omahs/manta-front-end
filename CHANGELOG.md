@@ -226,3 +226,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#753](https://github.com/Manta-Network/manta-front-end/pull/753) Enable Karura on Calamari MantaPay and Bridge Page
 - [\#821](https://github.com/Manta-Network/manta-front-end/pull/821) Allow users to connect a source account when sending to or from Moonriver by clicking on button next to the address input form
 - [\#754](https://github.com/Manta-Network/manta-front-end/pull/754) Get Coingecko asset prices in USD by querying our own proxy server that holds an API key, instead of using the public Coingecko endpoint.
+
+## [5.1.0] - 2023-4-7
+### Added
+- [\#834](https://github.com/Manta-Network/manta-front-end/pull/834) Enable briding of USDC and DAI between Calamari and Karura; enable bridging of USDT between Statemine and Calamari
