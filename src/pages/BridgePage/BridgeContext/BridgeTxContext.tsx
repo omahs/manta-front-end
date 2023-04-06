@@ -9,6 +9,7 @@ import { useMetamask } from 'contexts/metamaskContext';
 import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
 import { FixedPointNumber } from '@acala-network/sdk-core';
 import { useConfig } from 'contexts/configContext';
+import Balance from 'types/Balance';
 import { useBridgeData } from './BridgeDataContext';
 
 const BridgeTxContext = React.createContext();
@@ -24,6 +25,8 @@ export const BridgeTxContextProvider = (props) => {
     senderAssetType,
     senderAssetCurrentBalance,
     senderAssetTargetBalance,
+    subtractManuallyTrackedKaruraBalance,
+    addManuallyTrackedKaruraBalance,
     originChain,
     originApi,
     originChainIsEvm,
@@ -33,7 +36,8 @@ export const BridgeTxContextProvider = (props) => {
     maxInput,
     minInput,
     senderNativeAssetCurrentBalance,
-    originFee
+    originFee,
+    destinationFee
   } = useBridgeData();
 
   /**
@@ -42,13 +46,19 @@ export const BridgeTxContextProvider = (props) => {
    */
 
   const userCanPayOriginFee = () => {
-    if (!senderNativeAssetCurrentBalance || !originFee || !senderAssetTargetBalance) {
+    if (!senderNativeAssetCurrentBalance || !senderAssetTargetBalance || !originChain || !originFee) {
       return null;
     } else if (senderNativeAssetCurrentBalance.assetType.assetId !== originFee.assetType.assetId) {
       return null;
-    } else {
-      return senderNativeAssetCurrentBalance.gte(originFee);
     }
+    const nativeAsset = originChain.nativeAsset;
+    let txNativeTokenCost = originFee;
+    if (senderAssetTargetBalance?.assetType.assetId === nativeAsset.assetId) {
+      txNativeTokenCost = txNativeTokenCost.add(senderAssetTargetBalance);
+    }
+    const reservedNativeBalance = new Balance(nativeAsset, nativeAsset.existentialDeposit);
+    const minBalanceToPayOriginFee = txNativeTokenCost.add(reservedNativeBalance);
+    return senderNativeAssetCurrentBalance.gte(minBalanceToPayOriginFee);
   };
 
   // Checks if the user has enough funds to pay for a transaction
@@ -104,6 +114,18 @@ export const BridgeTxContextProvider = (props) => {
    * Transactions
    */
 
+  // Currently, the polkawallet-bridge library has a bug preventing balance updates for Karura-based
+  // ERC20 assets, so their balances are must be manually tracked / set, requiring some custom logic
+  const adjustManuallyTrackedBalance = () => {
+    const senderAssetIsKaruraErc20 = senderAssetType.baseTicker === 'USDC'
+      || senderAssetType.baseTicker === 'DAI';
+    if (originChain.name === 'karura' && senderAssetIsKaruraErc20) {
+      subtractManuallyTrackedKaruraBalance(senderAssetTargetBalance);
+    } else if (destinationChain.name === 'karura' && senderAssetIsKaruraErc20) {
+      addManuallyTrackedKaruraBalance(senderAssetTargetBalance.sub(destinationFee));
+    }
+  };
+
   // Handles the result of a transaction
   const handleTxRes = async ({ status, events }) => {
     if (status.isInBlock) {
@@ -123,6 +145,7 @@ export const BridgeTxContextProvider = (props) => {
           // Don't show success if tx interrupted by disconnection
           if (txStatusRef.current?.isProcessing()) {
             try {
+              adjustManuallyTrackedBalance();
               const signedBlock = await originApi.rpc.chain.getBlock(status.asInBlock);
               const extrinsics = signedBlock.block.extrinsics;
               const extrinsic = extrinsics.find((extrinsic) =>

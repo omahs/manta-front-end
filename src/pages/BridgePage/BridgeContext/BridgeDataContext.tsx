@@ -1,5 +1,7 @@
 // @ts-nocheck
 import React, { useReducer, useContext, useEffect } from 'react';
+import { Wallet } from '@acala-network/sdk/wallet';
+import { EvmRpcProvider } from '@acala-network/eth-providers';
 import PropTypes from 'prop-types';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
@@ -11,6 +13,7 @@ import { useConfig } from 'contexts/configContext';
 import { firstValueFrom } from 'rxjs';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
+import AssetType from 'types/AssetType';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 
@@ -29,6 +32,7 @@ export const BridgeDataContextProvider = (props) => {
     senderAssetType,
     senderAssetTargetBalance,
     senderAssetCurrentBalance,
+    manuallyTrackedBalancesByAddress,
     originChainOptions,
     originChain,
     destinationChain,
@@ -90,6 +94,18 @@ export const BridgeDataContextProvider = (props) => {
     });
   };
 
+  const initKaruraApi = (api, chain, adapter) => {
+    const karuraConfigs = { evmProvider: new EvmRpcProvider(config.KARURA_SOCKET) };
+    const wallet = new Wallet(api, karuraConfigs);
+    wallet.isReady.then(() => {
+      adapter.init(api, wallet);
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+        chain
+      });
+    });
+  };
+
   useEffect(() => {
     const initBridgeApis = () => {
       if (!bridge) {
@@ -102,11 +118,15 @@ export const BridgeDataContextProvider = (props) => {
           handleApiConnect(chain);
           // only runs on initial connection
           api.isReady.then(() => {
-            adapter.setApi(api);
-            dispatch({
-              type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
-              chain
-            });
+            if (chain.name === 'karura') {
+              initKaruraApi(api, chain, adapter);
+            } else {
+              adapter.init(api);
+              dispatch({
+                type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+                chain
+              });
+            }
           });
         });
         api.on('error', () => handleApiDisconnect(chain));
@@ -175,19 +195,57 @@ export const BridgeDataContextProvider = (props) => {
     );
     dispatch({
       type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE,
-      senderNativeAssetCurrentBalance
+      senderNativeAssetCurrentBalance,
+      originAddress
     });
   };
 
+  // Currently, the polkawallet-bridge library has a bug preventing balance updates for Karura-based
+  // ERC20 assets, so their balances are must be manually tracked / set, requiring some custom logic
+  const senderBalanceIsManuallyTracked = () => {
+    return originChain.name === 'karura'
+      && (senderAssetType.baseTicker === 'USDC' || senderAssetType.baseTicker === 'DAI')
+      && manuallyTrackedBalancesByAddress[originAddress]
+      && manuallyTrackedBalancesByAddress[originAddress][senderAssetType.baseTicker];
+  };
+
   const fetchSenderBalance = async () => {
-    const senderAssetCurrentBalance = await fetchBalance(
-      senderAssetType,
-      originAddress
-    );
+    if (senderBalanceIsManuallyTracked()) {
+      const balance = manuallyTrackedBalancesByAddress[originAddress][senderAssetType.baseTicker];
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+        senderAssetCurrentBalance: balance,
+        originAddress
+      });
+    } else {
+      const senderAssetCurrentBalance = await fetchBalance(
+        senderAssetType,
+        originAddress
+      );
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+        senderAssetCurrentBalance,
+        originAddress
+      });
+    }
+  };
+
+  const setManuallyTrackedKaruraBalance = (balance) => {
     dispatch({
-      type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
-      senderAssetCurrentBalance
+      type: BRIDGE_ACTIONS.SET_MANUALLY_TRACKED_KARURA_BALANCE,
+      balance,
+      originAddress
     });
+  };
+
+  const addManuallyTrackedKaruraBalance = (addedBalance, chain) => {
+    const newBalance = manuallyTrackedBalancesByAddress[originAddress][senderAssetType.baseTicker].add(addedBalance);
+    setManuallyTrackedKaruraBalance(newBalance, chain);
+  };
+
+  const subtractManuallyTrackedKaruraBalance = (subtractedBalance, chain) => {
+    const newBalance = manuallyTrackedBalancesByAddress[originAddress][senderAssetType.baseTicker].sub(subtractedBalance);
+    setManuallyTrackedKaruraBalance(newBalance, chain);
   };
 
   useEffect(() => {
@@ -224,7 +282,21 @@ export const BridgeDataContextProvider = (props) => {
         new BN(inputConfig.estimateFee)
       );
     };
+    const getManuallyTrackedMaxInput = () => {
+      if (!senderAssetCurrentBalance) {
+        return null;
+      }
+      const ticker = senderAssetType.baseTicker;
+      const assetType = ticker === 'USDC' ? AssetType.UsdCoin(config) : AssetType.Dai(config);
+      const existentialDeposit = new Balance(assetType, assetType.existentialDeposit);
+      const max = senderAssetCurrentBalance.sub(existentialDeposit);
+      return Balance.max(max, new Balance(assetType, new BN(0)));
+    };
     const getMaxInput = (inputConfig) => {
+      const ticker = senderAssetType.baseTicker;
+      if ((ticker === 'USDC' || ticker === 'DAI') && originChain.name === 'karura') {
+        return getManuallyTrackedMaxInput();
+      }
       return Balance.fromBaseUnits(
         senderAssetType,
         Decimal.max(new Decimal(inputConfig.maxInput.toString()), new Decimal(0))
@@ -279,7 +351,7 @@ export const BridgeDataContextProvider = (props) => {
       // Workaround for Karura adapter internals not being ready on initial connection
       originChain.name === 'karura' && await originXcmAdapter.wallet.isReady;
       const inputConfigParams = getInputConfigParams();
-      const inputConfigObservable = originXcmAdapter.subscribeInputConfigs(inputConfigParams);
+      const inputConfigObservable = originXcmAdapter.subscribeInputConfig(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);
       handleInputConfigChange(inputConfig);
     };
@@ -301,10 +373,11 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   // Sets the balance the user intends to send
-  const setSenderAssetTargetBalance = (senderAssetTargetBalance) => {
+  const setSenderAssetTargetBalance = (senderAssetTargetBalance, chain) => {
     dispatch({
       type: BRIDGE_ACTIONS.SET_SENDER_ASSET_TARGET_BALANCE,
-      senderAssetTargetBalance
+      senderAssetTargetBalance,
+      chain
     });
   };
 
@@ -367,6 +440,8 @@ export const BridgeDataContextProvider = (props) => {
     originChainIsEvm,
     destinationChainIsEvm,
     setSenderAssetTargetBalance,
+    addManuallyTrackedKaruraBalance,
+    subtractManuallyTrackedKaruraBalance,
     setSelectedAssetType,
     setOriginChain,
     setDestinationChain,

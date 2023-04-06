@@ -34,6 +34,17 @@ const getNewSenderAssetTargetBalance = (newSenderAssetType, prevTargetBalance) =
   return targetBalance;
 };
 
+const cloneManuallyTrackedBalancesByAddress = (oldManuallyTrackedBalances, originAddress) => {
+  const manuallyTrackedBalancesByAddress = {};
+  for (const address in oldManuallyTrackedBalances) {
+    manuallyTrackedBalancesByAddress[address] = { ...oldManuallyTrackedBalances[address] };
+  }
+  if (!manuallyTrackedBalancesByAddress[originAddress]) {
+    manuallyTrackedBalancesByAddress[originAddress] = { 'DAI': null, 'USDC': null};
+  }
+  return manuallyTrackedBalancesByAddress;
+};
+
 export const buildInitState = (config) => {
   // user's prev selecting
   const prevBridgeOriginChainName = store.get(localStorageKeys.BridgeOriginChainName);
@@ -46,7 +57,7 @@ export const buildInitState = (config) => {
   } else {
     initOriginChain = initOriginChainOptions[0];
   }
-  
+
   const initDestinationChainOptions = getDestinationChainOptions(
     initOriginChain, initOriginChainOptions
   );
@@ -56,7 +67,6 @@ export const buildInitState = (config) => {
   } else {
     initDestinationChain = initDestinationChainOptions[0];
   }
-
   const initSenderAssetTypeOptions = getSenderAssetTypeOptions(
     config, initOriginChain, initDestinationChain
   );
@@ -74,6 +84,7 @@ export const buildInitState = (config) => {
     senderAssetTypeOptions: initSenderAssetTypeOptions,
     senderAssetCurrentBalance: null,
     senderAssetTargetBalance: null,
+    manuallyTrackedBalancesByAddress: {},
     maxInput: null,
     minInput: null,
     senderNativeAssetCurrentBalance: null,
@@ -108,6 +119,9 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_SENDER_ASSET_TARGET_BALANCE:
     return setSenderAssetTargetBalance(state, action);
+
+  case BRIDGE_ACTIONS.SET_MANUALLY_TRACKED_KARURA_BALANCE:
+    return setManuallyTrackedKaruraBalance(state, action);
 
   case BRIDGE_ACTIONS.SET_FEE_ESTIMATES:
     return setFeeEstimates(state, action);
@@ -160,7 +174,6 @@ const setIsApiDisconnected = (state, { chain, isApiDisconnected }) => {
   return state;
 };
 
-
 const setBridge = (state, { bridge }) => {
   return {
     ...state,
@@ -185,16 +198,47 @@ const setSelectedAssetType = (state, action) => {
   };
 };
 
-const setSenderAssetCurrentBalance = (state, action) => {
-  if (balanceUpdateIsStale(state?.senderAssetType, action.senderAssetCurrentBalance?.assetType)) {
-    return state;
+// Currently, the polkawallet-bridge library has a bug preventing balance updates for Karura-based
+// ERC20 assets, so their balances are must be manually tracked / set, requiring some custom logic
+const setKaruraErc20CurrentBalance = (state, { senderAssetCurrentBalance, originAddress }) => {
+  const { senderAssetType } = state;
+  const manuallyTrackedBalancesByAddress = cloneManuallyTrackedBalancesByAddress(
+    state.manuallyTrackedBalancesByAddress, originAddress
+  );
+  const manuallyTrackedBalance = manuallyTrackedBalancesByAddress[originAddress][senderAssetType.baseTicker];
+  if (!manuallyTrackedBalance) {
+    manuallyTrackedBalancesByAddress[originAddress][senderAssetType.baseTicker] = senderAssetCurrentBalance;
+    return {
+      ...state,
+      manuallyTrackedBalancesByAddress,
+      senderAssetCurrentBalance
+    };
+  } else {
+    return {
+      ...state,
+      senderAssetCurrentBalance: manuallyTrackedBalance
+    };
   }
-  return {
-    ...state,
-    senderAssetCurrentBalance: action.senderAssetCurrentBalance
-  };
 };
 
+const setSenderAssetCurrentBalance = (state, { senderAssetCurrentBalance, originAddress }) => {
+  if (balanceUpdateIsStale(state?.senderAssetType, senderAssetCurrentBalance?.assetType)) {
+    return state;
+  }
+
+  const { originChain, senderAssetType } = state;
+  if (
+    originChain.name === 'karura'
+    && (senderAssetType.baseTicker === 'USDC' || senderAssetType.baseTicker === 'DAI')
+  ) {
+    return setKaruraErc20CurrentBalance(state, { senderAssetCurrentBalance, originAddress });
+  }
+
+  return {
+    ...state,
+    senderAssetCurrentBalance
+  };
+};
 
 const setSenderNativeAssetCurrentBalance = (state, {senderNativeAssetCurrentBalance}) => {
   if (
@@ -213,6 +257,29 @@ const setSenderAssetTargetBalance = (state, action) => {
   return {
     ...state,
     senderAssetTargetBalance: action.senderAssetTargetBalance
+  };
+};
+
+const setManuallyTrackedKaruraBalance = (state, { balance, originAddress }) => {
+  const { senderAssetType, originChain } = state;
+  const manuallyTrackedBalancesByAddress = cloneManuallyTrackedBalancesByAddress(
+    state.manuallyTrackedBalancesByAddress, originAddress
+  );
+  manuallyTrackedBalancesByAddress[originAddress][balance.assetType.baseTicker] = balance;
+
+  let newSenderAssetCurrentBalance = state.senderAssetCurrentBalance;
+  if (
+    (originChain.name === 'karura')
+    && (senderAssetType.baseTicker === 'USDC' || senderAssetType.baseTicker === 'DAI')
+  ) {
+    const ticker = state.senderAssetType.baseTicker;
+    newSenderAssetCurrentBalance = manuallyTrackedBalancesByAddress[originAddress][ticker];
+  }
+
+  return {
+    ...state,
+    manuallyTrackedBalancesByAddress,
+    senderAssetCurrentBalance: newSenderAssetCurrentBalance
   };
 };
 
