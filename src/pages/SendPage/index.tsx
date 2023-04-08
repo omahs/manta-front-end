@@ -6,7 +6,6 @@ import SendForm from './SendForm';
 import { PrivateTxHistoryContextProvider } from './privateTxHistoryContext';
 
 const SendPage = () => {
-
   return (
     <SendContextProvider>
       <PrivateTxHistoryContextProvider>
