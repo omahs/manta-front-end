@@ -3,7 +3,6 @@ import Icon from 'components/Icon';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { getSubstrateWallets } from 'utils';
-import getWalletDisplayName from 'utils/display/getWalletDisplayName';
 
 const WalletNotInstalledBlock = ({
   walletName,
@@ -164,7 +163,7 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     return (
       <ConnectWalletBlock
         key={wallet.extensionName}
-        walletName={getWalletDisplayName(wallet.extensionName)}
+        walletName={wallet.title}
         isWalletInstalled={wallet.installed}
         walletInstallLink={wallet.installUrl}
         walletLogo={wallet.logo}

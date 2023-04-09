@@ -4833,11 +4833,6 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@talismn/connect-wallets@^1.2.1":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@talismn/connect-wallets/-/connect-wallets-1.2.3.tgz#4aa91f2c554d692e9f49472f74dcc96fca319df5"
-  integrity sha512-6hLYeDnMjrlsNLF6a9e7ngxKMkKW3uTC2IbBjtTPq9fxA1VvApmxR8egboPzU7sgFQEuUFP36KN1hFAtfRIVhw==
-
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -11902,6 +11897,11 @@ makeerror@1.0.12:
   integrity sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==
   dependencies:
     tmpl "1.0.5"
+
+manta-extension-connect@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/manta-extension-connect/-/manta-extension-connect-1.2.3.tgz#c6662ddc3a2ac34d104cd609e64d0bbe8b0cdc42"
+  integrity sha512-YbxPSkGxImq5SR+morZHo12sVlZWRJeOzibyBXbstVrQITe0Um3Hesi+dNT24yd/+pfh14U/QPJssirAZUydJA==
 
 manta-polkawallet-bridge@0.1.0:
   version "0.1.0"

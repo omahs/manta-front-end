@@ -4,6 +4,7 @@ const WALLET_NAME = {
   SUBWALLET: 'subwallet-js',
   POLKADOT: 'polkadot-js',
   METAMASK: 'metamask',
+  MANTAWALLET: 'manta-wallet-js',
 };
 
 export default WALLET_NAME;
