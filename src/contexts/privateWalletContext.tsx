@@ -1,25 +1,25 @@
 // @ts-nocheck
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-  useRef
-} from 'react';
-import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
+import { Environment, MantaPrivateWallet, MantaUtilities } from 'manta-staging.js';
+import PropTypes from 'prop-types';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import Balance from 'types/Balance';
-import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
-import { MantaPrivateWallet, MantaUtilities, Environment } from 'manta.js';
+import Version from 'types/Version';
 import {
   removePendingTxHistoryEvent,
 } from 'utils/persistence/privateTransactionHistory';
+import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import { useConfig } from './configContext';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
-import { useConfig } from './configContext';
 
 const PrivateWalletContext = createContext();
 

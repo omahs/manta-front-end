@@ -11918,10 +11918,10 @@ manta-polkawallet-bridge@0.1.0:
     axios "^0.27.2"
     lodash "^4.17.20"
 
-manta.js@3.0.0:
+manta-staging.js@^3.0.0:
   version "3.0.0"
-  resolved "https://registry.yarnpkg.com/manta.js/-/manta.js-3.0.0.tgz#14e593695c90e3e3496f64e245b71208e4c54a52"
-  integrity sha512-qKScSi43nA+urxbNFA2V0Tnt+KjCFTfgH4jIjmyN5EKiDHQrBObz1FeXS1+NelT3KIBePfTU7+CoESjMYXHAhw==
+  resolved "https://registry.npmmirror.com/manta-staging.js/-/manta-staging.js-3.0.0.tgz#c0ddab62a783a965d8b2bf583165b2aec8ce63fb"
+  integrity sha512-3ToNqnfvDOI/OVrPzj1vjc6D3OLpvLYsXY01PoJ1+/BzDzV2a2YLvRmtInpFMBY5K/xV7ELyrLdQm5Tbbviwuw==
   dependencies:
     "@polkadot/api" "6.8.1"
     "@polkadot/extension-dapp" "0.39.3"
