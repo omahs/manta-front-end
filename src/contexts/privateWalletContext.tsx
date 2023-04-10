@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { BN } from 'bn.js';
-import { Environment, MantaPrivateWallet, MantaUtilities } from 'manta-staging.js';
+import { Environment, MantaPrivateWallet, MantaUtilities } from 'manta.js';
 import PropTypes from 'prop-types';
 import {
   createContext,
