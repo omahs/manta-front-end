@@ -1,19 +1,19 @@
 // @ts-nocheck
-import React from 'react';
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
 import { useConfig } from 'contexts/configContext';
-import { useExternalAccount } from 'contexts/externalAccountContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
-import { useTxStatus } from 'contexts/txStatusContext';
-import Balance from 'types/Balance';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import { usePublicAccount } from 'contexts/publicAccountContext';
+import { useGlobal } from 'contexts/globalContexts';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
+import { useTxStatus } from 'contexts/txStatusContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import Balance from 'types/Balance';
+import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
+import { useSend } from './SendContext';
 import useReceiverBalanceText from './SendToForm/useReceiverBalanceText';
 import useSenderBalanceText from './SendToForm/useSenderBalanceText';
-import { useSend } from './SendContext';
 
 const InnerSendButton = ({ senderLoading, receiverLoading }) => {
   const { send, isToPrivate, isToPublic, isPublicTransfer, isPrivateTransfer } =
@@ -72,9 +72,12 @@ const ValidationSendButton = ({ showModal }) => {
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance
   } = useSend();
-  const { signerIsConnected, signerVersion } = usePrivateWallet();
-  const { externalAccount } = useExternalAccount();
-  const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
+  const { usingMantaWallet } = useGlobal();
+  const { signerIsConnected, signerVersion } =
+    usePrivateWallet(usingMantaWallet);
+  const { externalAccount } = usePublicAccount();
+  const apiIsDisconnected =
+    apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
   const { shouldShowLoader: senderLoading } = useSenderBalanceText();
 
@@ -87,7 +90,7 @@ const ValidationSendButton = ({ showModal }) => {
     shouldShowWalletSignerMissingValidation = true;
   } else if (!signerIsConnected && !isPublicTransfer()) {
     shouldShowSignerMissingValidation = true;
-  } else if (signerIsOutOfDate(config, signerVersion)) {
+  } else if (versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)) {
     validationMsg = 'Signer out of date';
   } else if (!externalAccount) {
     shouldShowWalletMissingValidation = true;
@@ -134,6 +137,19 @@ const ValidationSendButton = ({ showModal }) => {
       </div>
     );
   };
+
+  if (usingMantaWallet)
+    return (
+      <>
+        {validationMsg && <ValidationText validationMsg={validationMsg} />}
+        {!validationMsg && (
+          <InnerSendButton
+            senderLoading={senderLoading}
+            receiverLoading={receiverLoading}
+          />
+        )}
+      </>
+    );
 
   return (
     <>

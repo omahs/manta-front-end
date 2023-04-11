@@ -1,15 +1,13 @@
 //@ts-nocheck
-import React, { useEffect, useState, createContext, useContext } from 'react';
 import BN from 'bn.js';
-import Decimal from 'decimal.js';
 import { useUsdPrices } from 'contexts/usdPricesContext';
-import { useSend } from 'pages/SendPage/SendContext';
-import { useTxStatus } from 'contexts/txStatusContext';
+import Decimal from 'decimal.js';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
+import PropTypes from 'prop-types';
+import { createContext, useContext, useEffect, useState } from 'react';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Usd from 'types/Usd';
-import PropTypes from 'prop-types';
 import { useConfig } from './configContext';
 
 const ZkAccountBalancesContext = createContext();
@@ -23,15 +21,8 @@ export type ZkAccountBalance = {
 
 export const ZkAccountBalancesContextProvider = (props) => {
   const config = useConfig();
-  const { txStatus } = useTxStatus();
-  const { privateAddress, getSpendableBalance, isReady, balancesAreStale } =
+  const { privateAddress, getSpendableBalance, isReady } =
     usePrivateWallet();
-  const {
-    senderAssetCurrentBalance,
-    senderAssetType,
-    receiverAssetType,
-    receiverCurrentBalance
-  } = useSend();
   const { usdPrices } = useUsdPrices();
 
   const assets = AssetType.AllCurrencies(config, true);
@@ -46,7 +37,9 @@ export const ZkAccountBalancesContextProvider = (props) => {
       if (assetUsdValue) {
         usdBalance = privateBalance.toUsd(assetUsdValue);
       }
-      const usdBalanceString = config.IS_TESTNET ? '$0.00' : usdBalance?.toString() || '';
+      const usdBalanceString = config.IS_TESTNET
+        ? '$0.00'
+        : usdBalance?.toString() || '';
       return {
         assetType,
         usdBalance,

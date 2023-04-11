@@ -1,4 +1,5 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import React from 'react';
 import Icon from 'components/Icon';
 import { useKeyring } from 'contexts/keyringContext';
@@ -13,7 +14,7 @@ const WalletNotInstalledBlock = ({
   walletInstallLink
 }) => {
   return (
-    <div className="mt-4 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -40,7 +41,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
   return (
     <button
       onClick={connectHandler}
-      className="relative mt-4 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
+      className="relative mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -70,7 +71,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
 
 const WalletEnabledBlock = ({ walletName, walletLogo }) => {
   return (
-    <div className="mt-4 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -148,9 +149,10 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
 };
 
 const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
-  // TODO
-  // get manta wallet meta data from logical aspect
-  // { installed, installUrl, isWalletEnabled }
+  const { connectWallet, connectWalletExtension } = useKeyring();
+  const substrateWallets = getSubstrateWallets();
+  const mantaWallet = substrateWallets.find(wallet => wallet.extensionName === WALLET_NAME.MANTA);
+  const isWalletEnabled = mantaWallet.extension ? true : false;
 
   const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
@@ -169,17 +171,17 @@ const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
         You can explore all the products of Manta with it.
       </div>
       <ConnectWalletBlock
-        key={'manta'}
-        walletName={'Manta Wallet'}
-        isWalletInstalled={false}
-        walletInstallLink={'dd'}
-        walletLogo={'manta'}
-        isWalletEnabled={false}
-        connectHandler={handleConnectWallet('mantawallet')}
+        key={mantaWallet.extensionName}
+        walletName={getWalletDisplayName(mantaWallet.extensionName)}
+        isWalletInstalled={mantaWallet.installed}
+        walletInstallLink={mantaWallet.installUrl}
+        walletLogo={mantaWallet.logo}
+        isWalletEnabled={isWalletEnabled}
+        connectHandler={handleConnectWallet(mantaWallet.extensionName)}
       />
       <div className="mt-4 text-sm">
         <div>Manta Signer user? </div>
-        <a className="flex items-center text-white hover:text-white" 
+        <a className="flex items-center text-white hover:text-white"
           href="https://forum.manta.network/" // TODO: replace the url
           target="_blank"
           rel="noopener noreferrer">
@@ -193,7 +195,7 @@ const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
 
 export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
-  const substrateWallets = getSubstrateWallets();
+  const substrateWallets = getSubstrateWallets().filter(wallet => wallet.extensionName !== WALLET_NAME.MANTA);
 
   const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
@@ -228,7 +230,7 @@ const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
     return (
       <div className="w-108">
         <h1 className="text-xl text-white">Connect Wallet</h1>
-        <MantaConnectWalletBlock 
+        <MantaConnectWalletBlock
           setIsMetamaskSelected={setIsMetamaskSelected}
           hideModal={hideModal}
         />

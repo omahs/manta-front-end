@@ -78,7 +78,7 @@ const SendForm = () => {
             <span>{ toggleWalletStateText }</span>
             <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
           </button>
-          <a className="mt-6 flex items-center mb-6 text-white hover:text-white" 
+          <a className="mt-6 flex items-center mb-6 text-white hover:text-white"
             href="https://forum.manta.network/" // TODO: replace the url
             target="_blank"
             rel="noopener noreferrer">
