@@ -15,7 +15,8 @@ const SingleAccountDisplay = ({
   accountAddress,
   isAccountSelected,
   isMetamaskSelected,
-  onClickAccountHandler
+  onClickAccountHandler,
+  zkAddress
 }) => {
   const succinctAddress = getAbbreviatedName(accountAddress, 5, 5);
 
@@ -39,6 +40,45 @@ const SingleAccountDisplay = ({
         className="px-1"
       />
     );
+  
+  if (zkAddress) {
+    const succinctZkAddress = getAbbreviatedName(zkAddress, 5, 5);
+    const AddressDisplay = ({ addressType, className }: { addressType: 'Public' | 'Private', className: string }) => (
+      <div
+        className={classNames(
+          'bg-white bg-opacity-5 cursor-pointer flex items-center gap-5 justify-between border border-white-light rounded-lg px-3 text-green w-68 h-16',
+          className,
+          { disabled: disabled }
+        )}>
+        <div className="flex flex-col">
+          <div className="text-base">{addressType} Address</div>
+          <div className="flex flex-row items-center gap-2 text-white text-opacity-60 text-sm">
+            {addressType === 'Private' ? succinctZkAddress : succinctAddress}
+            <CopyPasteIcon
+              iconClassName="w-5 h-5"
+              textToCopy={addressType === 'Private' ? zkAddress : accountAddress}
+            />
+          </div>
+        </div>
+        <div className="relative right-2">
+          <Icon name="greenCheck" />
+        </div>
+      </div>
+    );
+
+    return (
+      <div key={accountAddress}>
+        <div className="flex gap-1 items-center mb-4">
+          <AccountIcon />
+          <div className="text-base">{succinctAccountName}</div>
+        </div>
+
+        <AddressDisplay addressType="Private" className="mb-5" />
+        <AddressDisplay addressType="Public" />
+        
+      </div>
+    );
+  }
 
   return (
     <div
@@ -100,6 +140,7 @@ const AccountSelectDropdown = ({ isMetamaskSelected }) => {
           isAccountSelected={account.address === externalAccount.address}
           isMetamaskSelected={isMetamaskEnabled}
           onClickAccountHandler={onClickAccountHandler(account)}
+          zkAddress={account.meta.zkAddress}
         />
       ))}
     </div>
