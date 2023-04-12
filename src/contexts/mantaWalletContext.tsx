@@ -134,11 +134,12 @@ export const MantaWalletContextProvider = ({
   };
 
   useEffect(() => {
+    // TODO other browsers sync?
     const interval = setInterval(async () => {
       if (isReady) {
         sync();
       }
-    }, 10000);
+    }, 60000);
     return () => clearInterval(interval);
   }, [isReady]);
 

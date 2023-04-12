@@ -25,6 +25,7 @@ import {
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
 import isObjectEmpty from 'utils/validation/isEmpty';
+import { useGlobal } from './globalContexts';
 
 type KeyringContextValue = {
   keyring: Keyring;
@@ -58,9 +59,11 @@ export const KeyringContextProvider = ({
     []
   );
   const [selectedWallet, setSelectedWallet] = useState<Wallet>({} as Wallet);
+  const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
   const [authedWalletList, setAuthedWalletList] = useState<string[]>(
     getAuthedWalletListStorage()
   );
+  const { usingMantaWallet } = useGlobal();
   const keyringIsBusy = useRef(false);
 
   const addWalletName = (walletName: string, walletNameList: string[]) => {
@@ -69,7 +72,7 @@ export const KeyringContextProvider = ({
       copyWalletNameList.push(walletName);
       return copyWalletNameList;
     }
-    return [];
+    return copyWalletNameList;
   };
 
   const connectWalletExtension = useCallback(
@@ -129,10 +132,14 @@ export const KeyringContextProvider = ({
   };
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      !isObjectEmpty(selectedWallet) && refreshWalletAccounts(selectedWallet);
-    }, 1000);
-    return () => interval && clearInterval(interval);
+    const hasSelectedWallet = !isObjectEmpty(selectedWallet);
+    if (!usingMantaWallet) {
+      // Manta Signer
+      const interval = setInterval(async () => {
+        hasSelectedWallet && refreshWalletAccounts(selectedWallet);
+      }, 1000);
+      return () => interval && clearInterval(interval);
+    }
   }, [selectedWallet]);
 
   const initKeyring = useCallback(async () => {
@@ -171,7 +178,7 @@ export const KeyringContextProvider = ({
 
   const connectWallet = useCallback(
     async (extensionName: string, saveToStorage = true) => {
-      if (!isKeyringInit) {
+      if (!isKeyringInit || !extensionName) {
         return;
       }
       const substrateWallets = getSubstrateWallets();
@@ -213,10 +220,21 @@ export const KeyringContextProvider = ({
       return;
     }
 
-    setTimeout(() => {
-      connectWallet(getLastAccessedWallet()?.extensionName);
-    }, 200);
-  }, [connectWallet, isKeyringInit]);
+    const authedWalletList = getAuthedWalletListStorage() || [];
+    if (authedWalletList.length !== 0) {
+      // init keyring with authorized wallet list
+      Promise.all(
+        authedWalletList.map(async (walletName: string) => {
+          await connectWallet(walletName, false);
+        })
+      ).then(() => {
+        // TODO : not work, set default wallet
+        if (lastAccessExtensionName) {
+          connectWallet(lastAccessExtensionName);
+        }
+      });
+    }
+  }, [isKeyringInit, lastAccessExtensionName]);
 
   const value = useMemo(
     () => ({

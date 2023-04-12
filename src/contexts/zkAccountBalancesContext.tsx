@@ -1,14 +1,15 @@
 //@ts-nocheck
 import BN from 'bn.js';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useUsdPrices } from 'contexts/usdPricesContext';
 import Decimal from 'decimal.js';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import PropTypes from 'prop-types';
 import { createContext, useContext, useEffect, useState } from 'react';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Usd from 'types/Usd';
 import { useConfig } from './configContext';
+import { useGlobal } from './globalContexts';
 
 const ZkAccountBalancesContext = createContext();
 
@@ -21,13 +22,13 @@ export type ZkAccountBalance = {
 
 export const ZkAccountBalancesContextProvider = (props) => {
   const config = useConfig();
-  const { privateAddress, getSpendableBalance, isReady } =
-    usePrivateWallet();
+  const { privateAddress, getSpendableBalance, isReady } = usePrivateWallet();
   const { usdPrices } = useUsdPrices();
 
   const assets = AssetType.AllCurrencies(config, true);
   const [totalBalanceString, setTotalBalanceString] = useState('$0.00');
   const [balances, setBalances] = useState([]);
+  const { usingMantaWallet } = useGlobal();
 
   const fetchPrivateBalance = async (assetType) => {
     let usdBalance = null;
@@ -75,12 +76,15 @@ export const ZkAccountBalancesContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (isReady && privateAddress) {
-        fetchPrivateBalances();
-      }
-    }, 1000);
-    return () => clearInterval(interval);
+    // Manta Signer
+    if (!usingMantaWallet) {
+      const interval = setInterval(() => {
+        if (isReady && privateAddress) {
+          fetchPrivateBalances();
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
   }, [isReady, privateAddress]);
 
   useEffect(() => {
