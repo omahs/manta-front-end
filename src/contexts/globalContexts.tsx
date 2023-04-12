@@ -9,7 +9,7 @@ import { ThemeProvider } from './themeContext';
 const GlobalContext = createContext();
 
 const GlobalContextProvider = ({children}) => {
-  const [usingMantaWallet, _setUsingMantaWallet] = useState(store.get(localStorageKeys.UsingMantaWallet) || true);
+  const [usingMantaWallet, _setUsingMantaWallet] = useState(store.get(localStorageKeys.UsingMantaWallet) === false ? false : true);
 
   const setUsingMantaWallet = useCallback((state) => {
     _setUsingMantaWallet(state);
