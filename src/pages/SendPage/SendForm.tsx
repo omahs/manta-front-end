@@ -1,4 +1,5 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import React, { useEffect } from 'react';
 import { useConfig } from 'contexts/configContext';
 import DowntimeModal from 'components/Modal/downtimeModal';
@@ -9,6 +10,12 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
 import { useGlobal } from 'contexts/globalContexts';
+import { getSubstrateWallets } from 'utils';
+import {
+  getLastAccessedWallet,
+  setLastAccessedWallet
+} from 'utils/persistence/walletStorage';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
 import { useSend } from './SendContext';
@@ -16,7 +23,8 @@ import { useSend } from './SendContext';
 const SendForm = () => {
   const config = useConfig();
   const { usingMantaWallet, setUsingMantaWallet } = useGlobal();
-  const { keyring } = useKeyring();
+  const { keyring, refreshWalletAccounts,getLatestAccountAndPairs, keyringIsBusy } = useKeyring();
+  const { changeExternalAccountOptions } = usePublicAccount();
   const {
     swapSenderAndReceiverArePrivate,
     isPrivateTransfer,
@@ -32,7 +40,27 @@ const SendForm = () => {
     }
   }, [keyring]);
 
-  const toggleUsingMantaWalletState = () => {
+  const toggleUsingMantaWalletState = async () => {
+    const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
+    if (usingMantaWallet && lastAccessExtensionName === WALLET_NAME.MANTA) {
+      const substrateWallets = getSubstrateWallets();
+      const enabledExtentions = substrateWallets.filter((wallet) => (wallet.extension && wallet.extensionName !== WALLET_NAME.MANTA));
+      if (enabledExtentions.length > 0) {
+        // switch to another wallet as the default wallet
+        if (keyringIsBusy.current === false && !disabled) {
+          const defaultWallet = enabledExtentions[0];
+          await refreshWalletAccounts(defaultWallet);
+          const { account, pairs } = getLatestAccountAndPairs();
+          changeExternalAccountOptions(account, pairs);
+          setLastAccessedWallet(defaultWallet);
+        }
+      } else {
+        // reset state if no wallet exist
+        changeExternalAccountOptions(null, []);
+        setLastAccessedWallet(null);
+      }
+    }
+
     setUsingMantaWallet(!usingMantaWallet);
   };
 
