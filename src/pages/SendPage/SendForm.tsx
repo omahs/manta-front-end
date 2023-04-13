@@ -41,6 +41,9 @@ const SendForm = () => {
   }, [keyring]);
 
   const toggleUsingMantaWalletState = async () => {
+    if (disabled) {
+      return;
+    }
     const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
     if (usingMantaWallet && lastAccessExtensionName === WALLET_NAME.MANTA) {
       const substrateWallets = getSubstrateWallets();
@@ -102,7 +105,11 @@ const SendForm = () => {
           <SendToForm />
         </div>
         <div className="flex flex-col items-center">
-          <button onClick={toggleUsingMantaWalletState} className="px-6 rounded-3xl border border-solid border-white h-9 flex items-center cursor-hover text-white text-sm cursor-pointer">
+          <button onClick={toggleUsingMantaWalletState} className={classNames(
+            'px-6 rounded-3xl border border-solid border-white h-9 flex',
+            'items-center cursor-hover text-white text-sm cursor-pointer',
+            {'disabled': disabled }
+          )}>
             <span>{ toggleWalletStateText }</span>
             <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
           </button>
