@@ -47,6 +47,16 @@ const NavLinks = () => {
         Bridge
       </NavLink>
       {!isDolphinPage && (
+        <a
+          href="https://npo.manta.network"
+          className="py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold"
+          target="_blank"
+          rel="noreferrer">
+          NPO
+        </a>
+      )}
+
+      {!isDolphinPage && (
         <NavLink
           to={`${networkUrlParam}${NAVLINKPATH.Stake}`}
           className={classNames(
@@ -67,7 +77,7 @@ const NavLinks = () => {
       </a>
       <a
         href={`https://${NETWORK_NAME.toLowerCase()}.subscan.io/`}
-        className="py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold"
+        className="py-3 w-2/5  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold"
         target="_blank"
         rel="noreferrer">
         Block Explorer

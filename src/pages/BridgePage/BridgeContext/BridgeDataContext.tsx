@@ -102,7 +102,7 @@ export const BridgeDataContextProvider = (props) => {
           handleApiConnect(chain);
           // only runs on initial connection
           api.isReady.then(() => {
-            adapter.setApi(api);
+            adapter.init(api);
             dispatch({
               type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
               chain
@@ -279,7 +279,7 @@ export const BridgeDataContextProvider = (props) => {
       // Workaround for Karura adapter internals not being ready on initial connection
       originChain.name === 'karura' && await originXcmAdapter.wallet.isReady;
       const inputConfigParams = getInputConfigParams();
-      const inputConfigObservable = originXcmAdapter.subscribeInputConfigs(inputConfigParams);
+      const inputConfigObservable = originXcmAdapter.subscribeInputConfig(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);
       handleInputConfigChange(inputConfig);
     };

@@ -6,7 +6,6 @@ import { BridgeTxContextProvider } from './BridgeContext/BridgeTxContext';
 import BridgeForm from './BridgeForm';
 
 const BridgePage = () => {
-
   return (
     <BridgeDataContextProvider>
       <BridgeTxContextProvider>
