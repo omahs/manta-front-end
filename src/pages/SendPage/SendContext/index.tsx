@@ -500,6 +500,7 @@ export const SendContextProvider = (props) => {
       privateWallet.setBalancesAreStale(true);
       senderAssetType.isPrivate && setSenderAssetCurrentBalance(null, senderAssetType);
       receiverAssetType.isPrivate && setReceiverCurrentBalance(null, receiverAssetType);
+      privateWallet.sync();
     } catch (error) {
       console.error(error);
     }
@@ -507,8 +508,9 @@ export const SendContextProvider = (props) => {
 
   // Attempts to build and send a transaction
   const send = async () => {
-    if (usingMantaWallet) privateWalletIsReady && (await privateWallet.sync()); // Manta Wallet Sync
-
+    if (usingMantaWallet && privateWalletIsReady) {
+      await privateWallet.sync();
+    }
     if (!isValidToSend()) {
       return;
     }
@@ -522,8 +524,6 @@ export const SendContextProvider = (props) => {
     } else if (isToPublic()) {
       await toPublic(state);
     }
-
-    if (usingMantaWallet) privateWalletIsReady && (await privateWallet.sync()); // Manta Wallet Sync
   };
 
   // Attempts to build and send an internal transaction minting public tokens to private tokens

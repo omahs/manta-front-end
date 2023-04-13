@@ -77,7 +77,6 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     const getPrivateWallet = () => {
-      console.log('getPrivateWallet', selectedWallet);
       if (selectedWallet?.extension?.privateWallet) {
         setPrivateWallet(selectedWallet.extension.privateWallet);
       }
