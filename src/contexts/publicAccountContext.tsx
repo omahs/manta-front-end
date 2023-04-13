@@ -8,6 +8,7 @@ import {
   getLastAccessedExternalAccount,
   setLastAccessedExternalAccountAddress
 } from 'utils/persistence/externalAccountStorage';
+import Version from 'types/Version';
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
 
@@ -22,6 +23,8 @@ export const PublicAccountContextProvider = (props) => {
   const [extensionSigner, setExtensionSigner] = useState(null);
   const [externalAccountOptions, setExternalAccountOptions] = useState([]);
   const [isInitialAccountSet, setIsInitialAccountSet] = useState(false);
+  const [extensionVersion, setExtensionVersion] = useState(null);
+  const [extensionName, setExtensionName] = useState(null);
 
   const setApiSigner = (api) => {
     api?.setSigner(null);
@@ -38,6 +41,8 @@ export const PublicAccountContextProvider = (props) => {
       const selectedWallet = substrateExtensions.find(
         (wallet) => wallet.extensionName === source
       );
+      setExtensionName(selectedWallet.extensionName);
+      setExtensionVersion(new Version(selectedWallet._extension.version));
       setExtensionSigner(selectedWallet._signer);
       api.setSigner(selectedWallet._signer);
     }
@@ -164,7 +169,9 @@ export const PublicAccountContextProvider = (props) => {
     externalAccountSigner,
     externalAccountOptions: externalAccountOptions,
     changeExternalAccount,
-    changeExternalAccountOptions
+    changeExternalAccountOptions,
+    extensionVersion,
+    extensionName
   };
 
   return (

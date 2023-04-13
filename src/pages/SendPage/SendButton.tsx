@@ -1,4 +1,5 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
@@ -79,7 +80,7 @@ const ValidationSendButton = ({ showModal }) => {
     privateWallet,
     hasFinishedInitialBlockDownload
   } = usePrivateWallet(usingMantaWallet);
-  const { externalAccount } = usePublicAccount();
+  const { externalAccount, extensionVersion, extensionName } = usePublicAccount();
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
@@ -94,6 +95,16 @@ const ValidationSendButton = ({ showModal }) => {
     shouldShowWalletSignerMissingValidation = true;
   } else if (!signerIsConnected && !isPublicTransfer() && !usingMantaWallet) {
     shouldShowSignerMissingValidation = true;
+  } else if (
+    !usingMantaWallet && versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)
+  ) {
+    validationMsg = 'Signer out of date';
+  } else if (
+    usingMantaWallet &&
+    extensionName === WALLET_NAME.MANTA
+    && versionIsOutOfDate(config.MIN_REQUIRED_WALLET_VERSION, extensionVersion)
+  ) {
+    validationMsg = 'Manta Wallet out of date';
   } else if (versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)) {
     validationMsg = 'Signer out of date';
   } else if (!externalAccount || (usingMantaWallet && !privateWallet)) {
