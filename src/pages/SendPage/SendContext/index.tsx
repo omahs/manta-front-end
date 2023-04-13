@@ -508,13 +508,19 @@ export const SendContextProvider = (props) => {
 
   // Attempts to build and send a transaction
   const send = async () => {
-    if (usingMantaWallet && privateWalletIsReady) {
-      await privateWallet.sync();
-    }
     if (!isValidToSend()) {
       return;
     }
     setTxStatus(TxStatus.processing());
+
+    if (usingMantaWallet) {
+      await privateWallet.sync();
+      if (!isValidToSend()) {
+        setTxStatus(TxStatus.failed());
+        return;
+      }
+    }
+
     if (isPrivateTransfer()) {
       await privateTransfer(state);
     } else if (isPublicTransfer()) {
