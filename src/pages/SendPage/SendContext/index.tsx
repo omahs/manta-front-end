@@ -1,7 +1,7 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import { bnToU8a } from '@polkadot/util';
 import BN from 'bn.js';
-import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
@@ -154,22 +154,25 @@ export const SendContextProvider = (props) => {
 
   // Dispatches the receiver's balance in local state if the user would be sending a payment internally
   // i.e. if the user is sending a `To Private` or `To Public` transaction
-  const setReceiverCurrentBalance = (receiverCurrentBalance) => {
+  const setReceiverCurrentBalance = (receiverCurrentBalance, receiverAssetType = null) => {
     dispatch({
       type: SEND_ACTIONS.SET_RECEIVER_CURRENT_BALANCE,
-      receiverCurrentBalance
+      receiverCurrentBalance,
+      receiverAssetType
     });
   };
 
   // Dispatches the user's available balance to local state for the currently selected account and asset
   const setSenderAssetCurrentBalance = (
     senderAssetCurrentBalance,
-    senderPublicAddress
+    senderPublicAddress,
+    senderAssetType
   ) => {
     dispatch({
       type: SEND_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
       senderAssetCurrentBalance,
-      senderPublicAddress
+      senderPublicAddress,
+      senderAssetType
     });
   };
 
@@ -235,7 +238,7 @@ export const SendContextProvider = (props) => {
         senderPublicAccount?.address,
         senderAssetType
       );
-      setSenderAssetCurrentBalance(publicBalance, senderPublicAccount?.address);
+      setSenderAssetCurrentBalance(publicBalance, senderPublicAccount?.address, senderAssetType);
       // private balances cannot be queries while a transaction is processing
       // because web assambly wallet panics if asked to do two things at a time
     } else if (senderAssetType.isPrivate && !txStatus?.isProcessing()) {
@@ -244,7 +247,8 @@ export const SendContextProvider = (props) => {
       );
       setSenderAssetCurrentBalance(
         privateBalance,
-        senderPublicAccount?.address
+        senderPublicAccount?.address,
+        senderAssetType,
       );
     }
   };
@@ -254,20 +258,20 @@ export const SendContextProvider = (props) => {
   const fetchReceiverBalance = async () => {
     // Send pay doesn't display receiver balances if the receiver is external
     if (isPrivateTransfer()) {
-      setReceiverCurrentBalance(null);
+      setReceiverCurrentBalance(null, receiverAssetType);
       // private balances cannot be queried while a transaction is processing
       // because the private web assambly wallet panics if asked to do two things at a time
     } else if (isToPrivate() && !txStatus?.isProcessing()) {
       const privateBalance = await privateWallet.getSpendableBalance(
         receiverAssetType
       );
-      setReceiverCurrentBalance(privateBalance);
+      setReceiverCurrentBalance(privateBalance, receiverAssetType);
     } else if (receiverIsPublic()) {
       const publicBalance = await fetchPublicBalance(
         receiverAddress,
         receiverAssetType
       );
-      setReceiverCurrentBalance(publicBalance);
+      setReceiverCurrentBalance(publicBalance, receiverAssetType);
     }
   };
 
@@ -494,8 +498,8 @@ export const SendContextProvider = (props) => {
       // Correct private balances will only appear after a sync has completed
       // Until then, do not display stale balances
       privateWallet.setBalancesAreStale(true);
-      senderAssetType.isPrivate && setSenderAssetCurrentBalance(null);
-      receiverAssetType.isPrivate && setReceiverCurrentBalance(null);
+      senderAssetType.isPrivate && setSenderAssetCurrentBalance(null, senderAssetType);
+      receiverAssetType.isPrivate && setReceiverCurrentBalance(null, receiverAssetType);
     } catch (error) {
       console.error(error);
     }

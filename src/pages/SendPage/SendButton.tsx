@@ -73,8 +73,12 @@ const ValidationSendButton = ({ showModal }) => {
     senderNativeTokenPublicBalance
   } = useSend();
   const { usingMantaWallet } = useGlobal();
-  const { signerIsConnected, signerVersion } =
-    usePrivateWallet(usingMantaWallet);
+  const {
+    signerIsConnected,
+    signerVersion,
+    privateWallet,
+    hasFinishedInitialBlockDownload
+  } = usePrivateWallet(usingMantaWallet);
   const { externalAccount } = usePublicAccount();
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
@@ -86,14 +90,16 @@ const ValidationSendButton = ({ showModal }) => {
   let shouldShowSignerMissingValidation = false;
   let shouldShowWalletSignerMissingValidation = false;
 
-  if (!signerIsConnected && !isPublicTransfer() && !externalAccount) {
+  if (!signerIsConnected && !isPublicTransfer() && !externalAccount && !usingMantaWallet) {
     shouldShowWalletSignerMissingValidation = true;
-  } else if (!signerIsConnected && !isPublicTransfer()) {
+  } else if (!signerIsConnected && !isPublicTransfer() && !usingMantaWallet) {
     shouldShowSignerMissingValidation = true;
   } else if (versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)) {
     validationMsg = 'Signer out of date';
-  } else if (!externalAccount) {
+  } else if (!externalAccount || (usingMantaWallet && !privateWallet)) {
     shouldShowWalletMissingValidation = true;
+  } else if (usingMantaWallet && hasFinishedInitialBlockDownload === false) {
+    validationMsg = 'Manta Wallet sync required';
   } else if (apiIsDisconnected) {
     validationMsg = 'Connecting to network';
   } else if (!senderAssetTargetBalance) {
@@ -127,6 +133,7 @@ const ValidationSendButton = ({ showModal }) => {
     )}`;
   }
 
+
   const ValidationText = ({ validationMsg }) => {
     return (
       <div
@@ -137,19 +144,6 @@ const ValidationSendButton = ({ showModal }) => {
       </div>
     );
   };
-
-  if (usingMantaWallet)
-    return (
-      <>
-        {validationMsg && <ValidationText validationMsg={validationMsg} />}
-        {!validationMsg && (
-          <InnerSendButton
-            senderLoading={senderLoading}
-            receiverLoading={receiverLoading}
-          />
-        )}
-      </>
-    );
 
   return (
     <>

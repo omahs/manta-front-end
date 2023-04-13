@@ -7,10 +7,12 @@ import { useGlobal } from './globalContexts';
 
 type MantaWalletExclusiveProperties = {
   mantaWalletVersion: Version | null;
+  hasFinishedInitialBlockDownload: boolean | null;
 }
 
 const dummyMantaWalletExclusiveProperties: MantaWalletExclusiveProperties = {
-  mantaWalletVersion: null
+  mantaWalletVersion: null,
+  hasFinishedInitialBlockDownload: null
 };
 
 type MantaSignerExclusiveProperties = {
@@ -41,6 +43,7 @@ type PrivateWalletContextValue = {
   setBalancesAreStale: (_: boolean) => void,
   balancesAreStale: boolean,
   balancesAreStaleRef: React.MutableRefObject<boolean>
+  hasFinishedInitialBlockDownload: boolean | null;
 };
 
 const PrivateWalletContext = createContext<PrivateWalletContextValue | null>(null);

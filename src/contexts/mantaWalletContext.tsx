@@ -31,7 +31,8 @@ type txResHandlerType<T, E = undefined> = (
 
 type MantaWalletContext = {
   isReady: boolean;
-  privateAddress: string;
+  hasFinishedInitialBlockDownload: boolean | null;
+  privateAddress: string | null;
   getSpendableBalance: (asset: AssetType) => Promise<Balance | null>;
   toPrivate: (balance: Balance, txResHandler: any) => Promise<void>;
   toPublic: (balance: Balance, txResHandler: any) => Promise<void>;
@@ -40,10 +41,9 @@ type MantaWalletContext = {
     receiveZkAddress: string,
     txResHandler: txResHandlerType<any>
   ) => Promise<void>;
-  privateWallet: PrivateWallet;
+  privateWallet: PrivateWallet | null;
   sync: () => Promise<void>;
   isInitialSync: MutableRefObject<boolean>;
-  signerIsConnected: boolean;
 };
 
 const MantaWalletContext = createContext<MantaWalletContext | null>(null);
@@ -62,33 +62,32 @@ export const MantaWalletContextProvider = ({
   const { selectedWallet } = useKeyring();
 
   // private wallet
-  const [privateWallet, setPrivateWallet] = useState<PrivateWallet>(
-    {} as PrivateWallet
-  );
-
-  const signerIsConnected = !isObjectEmpty(privateWallet);
-  const [privateAddress, setPrivateAddress] = useState('');
+  const [privateWallet, setPrivateWallet] = useState<PrivateWallet | null>(null);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const isInitialSync = useRef(true);
+  const signerIsConnected = !!privateWallet?.getZkBalance;
+
+  const [privateAddress, setPrivateAddress] = useState<string | null>(null);
+  const [hasFinishedInitialBlockDownload, setHasFinishedInitialBlockDownload] = useState<boolean | null>(null);
+  const [isBusy, setIsBusy] = useState<boolean>(false);
+  const isInitialSync = useRef<boolean>(true);
 
   // transaction state
   const txQueue = useRef<SubmittableExtrinsic<'promise', any>[]>([]);
   const finalTxResHandler = useRef<txResHandlerType<any> | null>(null);
 
   useEffect(() => {
-    let unsub;
-    if (!isObjectEmpty(privateWallet)) {
-      unsub = privateWallet.subscribeWalletState((state) => {
-        const { isWalletReady } = state;
-        setIsReady(isWalletReady);
-      });
-    }
-    return unsub && unsub();
-  }, [privateWallet]);
+    const getPrivateWallet = () => {
+      console.log('getPrivateWallet', selectedWallet);
+      if (selectedWallet?.extension?.privateWallet) {
+        setPrivateWallet(selectedWallet.extension.privateWallet);
+      }
+    };
+    getPrivateWallet();
+  }, [selectedWallet]);
 
   useEffect(() => {
     const getZkAddress = async () => {
-      if (isObjectEmpty(selectedWallet) || isObjectEmpty(privateWallet)) {
+      if (isObjectEmpty(selectedWallet) || !privateWallet) {
         return;
       }
       const accounts = await selectedWallet.getAccounts();
@@ -103,11 +102,16 @@ export const MantaWalletContextProvider = ({
   }, [privateWallet, selectedWallet]);
 
   useEffect(() => {
-    if (selectedWallet?.extension?.privateWallet) {
-      isInitialSync.current = false; // privateWallet handles initialWalletSync
-      setPrivateWallet(selectedWallet.extension.privateWallet);
+    let unsub;
+    if (privateWallet) {
+      unsub = privateWallet.subscribeWalletState((state) => {
+        const { isWalletReady, isWalletBusy } = state;
+        setIsReady(isWalletReady);
+        setIsBusy(isWalletBusy);
+      });
     }
-  }, [selectedWallet]);
+    return unsub && unsub();
+  }, [privateWallet]);
 
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
@@ -119,19 +123,37 @@ export const MantaWalletContextProvider = ({
           network,
           assetId: `${assetType.assetId}`
         });
-        const res = new Balance(assetType, new BN(balanceRaw || 0));
-        return res;
-      } catch (error) {
-        console.error('error getting zkBalance', error);
+        setHasFinishedInitialBlockDownload(true);
+        return new Balance(assetType, new BN(balanceRaw || 0));
+      } catch (error: any) {
+        if (error.message === 'Need to sync the wallet first') {
+          setHasFinishedInitialBlockDownload(false);
+        }
         return null;
       }
     },
-    [privateWallet]
+    [privateWallet, isReady, network]
   );
 
   const sync = async () => {
-    await privateWallet.walletSync();
+    if (privateWallet && !isBusy && isReady) {
+      try {
+        await privateWallet.walletSync();
+        isInitialSync.current = false;
+      } catch (error) {
+        console.error('error syncing wallet', error);
+      }
+    }
   };
+
+  useEffect(() => {
+    const initialSync = async () => {
+      if (isInitialSync.current) {
+        await sync();
+      }
+    };
+    initialSync();
+  }, [isBusy, isReady, isInitialSync.current, privateWallet]);
 
   useEffect(() => {
     // TODO other browsers sync?
@@ -232,13 +254,13 @@ export const MantaWalletContextProvider = ({
   };
 
   const toPublic = async (balance: Balance, txResHandler: any) => {
-    const signResult = await privateWallet.toPublicBuild({
+    const signResult = await privateWallet?.toPublicBuild({
       assetId: `${balance.assetType.assetId}`,
       amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: publicAddress,
       network
     });
-    if (signResult === null) {
+    if (!signResult) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
@@ -252,14 +274,14 @@ export const MantaWalletContextProvider = ({
     receiveZkAddress: string,
     txResHandler: txResHandlerType<any>
   ) => {
-    const signResult = await privateWallet.privateTransferBuild({
+    const signResult = await privateWallet?.privateTransferBuild({
       assetId: `${balance.assetType.assetId}`,
       amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: publicAddress,
       toZkAddress: receiveZkAddress,
       network
     });
-    if (signResult === null) {
+    if (!signResult) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
@@ -272,13 +294,13 @@ export const MantaWalletContextProvider = ({
     balance: Balance,
     txResHandler: txResHandlerType<any>
   ) => {
-    const signResult = await privateWallet.toPrivateBuild({
+    const signResult = await privateWallet?.toPrivateBuild({
       assetId: `${balance.assetType.assetId}`,
       amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: publicAddress,
       network
     });
-    if (signResult === null) {
+    if (!signResult) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
@@ -290,6 +312,7 @@ export const MantaWalletContextProvider = ({
   const value = useMemo(
     () => ({
       isReady,
+      hasFinishedInitialBlockDownload,
       privateAddress,
       getSpendableBalance,
       toPrivate,
@@ -298,16 +321,17 @@ export const MantaWalletContextProvider = ({
       privateWallet,
       sync,
       isInitialSync,
-      signerIsConnected
+      signerIsConnected,
     }),
     [
-      api,
-      externalAccount,
       isReady,
+      hasFinishedInitialBlockDownload,
       privateAddress,
+      externalAccount,
+      api,
       getSpendableBalance,
       privateWallet,
-      isInitialSync,
+      isInitialSync.current,
       signerIsConnected
     ]
   );
