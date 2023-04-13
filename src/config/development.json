@@ -1,11 +1,10 @@
 {
-    "CALAMARI_SOCKET": "wss://c1.calamari.seabird.systems",
     "DEV_CONSOLE": true,
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",
             "logo": "calamariLogo",
-            "url": "wss://c1.calamari.seabird.systems",
+            "url": "wss://ws.calamari.systems/",
             "explorer": "calamari.subscan.io"
         },
         {
