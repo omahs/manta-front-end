@@ -2,6 +2,7 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import keyring, { Keyring } from '@polkadot/ui-keyring';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
+import WALLET_NAME from 'constants/WalletConstants';
 import { Wallet } from 'manta-extension-connect';
 import {
   createContext,
@@ -38,7 +39,7 @@ type KeyringContextValue = {
     saveToStorage?: boolean
   ) => Promise<boolean | undefined>;
   connectWalletExtension: (extensionName: string) => void;
-  refreshWalletAccounts: (wallet: Wallet) => Promise<void>;
+  refreshWalletAccounts: (wallet: Wallet) => Promise<string | void>;
   getLatestAccountAndPairs: () => {
     account: KeyringPair;
     pairs: KeyringPair[];
@@ -58,7 +59,9 @@ export const KeyringContextProvider = ({
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState<string[]>(
     []
   );
-  const [selectedWallet, setSelectedWallet] = useState<Wallet>({} as Wallet);
+  const [selectedWallet, setSelectedWallet] = useState<Wallet>(
+    getLastAccessedWallet()
+  );
   const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
   const [authedWalletList, setAuthedWalletList] = useState<string[]>(
     getAuthedWalletListStorage()
@@ -85,6 +88,9 @@ export const KeyringContextProvider = ({
   );
 
   const refreshWalletAccounts = async (wallet: Wallet) => {
+    if (!wallet?.enable) {
+      return Promise.resolve('no enable function');
+    }
     await wallet.enable(APP_NAME);
     keyringIsBusy.current = true;
     let currentKeyringAddresses = keyring
@@ -178,8 +184,8 @@ export const KeyringContextProvider = ({
 
   const connectWallet = useCallback(
     async (extensionName: string, saveToStorage = true) => {
-      if (!isKeyringInit || !extensionName) {
-        return;
+      if (!isKeyringInit) {
+        return false;
       }
       const substrateWallets = getSubstrateWallets();
       const selectedWallet = substrateWallets.find(
@@ -211,30 +217,37 @@ export const KeyringContextProvider = ({
           return false;
         }
       }
+      return true;
     },
     [isKeyringInit]
   );
 
+  /** Keyring Init Logic */
   useEffect(() => {
     if (!isKeyringInit) {
       return;
     }
 
-    const authedWalletList = getAuthedWalletListStorage() || [];
+    const authedWalletList = getAuthedWalletListStorage();
     if (authedWalletList.length !== 0) {
-      // init keyring with authorized wallet list
       Promise.all(
-        authedWalletList.map(async (walletName: string) => {
-          await connectWallet(walletName, false);
-        })
-      ).then(() => {
-        // TODO : not work, set default wallet
-        if (lastAccessExtensionName) {
-          connectWallet(lastAccessExtensionName);
-        }
+        authedWalletList
+          .filter((name: string) => name !== lastAccessExtensionName)
+          .map(async (walletName: string) => {
+            await connectWallet(walletName, false);
+          })
+      ).finally(async () => {
+        await connectWallet(lastAccessExtensionName, true);
       });
+    } else {
+      if (usingMantaWallet) {
+        // no any wallet connected
+        const mantaWallet = WALLET_NAME.MANTA;
+        connectWallet(mantaWallet, true);
+        connectWalletExtension(mantaWallet);
+      }
     }
-  }, [isKeyringInit, lastAccessExtensionName]);
+  }, [isKeyringInit]);
 
   const value = useMemo(
     () => ({
