@@ -253,19 +253,18 @@ export const MantaWalletContextProvider = ({
   };
 
   const toPublic = async (balance: Balance, txResHandler: any) => {
-    const signResult = await privateWallet?.toPublicBuild({
-      assetId: `${balance.assetType.assetId}`,
-      amount: balance.valueAtomicUnits.toString(),
-      polkadotAddress: publicAddress,
-      network
-    });
-    if (!signResult) {
+    try {
+      const signResult = await privateWallet?.toPublicBuild({
+        assetId: `${balance.assetType.assetId}`,
+        amount: balance.valueAtomicUnits.toString(),
+        polkadotAddress: publicAddress,
+        network
+      });
+      const batches = await getBatches(signResult as string[]);
+      await publishBatchesSequentially(batches, txResHandler);
+    } catch(e) {
       setTxStatus(TxStatus.failed('Transaction declined'));
-      return;
     }
-
-    const batches = await getBatches(signResult);
-    await publishBatchesSequentially(batches, txResHandler);
   };
 
   const privateTransfer = async (
@@ -273,39 +272,37 @@ export const MantaWalletContextProvider = ({
     receiveZkAddress: string,
     txResHandler: txResHandlerType<any>
   ) => {
-    const signResult = await privateWallet?.privateTransferBuild({
-      assetId: `${balance.assetType.assetId}`,
-      amount: balance.valueAtomicUnits.toString(),
-      polkadotAddress: publicAddress,
-      toZkAddress: receiveZkAddress,
-      network
-    });
-    if (!signResult) {
+    try {
+      const signResult = await privateWallet?.privateTransferBuild({
+        assetId: `${balance.assetType.assetId}`,
+        amount: balance.valueAtomicUnits.toString(),
+        polkadotAddress: publicAddress,
+        toZkAddress: receiveZkAddress,
+        network
+      });
+      const batches = await getBatches(signResult as string[]);
+      await publishBatchesSequentially(batches, txResHandler);
+    } catch (e) {
       setTxStatus(TxStatus.failed('Transaction declined'));
-      return;
     }
-
-    const batches = await getBatches(signResult);
-    await publishBatchesSequentially(batches, txResHandler);
   };
 
   const toPrivate = async (
     balance: Balance,
     txResHandler: txResHandlerType<any>
   ) => {
-    const signResult = await privateWallet?.toPrivateBuild({
-      assetId: `${balance.assetType.assetId}`,
-      amount: balance.valueAtomicUnits.toString(),
-      polkadotAddress: publicAddress,
-      network
-    });
-    if (!signResult) {
+    try {
+      const signResult = await privateWallet?.toPrivateBuild({
+        assetId: `${balance.assetType.assetId}`,
+        amount: balance.valueAtomicUnits.toString(),
+        polkadotAddress: publicAddress,
+        network
+      });
+      const batches = await getBatches(signResult as string[]);
+      await publishBatchesSequentially(batches, txResHandler);
+    } catch (e) {
       setTxStatus(TxStatus.failed('Transaction declined'));
-      return;
     }
-
-    const batches = await getBatches(signResult);
-    await publishBatchesSequentially(batches, txResHandler);
   };
 
   const value = useMemo(
