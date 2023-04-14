@@ -2,7 +2,6 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import keyring, { Keyring } from '@polkadot/ui-keyring';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
-import WALLET_NAME from 'constants/WalletConstants';
 import { Wallet } from 'manta-extension-connect';
 import {
   createContext,
@@ -239,13 +238,6 @@ export const KeyringContextProvider = ({
       ).finally(async () => {
         await connectWallet(lastAccessExtensionName, true);
       });
-    } else {
-      if (usingMantaWallet) {
-        // no any wallet connected
-        const mantaWallet = WALLET_NAME.MANTA;
-        connectWallet(mantaWallet, true);
-        connectWalletExtension(mantaWallet);
-      }
     }
   }, [isKeyringInit]);
 
