@@ -100,7 +100,7 @@ const SubstrateContextProvider = ({children}) => {
 
     const connect = async () => {
       dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_INIT });
-      const provider = new WsProvider(socket);
+      const provider = new WsProvider(['wss://a1.calamari.systems/', 'wss://a2.calamari.systems/', 'wss://a3.calamari.systems/', 'wss://i1.calamari.systems/']);
       const api = new ApiPromise({
         provider,
         types,
