@@ -182,7 +182,7 @@ const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
       <div className="mt-4 text-sm">
         <div>Manta Signer user? </div>
         <a className="flex items-center text-white hover:text-white"
-          href="https://forum.manta.network/" // TODO: replace the url
+          href="https://docs.manta.network/docs/guides/MantaWalletMigration"
           target="_blank"
           rel="noopener noreferrer">
           <span>Learn how to migrate from Manta Signer to Manta Wallet</span>

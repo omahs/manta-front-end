@@ -1,20 +1,22 @@
 import { localStorageKeys } from 'constants/LocalStorageConstants';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Icon from 'components/Icon';
 import Logo from 'resources/images/manta-wallet-intro-modal-logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import store from 'store';
+import { useGlobal } from 'contexts/globalContexts';
 
 function MantaWalletIntroModal() {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [skipIntro, setSkipIntro] = useState(false);
+  const { usingMantaWallet, setUsingMantaWallet } = useGlobal();
 
   const onClickExplore = () => {
-    // TODO, update the path
-    navigate('/calamari/stake');
+    if (!usingMantaWallet) {
+      setUsingMantaWallet(true);
+    }
+    setOpen(false);
   };
 
   const skipIntroHandler = () => {
@@ -56,7 +58,7 @@ function MantaWalletIntroModal() {
             Please migrate to Manta Wallet to view your zkAssets. 
           </div>
           <a className="flex items-center mb-6 hover:text-white" 
-            href="https://forum.manta.network/" // TODO: replace the url
+            href="https://docs.manta.network/docs/guides/MantaWalletMigration"
             target="_blank"
             rel="noopener noreferrer">
             <span>Learn how to migrate</span>
