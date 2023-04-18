@@ -179,7 +179,7 @@ const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
         isWalletEnabled={isWalletEnabled}
         connectHandler={handleConnectWallet(mantaWallet.extensionName)}
       />
-      <div className="mt-4 text-sm">
+      <div className="mt-4 text-xs">
         <div>Manta Signer user? </div>
         <a className="flex items-center text-white hover:text-white"
           href="https://docs.manta.network/docs/guides/MantaWalletMigration"

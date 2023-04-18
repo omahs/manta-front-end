@@ -1,7 +1,7 @@
-import { KeyringPair } from '@polkadot/keyring/types';
-import keyring, { Keyring } from '@polkadot/ui-keyring';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
+import { KeyringPair } from '@polkadot/keyring/types';
+import keyring, { Keyring } from '@polkadot/ui-keyring';
 import { Wallet } from 'manta-extension-connect';
 import {
   createContext,
@@ -248,6 +248,7 @@ export const KeyringContextProvider = ({
       keyringAddresses, //keyring object would not change so use keyringAddresses to trigger re-render
       selectedWallet,
       keyringIsBusy,
+      isTalismanExtConfigured,
       connectWallet,
       connectWalletExtension,
       refreshWalletAccounts,
@@ -258,7 +259,8 @@ export const KeyringContextProvider = ({
       connectWalletExtension,
       isKeyringInit,
       keyringAddresses,
-      selectedWallet
+      selectedWallet,
+      isTalismanExtConfigured
     ]
   );
 
