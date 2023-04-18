@@ -155,7 +155,6 @@ export const MantaWalletContextProvider = ({
   }, [isBusy, isReady, isInitialSync.current, privateWallet]);
 
   useEffect(() => {
-    // TODO other browsers sync?
     const interval = setInterval(async () => {
       if (isReady) {
         sync();
@@ -164,7 +163,6 @@ export const MantaWalletContextProvider = ({
     return () => clearInterval(interval);
   }, [isReady]);
 
-  // todo: deduplicate logic shared between this and the signer wallet context
   const handleInternalTxRes = async ({
     status,
     events
@@ -186,7 +184,6 @@ export const MantaWalletContextProvider = ({
     }
   };
 
-  // todo: deduplicate logic shared between this and the signer wallet context
   const publishNextBatch = async () => {
     const sendExternal = async () => {
       try {
@@ -206,7 +203,6 @@ export const MantaWalletContextProvider = ({
       }
     };
 
-    // todo: deduplicate logic shared between this and the signer wallet context
     const sendInternal = async () => {
       try {
         const internalTx: any = txQueue.current.shift();
@@ -226,7 +222,6 @@ export const MantaWalletContextProvider = ({
     }
   };
 
-  // todo: deduplicate logic shared between this and the signer wallet context
   const publishBatchesSequentially = async (
     batches: SubmittableExtrinsic<'promise', any>[],
     txResHandler: txResHandlerType<any>

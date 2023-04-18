@@ -1,5 +1,5 @@
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
-import { usePrivateWallet } from 'hooks';
 import ZkTransactConnectSignerModal from './ZkTransactConnectSignerModal';
 import ZkTransactConnectWalletModal from './ZkTransactConnectWalletModal';
 import ZkTransactConnectedModal from './ZkTransactConnectedModal';
