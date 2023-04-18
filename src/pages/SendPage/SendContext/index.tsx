@@ -458,7 +458,6 @@ export const SendContextProvider = (props) => {
           handleTxFailure(extrinsic);
         }
       }
-      // TODO currently network can's reponse status.isFinalize, refactor codes below
     } else if (status.isFinalized) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
