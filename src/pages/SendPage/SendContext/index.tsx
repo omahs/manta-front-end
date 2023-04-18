@@ -426,9 +426,8 @@ export const SendContextProvider = (props) => {
 
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
-    if (usingMantaWallet) return true; // TODO
     return (
-      (privateWallet.isReady || isPublicTransfer()) &&
+      (privateWallet?.isReady || isPublicTransfer()) &&
       api &&
       externalAccountSigner &&
       receiverAddress &&
