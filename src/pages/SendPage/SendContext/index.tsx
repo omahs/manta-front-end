@@ -303,7 +303,8 @@ export const SendContextProvider = (props) => {
     receiverAssetType,
     api,
     privateWalletIsReady,
-    txStatus
+    txStatus,
+    privateAddress
   ]);
 
   /**
@@ -496,7 +497,9 @@ export const SendContextProvider = (props) => {
       // Correct private balances will only appear after a sync has completed
       // Until then, do not display stale balances
       privateWallet.setBalancesAreStale(true);
-      senderAssetType.isPrivate && setSenderAssetCurrentBalance(null, senderAssetType);
+      senderAssetType.isPrivate && setSenderAssetCurrentBalance(
+        null, senderPublicAccount?.address, senderAssetType
+      );
       receiverAssetType.isPrivate && setReceiverCurrentBalance(null, receiverAssetType);
       privateWallet.sync();
     } catch (error) {

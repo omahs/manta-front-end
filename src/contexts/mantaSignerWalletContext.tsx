@@ -17,6 +17,7 @@ import {
 } from 'utils/persistence/privateTransactionHistory';
 import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
 import { useConfig } from './configContext';
+import { useGlobal } from './globalContexts';
 import { usePublicAccount } from './publicAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
@@ -26,6 +27,7 @@ const MantaSignerWalletContext = createContext();
 export const MantaSignerWalletContextProvider = (props) => {
   // external contexts
   const config = useConfig();
+  const { usingMantaWallet } = useGlobal();
   const { api, socket } = useSubstrate();
   const { externalAccountSigner, externalAccount, extensionSigner } =
     usePublicAccount();
@@ -74,10 +76,10 @@ export const MantaSignerWalletContextProvider = (props) => {
     setIsReady(false);
   }, [socket]);
 
-
   useEffect(() => {
     const canInitWallet = () => {
       return (
+        !usingMantaWallet &&
         walletNetworkIsActive.current &&
         signerIsConnected &&
         signerVersion &&
@@ -127,10 +129,12 @@ export const MantaSignerWalletContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      walletNetworkIsActive.current && fetchSignerVersion();
+      if (walletNetworkIsActive.current && !usingMantaWallet) {
+        fetchSignerVersion();
+      }
     }, 1000);
     return () => interval && clearInterval(interval);
-  }, [api, privateWallet]);
+  }, [api, privateWallet, usingMantaWallet]);
 
   const fetchZkAddress = async () => {
     try {
@@ -145,12 +149,12 @@ export const MantaSignerWalletContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (canFetchZkAddress && walletNetworkIsActive.current) {
+      if (canFetchZkAddress && walletNetworkIsActive.current && !usingMantaWallet) {
         fetchZkAddress();
       }
     }, 1000);
     return () => interval && clearInterval(interval);
-  }, [isReady]);
+  }, [isReady, usingMantaWallet]);
 
   const sync = async () => {
     // Don't refresh during a transaction to prevent stale balance updates
@@ -164,12 +168,12 @@ export const MantaSignerWalletContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (isReady && walletNetworkIsActive.current) {
+      if (isReady && walletNetworkIsActive.current && !usingMantaWallet) {
         sync();
       }
     }, 10000);
     return () => clearInterval(interval);
-  }, [isReady]);
+  }, [isReady, usingMantaWallet]);
 
   const getSpendableBalance = async (assetType) => {
     if (!isReady || balancesAreStaleRef.current) {

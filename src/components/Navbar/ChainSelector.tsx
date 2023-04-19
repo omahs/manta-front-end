@@ -66,9 +66,6 @@ const ChainSelector = () => {
 
   const nodes = config.NODES;
   const activeNode = nodes.find((node) => node.url === socket);
-  console.log(
-    'debug', nodes, socket
-  );
   const [showNetworkList, setShowNetworkList] = useState(false);
 
   const disabled = txStatus?.isProcessing();

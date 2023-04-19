@@ -18,6 +18,7 @@ import TxStatus from 'types/TxStatus';
 import { removePendingTxHistoryEvent } from 'utils/persistence/privateTransactionHistory';
 import isObjectEmpty from 'utils/validation/isEmpty';
 import { useConfig } from './configContext';
+import { useGlobal } from './globalContexts';
 import { useKeyring } from './keyringContext';
 import { PrivateWallet } from './mantaWalletType';
 import { usePublicAccount } from './publicAccountContext';
@@ -55,6 +56,7 @@ export const MantaWalletContextProvider = ({
 }) => {
   // external contexts
   const { NETWORK_NAME: network } = useConfig();
+  const { usingMantaWallet } = useGlobal();
   const { api } = useSubstrate();
   const { externalAccount } = usePublicAccount();
   const publicAddress = externalAccount?.address;
@@ -77,16 +79,16 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     const getPrivateWallet = () => {
-      if (selectedWallet?.extension?.privateWallet) {
+      if (selectedWallet?.extension?.privateWallet && usingMantaWallet) {
         setPrivateWallet(selectedWallet.extension.privateWallet);
       }
     };
     getPrivateWallet();
-  }, [selectedWallet]);
+  }, [selectedWallet, usingMantaWallet]);
 
   useEffect(() => {
     const getZkAddress = async () => {
-      if (isObjectEmpty(selectedWallet) || !privateWallet) {
+      if (isObjectEmpty(selectedWallet) || !privateWallet || !usingMantaWallet) {
         return;
       }
       const accounts = await selectedWallet.getAccounts();
@@ -98,11 +100,11 @@ export const MantaWalletContextProvider = ({
       setPrivateAddress(zkAddress);
     };
     getZkAddress();
-  }, [privateWallet, selectedWallet]);
+  }, [privateWallet, selectedWallet, usingMantaWallet]);
 
   useEffect(() => {
     let unsub;
-    if (privateWallet) {
+    if (privateWallet && usingMantaWallet) {
       unsub = privateWallet.subscribeWalletState((state) => {
         const { isWalletReady, isWalletBusy } = state;
         setIsReady(isWalletReady);
@@ -110,7 +112,7 @@ export const MantaWalletContextProvider = ({
       });
     }
     return unsub && unsub();
-  }, [privateWallet]);
+  }, [privateWallet, usingMantaWallet]);
 
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
@@ -147,21 +149,21 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     const initialSync = async () => {
-      if (isInitialSync.current) {
+      if (isInitialSync.current && usingMantaWallet) {
         await sync();
       }
     };
     initialSync();
-  }, [isBusy, isReady, isInitialSync.current, privateWallet]);
+  }, [isBusy, isReady, isInitialSync.current, privateWallet, usingMantaWallet]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if (isReady) {
+      if (isReady && usingMantaWallet) {
         sync();
       }
     }, 60000);
     return () => clearInterval(interval);
-  }, [isReady]);
+  }, [isReady, usingMantaWallet]);
 
   const handleInternalTxRes = async ({
     status,
