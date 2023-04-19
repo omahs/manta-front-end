@@ -186,6 +186,13 @@ export const SendContextProvider = (props) => {
     });
   };
 
+  const syncMantaWallet = async () => {
+    if (usingMantaWallet && privateWalletIsReady) {
+      await privateWallet.sync();
+    }
+    return;
+  };
+
   // Gets available public balance for some public address and asset type
   const fetchPublicBalance = async (address, assetType) => {
     if (!api?.isConnected || !address || !assetType) {
@@ -426,7 +433,6 @@ export const SendContextProvider = (props) => {
 
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
-    if (usingMantaWallet) return true; // TODO
     return (
       (privateWallet.isReady || isPublicTransfer()) &&
       api &&
@@ -458,14 +464,14 @@ export const SendContextProvider = (props) => {
           handleTxFailure(extrinsic);
         }
       }
-      // TODO currently network can's reponse status.isFinalize, refactor codes below
     } else if (status.isFinalized) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {
           return;
         }
       }
-      handleTxSuccess(status);
+      await handleTxSuccess(status);
+      await syncMantaWallet();
     }
   };
 
@@ -508,18 +514,14 @@ export const SendContextProvider = (props) => {
 
   // Attempts to build and send a transaction
   const send = async () => {
+    await syncMantaWallet();
+
     if (!isValidToSend()) {
+      setTxStatus(TxStatus.failed());
       return;
     }
-    setTxStatus(TxStatus.processing());
 
-    if (usingMantaWallet) {
-      await privateWallet.sync();
-      if (!isValidToSend()) {
-        setTxStatus(TxStatus.failed());
-        return;
-      }
-    }
+    setTxStatus(TxStatus.processing());
 
     if (isPrivateTransfer()) {
       await privateTransfer(state);
