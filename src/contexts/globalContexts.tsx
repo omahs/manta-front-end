@@ -41,7 +41,7 @@ const GlobalContextProvider = ({ children }) => {
       usingMantaWallet,
       setUsingMantaWallet
     }),
-    [usingMantaWallet, setUsingMantaWallet, isDolphinPage]
+    [usingMantaWallet, setUsingMantaWallet]
   );
 
   return (
