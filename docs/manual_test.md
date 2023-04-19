@@ -1,6 +1,6 @@
 # Manual Test
 
-To prepare for this test, you should have an up-to-date version of `manta-signer` desktop app, acess to a local or remote Dolphin testnet, and access to a local or remote `manta-front-end` UI. See README.md for more details.<br/>
+To prepare for this test, you should have an up-to-date version of `manta-signer` desktop app, access to a local or remote Dolphin testnet, and access to a local or remote `manta-front-end` UI. See README.md for more details.<br/>
 
 First, you should create two accounts in [polkadot.js browser extension](https://polkadot.js.org/extension/). Load these accounts with balances of Dolphin and at least two parachain assets.
 - If you are running a local testnet, you can mint assets to these accounts from the default sudo account (Alice) in [polkadot.js apps wallet](https://polkadot.js.org/apps) using the `assetManager.mintAsset` extrinsic.
@@ -42,4 +42,4 @@ After reconnection or refresh, balances should remain the same<br/>
 
 
 ## Gotchas
-- No balances is allowed to go below the existential deposit during any transaction. It is expected that UI should not allow such transactions to process. For example, transfering 10 DOL from an account that contains 10 DOL is invalid.
+- No balances is allowed to go below the existential deposit during any transaction. It is expected that UI should not allow such transactions to process. For example, transferring 10 DOL from an account that contains 10 DOL is invalid.
