@@ -6,6 +6,7 @@ import { dolphinConfig } from 'config';
 import { useConfig } from 'contexts/configContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useTxStatus } from 'contexts/txStatusContext';
+import useLastAccessedWallet from 'hooks/useLastAccessedWallet';
 import { useEffect } from 'react';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { useSend } from './SendContext';
@@ -26,6 +27,12 @@ const SendForm = () => {
   const disabledSwapSenderReceiver = isPrivateTransfer() || isPublicTransfer();
   const { NETWORK_NAME } = useConfig();
   const isDolphinPage = NETWORK_NAME === dolphinConfig.NETWORK_NAME;
+  const { resetLastAccessedWallet } = useLastAccessedWallet();
+
+  useEffect(() => {
+    // on Dolphin page, reset last accessed wallet
+    if (isDolphinPage) resetLastAccessedWallet();
+  }, [isDolphinPage]);
 
   useEffect(() => {
     if (keyring) {
