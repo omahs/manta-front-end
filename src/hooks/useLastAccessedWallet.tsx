@@ -37,5 +37,5 @@ export default () => {
       }
     }
   };
-  return { lastAccessedWallet, resetLastAccessedWallet };
+  return { resetLastAccessedWallet };
 };
