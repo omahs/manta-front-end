@@ -12,7 +12,6 @@ import {
 import { useLocation } from 'react-router-dom';
 import store from 'store';
 import { KeyringContextProvider } from './keyringContext';
-import { ThemeProvider } from './themeContext';
 
 const GlobalContext = createContext();
 
@@ -46,9 +45,7 @@ const GlobalContextProvider = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={contextValue}>
-      <KeyringContextProvider>
-        <ThemeProvider>{children}</ThemeProvider>
-      </KeyringContextProvider>
+      <KeyringContextProvider>{children}</KeyringContextProvider>
     </GlobalContext.Provider>
   );
 };
