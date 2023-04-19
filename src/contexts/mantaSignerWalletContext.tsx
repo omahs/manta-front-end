@@ -7,7 +7,8 @@ import {
   useContext,
   useEffect,
   useRef,
-  useState
+  useState,
+  useMemo
 } from 'react';
 import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
@@ -297,20 +298,37 @@ export const MantaSignerWalletContextProvider = (props) => {
     await publishBatchesSequentially(batches, txResHandler);
   };
 
-  const value = {
-    isReady,
-    privateAddress,
-    getSpendableBalance,
-    toPrivate,
-    toPublic,
-    privateTransfer,
-    signerIsConnected,
-    signerVersion,
-    isInitialSync,
-    setBalancesAreStale,
-    balancesAreStale,
-    balancesAreStaleRef
-  };
+  const value = useMemo(
+    () => ({
+      isReady,
+      privateAddress,
+      getSpendableBalance,
+      toPrivate,
+      toPublic,
+      privateTransfer,
+      signerIsConnected,
+      signerVersion,
+      isInitialSync,
+      setBalancesAreStale,
+      balancesAreStale,
+      balancesAreStaleRef
+    }),
+    [
+      isReady,
+      privateAddress,
+      getSpendableBalance,
+      toPrivate,
+      toPublic,
+      privateTransfer,
+      signerIsConnected,
+      signerVersion,
+      isInitialSync,
+      setBalancesAreStale,
+      balancesAreStale,
+      balancesAreStaleRef
+    ]
+  );
+
 
   return (
     <MantaSignerWalletContext.Provider value={value}>

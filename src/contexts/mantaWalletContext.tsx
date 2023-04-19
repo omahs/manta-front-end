@@ -32,6 +32,7 @@ type txResHandlerType<T, E = undefined> = (
 
 type MantaWalletContext = {
   isReady: boolean;
+  signerIsConnected: boolean | null;
   hasFinishedInitialBlockDownload: boolean | null;
   privateAddress: string | null;
   getSpendableBalance: (asset: AssetType) => Promise<Balance | null>;
