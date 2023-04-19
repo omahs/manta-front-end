@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { useGlobal } from 'contexts/globalContexts';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import SendToAddressForm from './SendToAddressForm';
 
