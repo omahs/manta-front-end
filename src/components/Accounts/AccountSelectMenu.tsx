@@ -1,21 +1,23 @@
 // @ts-nocheck
-import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
-import { usePublicAccount } from 'contexts/publicAccountContext';
+import Icon from 'components/Icon';
+import WALLET_NAME from 'constants/WalletConstants';
+import { useGlobal } from 'contexts/globalContexts';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import React, { useState } from 'react';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
+import { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
-import Icon from 'components/Icon';
-import { useGlobal } from 'contexts/globalContexts';
-import WalletSelectBar from './WalletSelectIconBar';
-import { ConnectWalletIcon, ConnectWalletButton } from './ConnectWallet';
 import AccountSelectDropdown from './AccountSelectDropdown';
+import { ConnectWalletButton, ConnectWalletIcon } from './ConnectWallet';
+import WalletSelectBar from './WalletSelectIconBar';
 
 const DisplayAccountsButton = () => {
   const { ethAddress } = useMetamask();
   const { selectedWallet } = useKeyring();
   const { externalAccount } = usePublicAccount();
+  const { isReady: privateWalletIsReady } = usePrivateWallet();
   const [showAccountList, setShowAccountList] = useState(false);
   const [isMetamaskSelected, setIsMetamaskSelected] = useState(false);
   const { usingMantaWallet } = useGlobal();
@@ -24,10 +26,11 @@ const DisplayAccountsButton = () => {
     !!ethAddress && window?.location?.pathname?.includes('bridge');
 
   // using manta wallet zkAddress combined with other wallets public address
-  const isOnlyUsingMantaWalletZKAddress = 
-    usingMantaWallet 
-    && selectedWallet?.extensionName !== WALLET_NAME.MANTA 
-    && window?.location?.pathname?.includes('transact');
+  const isOnlyUsingMantaWalletZKAddress =
+    usingMantaWallet &&
+    privateWalletIsReady &&
+    selectedWallet?.extensionName !== WALLET_NAME.MANTA &&
+    window?.location?.pathname?.includes('transact');
 
   const succinctAccountName =
     externalAccount?.meta.name.length >11
