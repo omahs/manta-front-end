@@ -44,9 +44,11 @@ module.exports = {
       },
       width: {
         10.5: '42px',
+        30: '120px',
         68: '272px',
         108: '432px',
         118: '472px',
+        126.5: '506px',
         140: '560px',
         156: '625px'
       },
@@ -70,6 +72,7 @@ module.exports = {
         'manta-gray': 'var(--color-bg-manta-gray)',
         button: 'var(--color-bg-button-primary)',
         'button-secondary': 'var(--color-bg-button-secondary)',
+        'button-thirdry': 'var(--color-bg-button-thirdry)',
         'button-fourth': 'var(--color-bg-button-fourth)',
         'connect-signer-button': '#2B49EA',
         'connect-wallet-button': '#00AFA5',

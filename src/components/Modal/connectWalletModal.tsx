@@ -7,92 +7,11 @@ import { useMetamask } from 'contexts/metamaskContext';
 import { getSubstrateWallets } from 'utils';
 import getWalletDisplayName from 'utils/display/getWalletDisplayName';
 import { useGlobal } from 'contexts/globalContexts';
-
-const WalletNotInstalledBlock = ({
-  walletName,
-  walletLogo,
-  walletInstallLink
-}) => {
-  return (
-    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
-      <div className="flex flex-row items-center gap-4">
-        {walletLogo && typeof walletLogo === 'object' ? (
-          <img
-            src={walletLogo.src}
-            alt={walletLogo.alt}
-            className="w-6 h-6 rounded-full"
-          />
-        ) : (
-          <Icon name={walletLogo} className="w-6 h-6 rounded-full" />
-        )}
-        {walletName}
-      </div>
-      <a href={walletInstallLink} target="_blank" rel="noreferrer">
-        <div className="text-center rounded-lg bg-button-fourth text-white py-2 px-4 text-sm w-21">
-          Install
-        </div>
-      </a>
-    </div>
-  );
-};
-
-const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
-  const { isTalismanExtConfigured } = useKeyring();
-  return (
-    <button
-      onClick={connectHandler}
-      className="relative mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
-      <div className="flex flex-row items-center gap-4">
-        {walletLogo && typeof walletLogo === 'object' ? (
-          <img
-            src={walletLogo.src}
-            alt={walletLogo.alt}
-            className="w-6 h-6 rounded-full"
-          />
-        ) : (
-          <Icon name={walletLogo} className="w-6 h-6 rounded-full" />
-        )}
-        {walletName}
-      </div>
-      <div className="rounded-lg bg-button-fourth text-white py-2 px-4 text-xs">
-        Connect
-      </div>
-
-      {walletName === 'Talisman' && !isTalismanExtConfigured && (
-        <p className="absolute left-0 -bottom-5 flex flex-row gap-2 b-0 text-warning text-xsss">
-          <Icon name="information" />
-          You have no account in Talisman. Please create one first.
-        </p>
-      )}
-
-    </button>
-  );
-};
-
-const WalletEnabledBlock = ({ walletName, walletLogo }) => {
-  return (
-    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
-      <div className="flex flex-row items-center gap-4">
-        {walletLogo && typeof walletLogo === 'object' ? (
-          <img
-            src={walletLogo.src}
-            alt={walletLogo.alt}
-            className="w-6 h-6 rounded-full"
-          />
-        ) : (
-          <Icon name={walletLogo} className="w-6 h-6 rounded-full" />
-        )}
-
-        {walletName}
-      </div>
-      <div className="flex flex-row gap-3 items-center rounded-lg text-xs">
-        <div className="rounded full w-2 h-2 bg-green-300"></div>Connected
-      </div>
-    </div>
-  );
-};
+import { useLocation } from 'react-router-dom';
+import { ReactComponent as RecommendedImage } from 'resources/images/recommended-manta-wallet.svg';
 
 const ConnectWalletBlock = ({
+  extensionName,
   walletName,
   isWalletInstalled,
   walletInstallLink,
@@ -100,30 +19,78 @@ const ConnectWalletBlock = ({
   isWalletEnabled,
   connectHandler
 }) => {
-  if (isWalletEnabled) {
+  const { isTalismanExtConfigured } = useKeyring();
+  const { usingMantaWallet } = useGlobal();
+  const { pathname } = useLocation();
+  const isCalamariMantaPayPage = pathname.includes('/calamari/transact');
+
+  const usingNewUI = usingMantaWallet && isCalamariMantaPayPage;
+
+  const WalletNameBlock = () => {
+    const isMantaWallet = extensionName === WALLET_NAME.MANTA;
     return (
-      <WalletEnabledBlock walletName={walletName} walletLogo={walletLogo} />
+      <div>
+        <div className="text-sm flex items-center gap-3 leading-5">
+          {walletName}
+          {isMantaWallet && usingNewUI && <RecommendedImage />}
+        </div>
+        {usingNewUI && (
+          <div className="text-xs leading-4 mt-1 opacity-60">
+            {isMantaWallet
+              ? 'Public Address and zkAddress Combined'
+              : 'Public Addresses Only'}
+          </div>
+        )}
+      </div>
     );
-  } else if (isWalletInstalled) {
-    return (
-      <WalletInstalledBlock
-        walletName={walletName}
-        walletLogo={walletLogo}
-        connectHandler={connectHandler}
-      />
-    );
-  } else {
-    return (
-      <WalletNotInstalledBlock
-        walletName={walletName}
-        walletLogo={walletLogo}
-        walletInstallLink={walletInstallLink}
-      />
-    );
-  }
+  };
+  return (
+    <div className="relative mt-6 p-4 flex items-center justify-between border border-white-light text-white rounded-lg w-full">
+      <div className="flex flex-row items-center gap-4">
+        {walletLogo && typeof walletLogo === 'object' ? (
+          <img
+            src={walletLogo.src}
+            alt={walletLogo.alt}
+            className="w-6 h-6 rounded-full"
+          />
+        ) : (
+          <Icon name={walletLogo} className="w-6 h-6 rounded-full" />
+        )}
+        <WalletNameBlock />
+      </div>
+
+      {isWalletEnabled ? (
+        <div className="flex items-center justify-center text-xs w-30">
+          <div className="flex items-center gap-3">
+            <div className="rounded full w-2 h-2 bg-green-300" />
+            Connected
+          </div>
+        </div>
+      ) : isWalletInstalled ? (
+        <button
+          onClick={connectHandler}
+          className="rounded-lg bg-button-thirdry text-white text-sm w-30 h-10">
+          Connect
+        </button>
+      ) : (
+        <a href={walletInstallLink} target="_blank" rel="noreferrer">
+          <div className="text-center rounded-lg bg-button-fourth text-white text-sm w-30 h-10 leading-10">
+            Install
+          </div>
+        </a>
+      )}
+
+      {walletName === 'Talisman' && !isTalismanExtConfigured && (
+        <p className="absolute left-0 -bottom-5 flex flex-row gap-2 b-0 text-warning text-xsss">
+          <Icon name="information" />
+          You have no account in Talisman. Please create one first.
+        </p>
+      )}
+    </div>
+  );
 };
 
-const MetamaskConnectWalletBlock = ({hideModal}) => {
+const MetamaskConnectWalletBlock = ({ hideModal }) => {
   const { configureMoonRiver, ethAddress } = useMetamask();
   const metamaskIsInstalled =
     window.ethereum?.isMetaMask &&
@@ -148,54 +115,26 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
   );
 };
 
-const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
+export const SubstrateConnectWalletBlock = ({
+  setIsMetamaskSelected,
+  hideModal
+}) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
-  const substrateWallets = getSubstrateWallets();
-  const mantaWallet = substrateWallets.find(wallet => wallet.extensionName === WALLET_NAME.MANTA);
-  const isWalletEnabled = mantaWallet.extension ? true : false;
+  const { usingMantaWallet } = useGlobal();
 
-  const handleConnectWallet = (walletName) => async () => {
-    connectWalletExtension(walletName);
-    const isConnected = await connectWallet(walletName);
-    if (isConnected) {
-      setIsMetamaskSelected && setIsMetamaskSelected(false);
-      hideModal();
-    }
-  };
-  return (
-    <div className="mt-6 text-white bg-white bg-opacity-5 p-4 rounded-lg">
-      <div className="font-semibold text-sm">Recommended Wallet</div>
-      <div className="text-sm mt-2">
-        Have both public addresses and zkAddress.
-        <br />
-        You can explore all the products of Manta with it.
-      </div>
-      <ConnectWalletBlock
-        key={mantaWallet.extensionName}
-        walletName={getWalletDisplayName(mantaWallet.extensionName)}
-        isWalletInstalled={mantaWallet.installed}
-        walletInstallLink={mantaWallet.installUrl}
-        walletLogo={mantaWallet.logo}
-        isWalletEnabled={isWalletEnabled}
-        connectHandler={handleConnectWallet(mantaWallet.extensionName)}
-      />
-      <div className="mt-4 text-xs">
-        <div>Manta Signer user? </div>
-        <a className="flex items-center text-white hover:text-white"
-          href="https://docs.manta.network/docs/guides/MantaWalletMigration"
-          target="_blank"
-          rel="noopener noreferrer">
-          <span>Learn how to migrate from Manta Signer to Manta Wallet</span>
-          <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
-        </a>
-      </div>
-    </div>
-  );
-};
+  let substrateWallets = getSubstrateWallets();
 
-export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
-  const { connectWallet, connectWalletExtension } = useKeyring();
-  const substrateWallets = getSubstrateWallets().filter(wallet => wallet.extensionName !== WALLET_NAME.MANTA);
+  if (!usingMantaWallet) {
+    substrateWallets = substrateWallets.filter(
+      (wallet) => wallet.extensionName !== WALLET_NAME.MANTA
+    );
+  } else {
+    // display Manta Wallet as the first wallet
+    const mantaWalletIndex = substrateWallets.findIndex(
+      (wallet) => wallet.extensionName === WALLET_NAME.MANTA
+    );
+    substrateWallets.unshift(substrateWallets.splice(mantaWalletIndex, 1)[0]);
+  }
 
   const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
@@ -212,6 +151,7 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     return (
       <ConnectWalletBlock
         key={wallet.extensionName}
+        extensionName={wallet.extensionName}
         walletName={getWalletDisplayName(wallet.extensionName)}
         isWalletInstalled={wallet.installed}
         walletInstallLink={wallet.installUrl}
@@ -225,36 +165,22 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
   const isBridgePage = window?.location?.pathname?.includes('bridge');
+
   const { usingMantaWallet } = useGlobal();
-  if (usingMantaWallet) {
-    return (
-      <div className="w-108">
-        <h1 className="text-xl text-white">Connect Wallet</h1>
-        <MantaConnectWalletBlock
-          setIsMetamaskSelected={setIsMetamaskSelected}
-          hideModal={hideModal}
-        />
-        <div className="mt-4 text-white bg-white bg-opacity-5 p-4 rounded-lg">
-          <div className="font-semibold text-sm">Other Wallets</div>
-          <div className="text-sm mt-2">Have public addresses only. If you want to privatize your assets, Manta Wallet is still needed.</div>
-          <SubstrateConnectWalletBlock
-            setIsMetamaskSelected={setIsMetamaskSelected}
-            hideModal={hideModal}
-          />
-          {isBridgePage && <MetamaskConnectWalletBlock hideModal={hideModal} />}
-        </div>
-        <p className="flex flex-row gap-2 mt-5 text-secondary text-xsss">
-          <Icon name="information" />
-          Already installed? Try refreshing this page
-        </p>
-      </div>
-    );
-  }
-  // we will remove manta signer one day, so this return statement will be removed too.
-  // here, considering the different UI modal, for the sake of brevity, we just use two returns.
+  const { pathname } = useLocation();
+  const isCalamariMantaPayPage = pathname.includes('/calamari/transact');
+  const usingNewUI = usingMantaWallet && isCalamariMantaPayPage;
+
   return (
-    <div className="w-96">
+    <div className="w-126.5">
       <h1 className="text-xl text-white">Connect Wallet</h1>
+      {usingNewUI && (
+        <div className="mt-4 text-sm text-white">
+          For full MantaPay functionality,
+          <br />
+          both public and zkAddress are required.
+        </div>
+      )}
       <SubstrateConnectWalletBlock
         setIsMetamaskSelected={setIsMetamaskSelected}
         hideModal={hideModal}
