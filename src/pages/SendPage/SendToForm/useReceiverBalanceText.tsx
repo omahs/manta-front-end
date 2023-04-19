@@ -33,6 +33,7 @@ const useReceiverBalanceText = () => {
     !receiverCurrentBalance &&
     !balanceText &&
     (isToPrivate() || isToPublic()) &&
+    // Prevent loader from appearing in Manta Wallet mode if Manta Wallet is not synced
     (isToPublic() || !usingMantaWallet || isReady);
 
   return { balanceText, shouldShowLoader };
