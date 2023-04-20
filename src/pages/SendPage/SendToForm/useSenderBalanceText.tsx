@@ -1,15 +1,16 @@
-import { useExternalAccount } from 'contexts/externalAccountContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useSend } from 'pages/SendPage/SendContext';
 import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
+import { useGlobal } from 'contexts/globalContexts';
 
 const useSenderBalanceText = () => {
+  const { usingMantaWallet } = useGlobal();
   const { apiState } = useSubstrate();
   const { senderAssetCurrentBalance, senderIsPrivate } = useSend();
-  const { externalAccount } = useExternalAccount();
-  const { privateAddress } = usePrivateWallet();
-  const { isInitialSync } = usePrivateWallet();
+  const { externalAccount } = usePublicAccount();
+  const { privateAddress, isInitialSync, isReady } = usePrivateWallet();
 
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
@@ -18,15 +19,22 @@ const useSenderBalanceText = () => {
     senderAssetCurrentBalance,
     apiIsDisconnected,
     senderIsPrivate(),
-    isInitialSync.current
+    isInitialSync.current,
+    isReady
   );
 
   const shouldShowPublicLoader = Boolean(
     !senderAssetCurrentBalance && externalAccount?.address && !balanceText
   );
+
   const shouldShowPrivateLoader = Boolean(
-    !senderAssetCurrentBalance && privateAddress && !balanceText
+    !senderAssetCurrentBalance &&
+    privateAddress &&
+    !balanceText &&
+    // Prevent loader from appearing in Manta Wallet mode if Manta Wallet is not synced
+    (!usingMantaWallet || isReady)
   );
+
   const shouldShowLoader = senderIsPrivate()
     ? shouldShowPrivateLoader
     : shouldShowPublicLoader;

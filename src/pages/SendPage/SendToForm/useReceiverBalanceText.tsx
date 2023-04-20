@@ -1,12 +1,19 @@
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
+import { useGlobal } from 'contexts/globalContexts';
 import { useSend } from '../SendContext';
 
 const useReceiverBalanceText = () => {
-  const { receiverCurrentBalance, receiverAddress, receiverIsPrivate, isToPrivate, isToPublic } =
-    useSend();
-  const { isInitialSync } = usePrivateWallet();
+  const {
+    receiverCurrentBalance,
+    receiverAddress,
+    receiverIsPrivate,
+    isToPrivate,
+    isToPublic
+  } = useSend();
+  const { usingMantaWallet } = useGlobal();
+  const { isInitialSync, isReady } = usePrivateWallet();
   const { apiState } = useSubstrate();
 
   const apiIsDisconnected =
@@ -16,15 +23,17 @@ const useReceiverBalanceText = () => {
     receiverCurrentBalance,
     apiIsDisconnected,
     receiverIsPrivate(),
-    isInitialSync.current
+    isInitialSync.current,
+    isReady
   );
 
-  const shouldShowLoader = (
-    receiverAddress
-    && !receiverCurrentBalance
-    && !balanceText
-    && (isToPrivate() || isToPublic())
-  );
+  const shouldShowLoader =
+    receiverAddress &&
+    !receiverCurrentBalance &&
+    !balanceText &&
+    (isToPrivate() || isToPublic()) &&
+    // Prevent loader from appearing in Manta Wallet mode if Manta Wallet is not synced
+    (isToPublic() || !usingMantaWallet || isReady);
 
   return { balanceText, shouldShowLoader };
 };

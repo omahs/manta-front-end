@@ -1,16 +1,18 @@
-// @ts-nocheck
-import React, { useEffect } from 'react';
-import { useConfig } from 'contexts/configContext';
-import DowntimeModal from 'components/Modal/downtimeModal';
-import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
-import userIsMobile from 'utils/ui/userIsMobile';
-import { useKeyring } from 'contexts/keyringContext';
-import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
+import DowntimeModal from 'components/Modal/downtimeModal';
+import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
+import { dolphinConfig } from 'config';
+import { useConfig } from 'contexts/configContext';
+import { useKeyring } from 'contexts/keyringContext';
+import { useTxStatus } from 'contexts/txStatusContext';
+import useLastAccessedWallet from 'hooks/useLastAccessedWallet';
+import { useEffect } from 'react';
+import userIsMobile from 'utils/ui/userIsMobile';
+import { useSend } from './SendContext';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
-import { useSend } from './SendContext';
+import SwitchMantaWalletAndSigner from './SwitchMantaWalletAndSigner';
 
 const SendForm = () => {
   const config = useConfig();
@@ -23,6 +25,14 @@ const SendForm = () => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const disabledSwapSenderReceiver = isPrivateTransfer() || isPublicTransfer();
+  const { NETWORK_NAME } = useConfig();
+  const isDolphinPage = NETWORK_NAME === dolphinConfig.NETWORK_NAME;
+  const { resetLastAccessedWallet } = useLastAccessedWallet();
+
+  useEffect(() => {
+    // on Dolphin page, reset last accessed wallet
+    if (isDolphinPage) resetLastAccessedWallet();
+  }, [isDolphinPage]);
 
   useEffect(() => {
     if (keyring) {
@@ -65,6 +75,7 @@ const SendForm = () => {
           </div>
           <SendToForm />
         </div>
+        {!isDolphinPage && <SwitchMantaWalletAndSigner />}
       </div>
     </div>
   );
