@@ -105,9 +105,7 @@ const ValidationSendButton = ({ showModal }) => {
     && versionIsOutOfDate(config.MIN_REQUIRED_WALLET_VERSION, extensionVersion)
   ) {
     validationMsg = 'Manta Wallet out of date';
-  } else if (versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)) {
-    validationMsg = 'Signer out of date';
-  } else if (!externalAccount || (usingMantaWallet && !privateWallet)) {
+  } else if (!externalAccount || (usingMantaWallet && !privateWallet && !isPublicTransfer())) {
     shouldShowWalletMissingValidation = true;
   } else if (usingMantaWallet && hasFinishedInitialBlockDownload === false) {
     validationMsg = 'Manta Wallet sync required';

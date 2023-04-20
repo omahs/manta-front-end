@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 import { useMantaSignerWallet } from 'contexts/mantaSignerWalletContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
 import Version from 'types/Version';
@@ -54,9 +54,41 @@ export const PrivateWalletContextProvider = ({
   children: ReactNode;
 }) => {
   const { usingMantaWallet } = useGlobal();
-  const value = usingMantaWallet ?
-    {...dummyMantaSignerExclusiveProperties, ...useMantaWallet()}
-    : {...dummyMantaWalletExclusiveProperties, ...useMantaSignerWallet()};
+  const mantaSignerValue = useMantaSignerWallet();
+  const mantaWalletValue = useMantaWallet();
+
+  const value = useMemo(
+    () => {
+      return usingMantaWallet ?
+        {...dummyMantaSignerExclusiveProperties, ...mantaWalletValue}
+        : {...dummyMantaWalletExclusiveProperties, ...mantaSignerValue};
+    },
+    [
+      mantaSignerValue.isReady,
+      mantaSignerValue.privateAddress,
+      mantaSignerValue.getSpendableBalance,
+      mantaSignerValue.toPrivate,
+      mantaSignerValue.toPublic,
+      mantaSignerValue.privateTransfer,
+      mantaSignerValue.signerIsConnected,
+      mantaSignerValue.signerVersion,
+      mantaSignerValue.isInitialSync,
+      mantaSignerValue.setBalancesAreStale,
+      mantaSignerValue.balancesAreStale,
+      mantaSignerValue.balancesAreStaleRef,
+      mantaWalletValue.isReady,
+      mantaWalletValue.hasFinishedInitialBlockDownload,
+      mantaWalletValue.privateAddress,
+      mantaWalletValue.getSpendableBalance,
+      mantaWalletValue.toPrivate,
+      mantaWalletValue.toPublic,
+      mantaWalletValue.privateTransfer,
+      mantaWalletValue.privateWallet,
+      mantaWalletValue.sync,
+      mantaWalletValue.isInitialSync,
+      mantaWalletValue.signerIsConnected,
+    ]
+  );
 
   return (
     <PrivateWalletContext.Provider value={value}>

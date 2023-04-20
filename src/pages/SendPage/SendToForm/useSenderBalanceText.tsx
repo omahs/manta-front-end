@@ -20,7 +20,6 @@ const useSenderBalanceText = () => {
     apiIsDisconnected,
     senderIsPrivate(),
     isInitialSync.current,
-    usingMantaWallet,
     isReady
   );
 
@@ -32,6 +31,7 @@ const useSenderBalanceText = () => {
     !senderAssetCurrentBalance &&
     privateAddress &&
     !balanceText &&
+    // Prevent loader from appearing in Manta Wallet mode if Manta Wallet is not synced
     (!usingMantaWallet || isReady)
   );
 
