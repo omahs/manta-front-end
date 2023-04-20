@@ -1,15 +1,15 @@
 // @ts-nocheck
-import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
+import WALLET_NAME from 'constants/WalletConstants';
 import { useConfig } from 'contexts/configContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useGlobal } from 'contexts/globalContexts';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import Balance from 'types/Balance';
 import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
 import { useSend } from './SendContext';
@@ -107,7 +107,7 @@ const ValidationSendButton = ({ showModal }) => {
     validationMsg = 'Manta Wallet out of date';
   } else if (!externalAccount || (usingMantaWallet && !privateWallet && !isPublicTransfer())) {
     shouldShowWalletMissingValidation = true;
-  } else if (usingMantaWallet && hasFinishedInitialBlockDownload === false) {
+  } else if (usingMantaWallet && hasFinishedInitialBlockDownload === false && !isPublicTransfer()) {
     validationMsg = 'Manta Wallet sync required';
   } else if (apiIsDisconnected) {
     validationMsg = 'Connecting to network';
