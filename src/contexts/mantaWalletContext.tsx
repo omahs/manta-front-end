@@ -65,12 +65,15 @@ export const MantaWalletContextProvider = ({
   const { selectedWallet } = useKeyring();
 
   // private wallet
-  const [privateWallet, setPrivateWallet] = useState<PrivateWallet | null>(null);
+  const [privateWallet, setPrivateWallet] = useState<PrivateWallet | null>(
+    null
+  );
   const [isReady, setIsReady] = useState<boolean>(false);
   const signerIsConnected = !!privateWallet?.getZkBalance;
 
   const [privateAddress, setPrivateAddress] = useState<string | null>(null);
-  const [hasFinishedInitialBlockDownload, setHasFinishedInitialBlockDownload] = useState<boolean | null>(null);
+  const [hasFinishedInitialBlockDownload, setHasFinishedInitialBlockDownload] =
+    useState<boolean | null>(null);
   const [isBusy, setIsBusy] = useState<boolean>(false);
   const isInitialSync = useRef<boolean>(true);
 
@@ -89,7 +92,11 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     const getZkAddress = async () => {
-      if (isObjectEmpty(selectedWallet) || !privateWallet || !usingMantaWallet) {
+      if (
+        isObjectEmpty(selectedWallet) ||
+        !privateWallet ||
+        !usingMantaWallet
+      ) {
         return;
       }
       const accounts = await selectedWallet.getAccounts();
@@ -98,7 +105,7 @@ export const MantaWalletContextProvider = ({
       }
       // @ts-ignore
       const { zkAddress } = accounts[0];
-      setPrivateAddress(zkAddress);
+      zkAddress && setPrivateAddress(zkAddress);
     };
     getZkAddress();
   }, [privateWallet, selectedWallet, usingMantaWallet]);
@@ -253,58 +260,64 @@ export const MantaWalletContextProvider = ({
     return batches;
   };
 
-  const toPublic = useCallback(async (balance: Balance, txResHandler: txResHandlerType<any>) => {
-    try {
-      const signResult = await privateWallet?.toPublicBuild({
-        assetId: `${balance.assetType.assetId}`,
-        amount: balance.valueAtomicUnits.toString(),
-        polkadotAddress: publicAddress,
-        network
-      });
-      const batches = await getBatches(signResult as string[]);
-      await publishBatchesSequentially(batches, txResHandler);
-    } catch(e) {
-      setTxStatus(TxStatus.failed('Transaction declined'));
-    }
-  }, [privateWallet, publicAddress, network, api]);
+  const toPublic = useCallback(
+    async (balance: Balance, txResHandler: txResHandlerType<any>) => {
+      try {
+        const signResult = await privateWallet?.toPublicBuild({
+          assetId: `${balance.assetType.assetId}`,
+          amount: balance.valueAtomicUnits.toString(),
+          polkadotAddress: publicAddress,
+          network
+        });
+        const batches = await getBatches(signResult as string[]);
+        await publishBatchesSequentially(batches, txResHandler);
+      } catch (e) {
+        setTxStatus(TxStatus.failed('Transaction declined'));
+      }
+    },
+    [privateWallet, publicAddress, network, api]
+  );
 
-  const privateTransfer = useCallback(async (
-    balance: Balance,
-    receiveZkAddress: string,
-    txResHandler: txResHandlerType<any>
-  ) => {
-    try {
-      const signResult = await privateWallet?.privateTransferBuild({
-        assetId: `${balance.assetType.assetId}`,
-        amount: balance.valueAtomicUnits.toString(),
-        polkadotAddress: publicAddress,
-        toZkAddress: receiveZkAddress,
-        network
-      });
-      const batches = await getBatches(signResult as string[]);
-      await publishBatchesSequentially(batches, txResHandler);
-    } catch (e) {
-      setTxStatus(TxStatus.failed('Transaction declined'));
-    }
-  }, [privateWallet, publicAddress, network, api]);
+  const privateTransfer = useCallback(
+    async (
+      balance: Balance,
+      receiveZkAddress: string,
+      txResHandler: txResHandlerType<any>
+    ) => {
+      try {
+        const signResult = await privateWallet?.privateTransferBuild({
+          assetId: `${balance.assetType.assetId}`,
+          amount: balance.valueAtomicUnits.toString(),
+          polkadotAddress: publicAddress,
+          toZkAddress: receiveZkAddress,
+          network
+        });
+        const batches = await getBatches(signResult as string[]);
+        await publishBatchesSequentially(batches, txResHandler);
+      } catch (e) {
+        setTxStatus(TxStatus.failed('Transaction declined'));
+      }
+    },
+    [privateWallet, publicAddress, network, api]
+  );
 
-  const toPrivate = useCallback(async (
-    balance: Balance,
-    txResHandler: txResHandlerType<any>
-  ) => {
-    try {
-      const signResult = await privateWallet?.toPrivateBuild({
-        assetId: `${balance.assetType.assetId}`,
-        amount: balance.valueAtomicUnits.toString(),
-        polkadotAddress: publicAddress,
-        network
-      });
-      const batches = await getBatches(signResult as string[]);
-      await publishBatchesSequentially(batches, txResHandler);
-    } catch (e) {
-      setTxStatus(TxStatus.failed('Transaction declined'));
-    }
-  }, [privateWallet, publicAddress, network, api]);
+  const toPrivate = useCallback(
+    async (balance: Balance, txResHandler: txResHandlerType<any>) => {
+      try {
+        const signResult = await privateWallet?.toPrivateBuild({
+          assetId: `${balance.assetType.assetId}`,
+          amount: balance.valueAtomicUnits.toString(),
+          polkadotAddress: publicAddress,
+          network
+        });
+        const batches = await getBatches(signResult as string[]);
+        await publishBatchesSequentially(batches, txResHandler);
+      } catch (e) {
+        setTxStatus(TxStatus.failed('Transaction declined'));
+      }
+    },
+    [privateWallet, publicAddress, network, api]
+  );
 
   const value = useMemo(
     () => ({
@@ -318,7 +331,7 @@ export const MantaWalletContextProvider = ({
       privateWallet,
       sync,
       isInitialSync,
-      signerIsConnected,
+      signerIsConnected
     }),
     [
       isReady,

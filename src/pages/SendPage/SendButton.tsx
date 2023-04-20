@@ -1,9 +1,9 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
-import WALLET_NAME from 'constants/WalletConstants';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
@@ -80,34 +80,48 @@ const ValidationSendButton = ({ showModal }) => {
     privateWallet,
     hasFinishedInitialBlockDownload
   } = usePrivateWallet(usingMantaWallet);
-  const { externalAccount, extensionVersion, extensionName } = usePublicAccount();
+  const { externalAccount, extensionVersion, extensionName } =
+    usePublicAccount();
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
   const { shouldShowLoader: senderLoading } = useSenderBalanceText();
 
   let validationMsg = null;
+  let shouldShowMantaWalletMissingValidation = false;
   let shouldShowWalletMissingValidation = false;
   let shouldShowSignerMissingValidation = false;
   let shouldShowWalletSignerMissingValidation = false;
 
-  if (!signerIsConnected && !isPublicTransfer() && !externalAccount && !usingMantaWallet) {
+  if (
+    !signerIsConnected &&
+    !isPublicTransfer() &&
+    !externalAccount &&
+    !usingMantaWallet
+  ) {
     shouldShowWalletSignerMissingValidation = true;
   } else if (!signerIsConnected && !isPublicTransfer() && !usingMantaWallet) {
     shouldShowSignerMissingValidation = true;
   } else if (
-    !usingMantaWallet && versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)
+    !usingMantaWallet &&
+    versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)
   ) {
     validationMsg = 'Signer out of date';
   } else if (
     usingMantaWallet &&
-    extensionName === WALLET_NAME.MANTA
-    && versionIsOutOfDate(config.MIN_REQUIRED_WALLET_VERSION, extensionVersion)
+    extensionName === WALLET_NAME.MANTA &&
+    versionIsOutOfDate(config.MIN_REQUIRED_WALLET_VERSION, extensionVersion)
   ) {
     validationMsg = 'Manta Wallet out of date';
-  } else if (!externalAccount || (usingMantaWallet && !privateWallet && !isPublicTransfer())) {
+  } else if (!externalAccount) {
     shouldShowWalletMissingValidation = true;
-  } else if (usingMantaWallet && hasFinishedInitialBlockDownload === false && !isPublicTransfer()) {
+  } else if (usingMantaWallet && !privateWallet && !isPublicTransfer()) {
+    shouldShowMantaWalletMissingValidation = true;
+  } else if (
+    usingMantaWallet &&
+    hasFinishedInitialBlockDownload === false &&
+    !isPublicTransfer()
+  ) {
     validationMsg = 'Manta Wallet sync required';
   } else if (apiIsDisconnected) {
     validationMsg = 'Connecting to network';
@@ -142,7 +156,6 @@ const ValidationSendButton = ({ showModal }) => {
     )}`;
   }
 
-
   const ValidationText = ({ validationMsg }) => {
     return (
       <div
@@ -161,6 +174,14 @@ const ValidationSendButton = ({ showModal }) => {
           className={
             'bg-connect-signer-button py-2 unselectable-text text-center text-white rounded-lg w-full'
           }
+        />
+      )}
+      {shouldShowMantaWalletMissingValidation && (
+        <ConnectWalletButton
+          className={
+            'bg-connect-wallet-button py-2 unselectable-text text-center text-white rounded-lg w-full'
+          }
+          text="Connect Manta Wallet"
         />
       )}
       {shouldShowWalletMissingValidation && (
@@ -184,13 +205,14 @@ const ValidationSendButton = ({ showModal }) => {
       {validationMsg && <ValidationText validationMsg={validationMsg} />}
       {!shouldShowSignerMissingValidation &&
         !shouldShowWalletMissingValidation &&
+        !shouldShowMantaWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-        <InnerSendButton
-          senderLoading={senderLoading}
-          receiverLoading={receiverLoading}
-        />
-      )}
+          <InnerSendButton
+            senderLoading={senderLoading}
+            receiverLoading={receiverLoading}
+          />
+        )}
     </>
   );
 };
