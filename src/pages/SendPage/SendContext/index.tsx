@@ -186,13 +186,6 @@ export const SendContextProvider = (props) => {
     });
   };
 
-  const syncMantaWallet = async () => {
-    if (usingMantaWallet && privateWalletIsReady) {
-      await privateWallet.sync();
-    }
-    return;
-  };
-
   // Gets available public balance for some public address and asset type
   const fetchPublicBalance = async (address, assetType) => {
     if (!api?.isConnected || !address || !assetType) {
@@ -472,7 +465,6 @@ export const SendContextProvider = (props) => {
         }
       }
       await handleTxSuccess(status);
-      await syncMantaWallet();
     }
   };
 
@@ -517,14 +509,19 @@ export const SendContextProvider = (props) => {
 
   // Attempts to build and send a transaction
   const send = async () => {
-    await syncMantaWallet();
-
     if (!isValidToSend()) {
-      setTxStatus(TxStatus.failed());
       return;
     }
 
     setTxStatus(TxStatus.processing());
+
+    if (usingMantaWallet) {
+      await privateWallet.sync();
+      if (!isValidToSend()) {
+        setTxStatus(TxStatus.failed());
+        return;
+      }
+    }
 
     if (isPrivateTransfer()) {
       await privateTransfer(state);

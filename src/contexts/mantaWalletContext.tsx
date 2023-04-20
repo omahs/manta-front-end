@@ -1,3 +1,4 @@
+import WALLET_NAME from 'constants/WalletConstants';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
@@ -15,11 +16,10 @@ import {
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
+import { getSubstrateWallets } from 'utils';
 import { removePendingTxHistoryEvent } from 'utils/persistence/privateTransactionHistory';
-import isObjectEmpty from 'utils/validation/isEmpty';
 import { useConfig } from './configContext';
 import { useGlobal } from './globalContexts';
-import { useKeyring } from './keyringContext';
 import { PrivateWallet } from './mantaWalletType';
 import { usePublicAccount } from './publicAccountContext';
 import { useSubstrate } from './substrateContext';
@@ -62,7 +62,6 @@ export const MantaWalletContextProvider = ({
   const { externalAccount } = usePublicAccount();
   const publicAddress = externalAccount?.address;
   const { setTxStatus } = useTxStatus();
-  const { selectedWallet } = useKeyring();
 
   // private wallet
   const [privateWallet, setPrivateWallet] = useState<PrivateWallet | null>(
@@ -81,34 +80,45 @@ export const MantaWalletContextProvider = ({
   const txQueue = useRef<SubmittableExtrinsic<'promise', any>[]>([]);
   const finalTxResHandler = useRef<txResHandlerType<any> | null>(null);
 
+  const getMantaWallet = useCallback(async () => {
+    const substrateWallets = await getSubstrateWallets();
+    const mantaWallet = substrateWallets.find(
+      (wallet) =>
+        wallet.extension && wallet.extensionName === WALLET_NAME.MANTA
+    );
+    return mantaWallet;
+  }, []);
+
   useEffect(() => {
-    const getPrivateWallet = () => {
-      if (selectedWallet?.extension?.privateWallet && usingMantaWallet) {
-        setPrivateWallet(selectedWallet.extension.privateWallet);
+    const getPrivateWallet = async () => {
+      if (!privateWallet) {
+        const mantaWallet = await getMantaWallet();
+        if (mantaWallet?.extension?.privateWallet) {
+          setPrivateWallet(mantaWallet?.extension?.privateWallet);
+        }
       }
     };
     getPrivateWallet();
-  }, [selectedWallet, usingMantaWallet]);
+  });
 
   useEffect(() => {
     const getZkAddress = async () => {
-      if (
-        isObjectEmpty(selectedWallet) ||
-        !privateWallet ||
-        !usingMantaWallet
-      ) {
-        return;
+      if (!privateAddress) {
+        const mantaWallet = await getMantaWallet();
+        if (!mantaWallet || !privateWallet) {
+          return;
+        }
+        const accounts = await mantaWallet.getAccounts();
+        if (!accounts || accounts.length <= 0) {
+          return;
+        }
+        // @ts-ignore
+        const { zkAddress } = accounts[0];
+        setPrivateAddress(zkAddress);
       }
-      const accounts = await selectedWallet.getAccounts();
-      if (!accounts || accounts.length <= 0) {
-        return;
-      }
-      // @ts-ignore
-      const { zkAddress } = accounts[0];
-      zkAddress && setPrivateAddress(zkAddress);
     };
     getZkAddress();
-  }, [privateWallet, selectedWallet, usingMantaWallet]);
+  }, [privateWallet, signerIsConnected, isReady, isBusy]);
 
   useEffect(() => {
     let unsub;

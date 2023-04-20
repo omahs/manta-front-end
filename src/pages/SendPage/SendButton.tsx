@@ -79,9 +79,8 @@ const ValidationSendButton = ({ showModal }) => {
     signerVersion,
     privateWallet,
     hasFinishedInitialBlockDownload
-  } = usePrivateWallet(usingMantaWallet);
-  const { externalAccount, extensionVersion, extensionName } =
-    usePublicAccount();
+  } = usePrivateWallet();
+  const { externalAccount, extensionVersion, extensionName } = usePublicAccount();
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
@@ -208,11 +207,11 @@ const ValidationSendButton = ({ showModal }) => {
         !shouldShowMantaWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-          <InnerSendButton
-            senderLoading={senderLoading}
-            receiverLoading={receiverLoading}
-          />
-        )}
+        <InnerSendButton
+          senderLoading={senderLoading}
+          receiverLoading={receiverLoading}
+        />
+      )}
     </>
   );
 };

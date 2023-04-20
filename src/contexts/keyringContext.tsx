@@ -138,13 +138,10 @@ export const KeyringContextProvider = ({
 
   useEffect(() => {
     const hasSelectedWallet = !isObjectEmpty(selectedWallet);
-    if (!usingMantaWallet) {
-      // Manta Signer
-      const interval = setInterval(async () => {
-        hasSelectedWallet && refreshWalletAccounts(selectedWallet);
-      }, 1000);
-      return () => interval && clearInterval(interval);
-    }
+    const interval = setInterval(async () => {
+      hasSelectedWallet && refreshWalletAccounts(selectedWallet);
+    }, 1000);
+    return () => interval && clearInterval(interval);
   }, [selectedWallet]);
 
   const initKeyring = useCallback(async () => {
