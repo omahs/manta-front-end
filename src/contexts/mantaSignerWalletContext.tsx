@@ -81,7 +81,6 @@ export const MantaSignerWalletContextProvider = (props) => {
   useEffect(() => {
     const canInitWallet = () => {
       return (
-        !usingMantaWallet &&
         walletNetworkIsActive.current &&
         signerIsConnected &&
         signerVersion &&
@@ -130,11 +129,14 @@ export const MantaSignerWalletContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (walletNetworkIsActive.current && !usingMantaWallet) {
-        fetchSignerVersion();
-      }
-    }, 1000);
+    let interval;
+    if (!usingMantaWallet) {
+      interval = setInterval(async () => {
+        if (walletNetworkIsActive.current) {
+          fetchSignerVersion();
+        }
+      }, 1000);
+    }
     return () => interval && clearInterval(interval);
   }, [api, privateWallet, usingMantaWallet]);
 
@@ -150,11 +152,14 @@ export const MantaSignerWalletContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (canFetchZkAddress && walletNetworkIsActive.current && !usingMantaWallet) {
-        fetchZkAddress();
-      }
-    }, 1000);
+    let interval;
+    if (!usingMantaWallet) {
+      interval = setInterval(async () => {
+        if (canFetchZkAddress && walletNetworkIsActive.current) {
+          fetchZkAddress();
+        }
+      }, 1000);
+    }
     return () => interval && clearInterval(interval);
   }, [isReady, usingMantaWallet]);
 
@@ -169,11 +174,14 @@ export const MantaSignerWalletContextProvider = (props) => {
   }, [privateWallet, txStatusRef.current]);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (isReady && walletNetworkIsActive.current && !usingMantaWallet) {
-        sync();
-      }
-    }, 10000);
+    let interval;
+    if (!usingMantaWallet) {
+      interval = setInterval(async () => {
+        if (isReady && walletNetworkIsActive.current) {
+          sync();
+        }
+      }, 10000);
+    }
     return () => clearInterval(interval);
   }, [isReady, usingMantaWallet]);
 

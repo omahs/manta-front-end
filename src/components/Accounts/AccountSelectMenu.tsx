@@ -1,7 +1,7 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
-import WALLET_NAME from 'constants/WalletConstants';
 import { useGlobal } from 'contexts/globalContexts';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';

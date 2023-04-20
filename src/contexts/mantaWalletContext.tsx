@@ -150,19 +150,22 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     const initialSync = async () => {
-      if (isInitialSync.current && usingMantaWallet) {
+      if (isInitialSync.current) {
         await sync();
       }
     };
     initialSync();
-  }, [isBusy, isReady, isInitialSync.current, privateWallet, usingMantaWallet]);
+  }, [isBusy, isReady, isInitialSync.current, privateWallet]);
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (isReady && usingMantaWallet) {
-        sync();
-      }
-    }, 60000);
+    let interval: ReturnType<typeof setInterval>;
+    if (usingMantaWallet) {
+      interval = setInterval(async () => {
+        if (isReady && usingMantaWallet) {
+          sync();
+        }
+      }, 60000);
+    }
     return () => clearInterval(interval);
   }, [isReady, usingMantaWallet]);
 

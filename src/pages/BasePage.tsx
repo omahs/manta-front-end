@@ -21,6 +21,7 @@ import {
   showSuccess,
   showWarning
 } from 'utils/ui/Notifications';
+import { useGlobal } from 'contexts/globalContexts';
 
 const TxStatusHandler = () => {
   const { txStatus, setTxStatus } = useTxStatus();
@@ -64,21 +65,38 @@ BasePage.propTypes = {
   children: PropTypes.any
 };
 
+
+const PrivateWalletImplementation = ({ children }) => {
+  const { usingMantaWallet } = useGlobal();
+  if (usingMantaWallet) {
+    return (
+      <MantaWalletContextProvider>
+        {children}
+      </MantaWalletContextProvider>
+    );
+  }
+  return (
+    <MantaSignerWalletContextProvider>
+      {children}
+    </MantaSignerWalletContextProvider>
+  );
+};
+
+PrivateWalletImplementation.propTypes = {
+  children: PropTypes.any
+};
+
 export const CalamariBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>
       <BasePage>
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
-            <MantaSignerWalletContextProvider>
-              <MantaWalletContextProvider>
-                <PrivateWalletContextProvider>
-                  <ZkAccountBalancesContextProvider>
-                    {children}
-                  </ZkAccountBalancesContextProvider>
-                </PrivateWalletContextProvider>
-              </MantaWalletContextProvider>
-            </MantaSignerWalletContextProvider>
+            <PrivateWalletImplementation>
+              <PrivateWalletContextProvider>
+                <ZkAccountBalancesContextProvider>{children}</ZkAccountBalancesContextProvider>
+              </PrivateWalletContextProvider>
+            </PrivateWalletImplementation>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>
       </BasePage>
@@ -96,15 +114,13 @@ export const DolphinBasePage = ({ children }) => {
       <BasePage>
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
-            <MantaSignerWalletContextProvider>
-              <MantaWalletContextProvider>
-                <PrivateWalletContextProvider>
-                  <ZkAccountBalancesContextProvider>
-                    {children}
-                  </ZkAccountBalancesContextProvider>
-                </PrivateWalletContextProvider>
-              </MantaWalletContextProvider>
-            </MantaSignerWalletContextProvider>
+            <PrivateWalletImplementation>
+              <PrivateWalletContextProvider>
+                <ZkAccountBalancesContextProvider>
+                  {children}
+                </ZkAccountBalancesContextProvider>
+              </PrivateWalletContextProvider>
+            </PrivateWalletImplementation>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>
       </BasePage>
