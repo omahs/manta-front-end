@@ -9,16 +9,23 @@ import Identicon from '@polkadot/react-identicon';
 import makeBlockie from 'ethereum-blockies-base64';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
+import { useLocation } from 'react-router-dom';
 
 type AddressDisplayProperties = {
   isPrivateAddress?: boolean;
-  zkAddress: string,
-  publicAddress: string,
+  zkAddress: string;
+  publicAddress: string;
   className?: string;
   disabled: boolean;
-}
+};
 
-const AddressDisplay = ({ isPrivateAddress, zkAddress, publicAddress, className, disabled }: AddressDisplayProperties) => (
+const AddressDisplay = ({
+  isPrivateAddress,
+  zkAddress,
+  publicAddress,
+  className,
+  disabled
+}: AddressDisplayProperties) => (
   <div
     className={classNames(
       'bg-white bg-opacity-5 cursor-pointer flex items-center gap-5 justify-between border border-white-light rounded-lg px-3 text-green w-68 h-16',
@@ -26,9 +33,11 @@ const AddressDisplay = ({ isPrivateAddress, zkAddress, publicAddress, className,
       { disabled: disabled }
     )}>
     <div className="flex flex-col">
-      <div className="text-base">{isPrivateAddress ? 'Private' : 'Public'} Address</div>
+      <div className="text-base">
+        {isPrivateAddress ? 'Private' : 'Public'} Address
+      </div>
       <div className="flex flex-row items-center gap-2 text-white text-opacity-60 text-sm">
-        { getAbbreviatedName(isPrivateAddress ? zkAddress : publicAddress, 5, 5) }
+        {getAbbreviatedName(isPrivateAddress ? zkAddress : publicAddress, 5, 5)}
         <CopyPasteIcon
           iconClassName="w-5 h-5"
           textToCopy={isPrivateAddress ? zkAddress : publicAddress}
@@ -56,6 +65,9 @@ const SingleAccountDisplay = ({
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
 
+  const { pathname } = useLocation();
+  const isMantaPayPage = pathname.includes('/transact');
+
   const AccountIcon = () =>
     isMetamaskSelected ? (
       <img
@@ -71,7 +83,7 @@ const SingleAccountDisplay = ({
         className="px-1"
       />
     );
-  
+
   if (zkAddress) {
     return (
       <div key={accountAddress}>
@@ -80,9 +92,20 @@ const SingleAccountDisplay = ({
           <div className="text-base">{succinctAccountName}</div>
         </div>
 
-        <AddressDisplay isPrivateAddress className="mb-5" zkAddress={zkAddress} publicAddress={accountAddress} disabled={disabled} />
-        <AddressDisplay zkAddress={zkAddress} publicAddress={accountAddress}  disabled={disabled} />
-        
+        {isMantaPayPage && (
+          <AddressDisplay
+            isPrivateAddress
+            className="mb-5"
+            zkAddress={zkAddress}
+            publicAddress={accountAddress}
+            disabled={disabled}
+          />
+        )}
+        <AddressDisplay
+          zkAddress={zkAddress}
+          publicAddress={accountAddress}
+          disabled={disabled}
+        />
       </div>
     );
   }
